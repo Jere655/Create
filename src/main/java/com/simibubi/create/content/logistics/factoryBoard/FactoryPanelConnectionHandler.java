@@ -181,8 +181,8 @@ public class FactoryPanelConnectionHandler {
 			return;
 
 		Vec3 offsetPos = bhr.getLocation()
-			.add(Vec3.atLowerCornerOf(bhr.getDirection()
-				.getUnitVec3())
+			.add(bhr.getDirection()
+				.getUnitVec3()
 				.scale(1 / 32f));
 		BlockPos pos = BlockPos.containing(offsetPos);
 		BlockState blockState = at.blockEntity.getBlockState();

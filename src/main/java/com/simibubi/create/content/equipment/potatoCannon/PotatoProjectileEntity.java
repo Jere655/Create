@@ -214,7 +214,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 
 		boolean onServer = !level().isClientSide;
 		DamageSource damageSource = causePotatoDamage();
-		if (onServer && !target.hurt(damageSource, damage)) {
+		if (onServer && !target.hurtOrSimulate(damageSource, damage)) {
 			target.setRemainingFireTicks(k);
 			kill((ServerLevel) level());
 			return;
@@ -302,13 +302,13 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 	}
 
 	@Override
-	public boolean hurt(@NotNull DamageSource source, float amt) {
+	public boolean hurtServer(ServerLevel level, @NotNull DamageSource source, float amt) {
 		if (source.is(DamageTypeTags.IS_FIRE))
 			return false;
-		if (this.isInvulnerableTo(source))
+		if (this.isInvulnerableToBase(source))
 			return false;
 		pop(position());
-		kill((ServerLevel) level());
+		kill(level);
 		return true;
 	}
 

@@ -14,6 +14,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -30,7 +31,7 @@ public class DebugHatsCommand {
 					for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
 						ServerLevel level = ctx.getSource().getLevel();
 
-						Entity entity = entityType.create(level);
+						Entity entity = entityType.create(level, EntitySpawnReason.COMMAND);
 						if (entity instanceof LivingEntity) {
 							level.setBlockAndUpdate(pos, AllBlocks.SEATS.get(DyeColor.RED).getDefaultState());
 							level.setBlockAndUpdate(pos.east(), AllBlocks.STOCK_TICKER.getDefaultState().setValue(StockTickerBlock.FACING, Direction.EAST));

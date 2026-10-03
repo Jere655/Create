@@ -222,8 +222,6 @@ public class LinkedControllerClientHandler {
 		if (MODE != Mode.BIND)
 			return;
 
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
 		Screen tooltipScreen = new Screen(CommonComponents.EMPTY) {
 		};
 		tooltipScreen.init(mc, width1, height1);
@@ -249,10 +247,7 @@ public class LinkedControllerClientHandler {
 		int x = (width1 / 3) - width / 2;
 		int y = height1 - height - 24;
 
-		// TODO
-		guiGraphics.renderComponentTooltip(Minecraft.getInstance().font, list, x, y);
-
-		poseStack.popPose();
+		guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, list, x, y);
 	}
 
 	public enum Mode {

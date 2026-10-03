@@ -67,8 +67,8 @@ public class DeployerBlock extends DirectionalAxisKineticBlock implements IBE<De
 
 	@Override
 	public InteractionResult onWrenched(BlockState state, UseOnContext context) {
-		Vec3 normal = Vec3.atLowerCornerOf(state.getValue(FACING)
-			.getUnitVec3());
+		Vec3 normal = state.getValue(FACING)
+			.getUnitVec3();
 		Vec3 location = context.getClickLocation()
 			.subtract(Vec3.atCenterOf(context.getClickedPos())
 				.subtract(normal.scale(.5)))
@@ -110,8 +110,8 @@ public class DeployerBlock extends DirectionalAxisKineticBlock implements IBE<De
 		if (AllItems.WRENCH.isIn(heldByPlayer))
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
-		Vec3 normal = Vec3.atLowerCornerOf(state.getValue(FACING)
-			.getUnitVec3());
+		Vec3 normal = state.getValue(FACING)
+			.getUnitVec3();
 		Vec3 location = hitResult.getLocation()
 			.subtract(Vec3.atCenterOf(pos)
 				.subtract(normal.scale(.5)))

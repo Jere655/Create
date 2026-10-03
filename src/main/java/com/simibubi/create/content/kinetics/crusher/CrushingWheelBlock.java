@@ -37,7 +37,7 @@ public class CrushingWheelBlock extends RotatedPillarKineticBlock implements IBE
 
 	@Override
 	public RenderShape getRenderShape(BlockState state) {
-		return RenderShape.ENTITYBLOCK_ANIMATED;
+		return RenderShape.INVISIBLE;
 	}
 
 	@Override
@@ -126,7 +126,8 @@ public class CrushingWheelBlock extends RotatedPillarKineticBlock implements IBE
 	}
 
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
+	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn,
+							 net.minecraft.world.entity.InsideBlockEffectApplier effectApplier) {
 		if (entityIn.getY() < pos.getY() + 1.25f || !entityIn.onGround())
 			return;
 

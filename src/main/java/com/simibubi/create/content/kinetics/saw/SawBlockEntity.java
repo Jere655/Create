@@ -79,7 +79,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 public class SawBlockEntity extends BlockBreakingKineticBlockEntity implements Clearable {
 	private static final Object cuttingRecipesKey = new Object();
 	public static final Supplier<RecipeType<?>> woodcuttingRecipeType =
-		Suppliers.memoize(() -> BuiltInRegistries.RECIPE_TYPE.get(ResourceLocation.fromNamespaceAndPath("druidcraft", "woodcutting")));
+		Suppliers.memoize(() -> BuiltInRegistries.RECIPE_TYPE.getValue(ResourceLocation.fromNamespaceAndPath("druidcraft", "woodcutting")));
 
 	public ProcessingInventory inventory;
 	private int recipeIndex;
@@ -376,8 +376,9 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity implements C
 			for (ItemStack stack : results) {
 				ItemHelper.addToList(stack, list);
 			}
-			if (input.hasCraftingRemainingItem())
-				ItemHelper.addToList(input.getCraftingRemainingItem(), list);
+			ItemStack craftingRemainder = input.getCraftingRemainder();
+			if (!craftingRemainder.isEmpty())
+				ItemHelper.addToList(craftingRemainder, list);
 		}
 
 		for (int slot = 0; slot < list.size() && slot + 1 < inventory.getSlots(); slot++)

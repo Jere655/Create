@@ -162,7 +162,7 @@ public class ArmInteractionPoint {
 		ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type").orElse(""));
 		if (id == null)
 			return null;
-		ArmInteractionPointType type = CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.get(id);
+		ArmInteractionPointType type = CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.getValue(id);
 		if (type == null)
 			return null;
 		BlockPos pos = NBTHelper.readBlockPos(nbt, "Pos").offset(anchor);

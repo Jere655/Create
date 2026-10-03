@@ -63,7 +63,7 @@ public class TableClothShopPeripheral extends SyncedPeripheral<TableClothBlockEn
 		ResourceLocation resourceLocation = ResourceLocation.tryParse("minecraft:air");
 		if (itemName.isPresent())
 			resourceLocation = ResourceLocation.tryParse(itemName.get());
-		ItemLike item = BuiltInRegistries.ITEM.get(resourceLocation);
+		ItemLike item = BuiltInRegistries.ITEM.getValue(resourceLocation);
 		blockEntity.priceTag.setFilter(new ItemStack(item));
 	}
 
@@ -130,7 +130,7 @@ public class TableClothShopPeripheral extends SyncedPeripheral<TableClothBlockEn
 						throw new LuaException("Count for item " + itemName + " exceeds 256");
 				}
 				ResourceLocation resourceLocation = ResourceLocation.tryParse(itemName);
-				ItemLike item = BuiltInRegistries.ITEM.get(resourceLocation);
+				ItemLike item = BuiltInRegistries.ITEM.getValue(resourceLocation);
 				ItemStack itemStack = new ItemStack(item);
 				if (itemStack.isEmpty())
 					throw new LuaException("Invalid item at index: " + (i + 1));

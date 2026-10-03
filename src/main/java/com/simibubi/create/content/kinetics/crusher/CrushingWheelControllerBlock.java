@@ -68,7 +68,8 @@ public class CrushingWheelControllerBlock extends DirectionalBlock implements IB
 		super.createBlockStateDefinition(builder);
 	}
 
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
+	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn,
+							 net.minecraft.world.entity.InsideBlockEffectApplier effectApplier) {
 		if (!state.getValue(VALID))
 			return;
 
@@ -110,8 +111,8 @@ public class CrushingWheelControllerBlock extends DirectionalBlock implements IB
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
-		super.updateEntityAfterFallOn(worldIn, entityIn);
+	public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entityIn) {
+		super.updateEntityMovementAfterFallOn(worldIn, entityIn);
 		// Moved to onEntityCollision to allow for omnidirectional input
 	}
 

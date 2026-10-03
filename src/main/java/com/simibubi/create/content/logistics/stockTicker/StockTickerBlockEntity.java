@@ -186,7 +186,7 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 		hiddenCategoriesByPlayer.clear();
 
 		NBTHelper.iterateCompoundList(tag.getListOrEmpty("HiddenCategories"),
-			c -> hiddenCategoriesByPlayer.put(com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(c, "Id")), IntStream.of(c.getIntArrayOrEmpty("Indices"))
+			c -> hiddenCategoriesByPlayer.put(com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(c, "Id")), IntStream.of(c.getIntArray("Indices").orElseGet(() -> new int[0]))
 				.boxed()
 				.toList()));
 

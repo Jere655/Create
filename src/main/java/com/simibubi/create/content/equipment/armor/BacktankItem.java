@@ -97,11 +97,6 @@ public class BacktankItem extends BaseArmorItem {
 			this.actualItem = actualItem;
 		}
 
-		@Override
-		public String getDescriptionId() {
-			return this.getOrCreateDescriptionId();
-		}
-
 		public Item getActualItem() {
 			return actualItem.get();
 		}

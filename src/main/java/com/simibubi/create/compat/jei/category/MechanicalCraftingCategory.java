@@ -130,8 +130,8 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 		matrixStack.translate(0, 0, 300);
 
 		int amount = 0;
-		for (Ingredient ingredient : recipe.getIngredients()) {
-			if (Ingredient.EMPTY == ingredient)
+		for (java.util.Optional<Ingredient> ingredient : recipe.getIngredients()) {
+			if (ingredient.isEmpty())
 				continue;
 			amount++;
 		}

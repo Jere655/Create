@@ -131,7 +131,6 @@ public class GaugeBlock extends DirectionalAxisKineticBlock implements IBE<Gauge
 			if (!shouldRenderHeadOnFace(worldIn, pos, stateIn, face))
 				continue;
 
-			Vector3f rgb = new Color(color).asVectorF();
 			Vec3 faceVec = face.getUnitVec3();
 			Direction positiveFacing = Direction.get(AxisDirection.POSITIVE, face.getAxis());
 			Vec3 positiveFaceVec = positiveFacing.getUnitVec3();
@@ -148,7 +147,7 @@ public class GaugeBlock extends DirectionalAxisKineticBlock implements IBE<Gauge
 				Vec3 offset = VecHelper.getCenterOf(pos)
 					.add(faceVec.scale(.55))
 					.add(mul);
-				worldIn.addParticle(new DustParticleOptions(rgb, 1), offset.x, offset.y, offset.z, mul.x, mul.y, mul.z);
+				worldIn.addParticle(new DustParticleOptions(color, 1), offset.x, offset.y, offset.z, mul.x, mul.y, mul.z);
 			}
 
 		}

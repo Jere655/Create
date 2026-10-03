@@ -28,7 +28,7 @@ public class NoGravMagicalDohickyItem extends Item {
 				world.addParticle(ParticleTypes.END_ROD, ppos.x, pos.y, ppos.z, 0, -.1f, 0);
 			}
 
-			if (entity.isSilent() && !persistentData.getBoolean("PlayEffects")) {
+			if (entity.isSilent() && !persistentData.getBooleanOr("PlayEffects", false)) {
 				Vec3 basemotion = new Vec3(0, 1, 0);
 				world.addParticle(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 0, 0, 0);
 				for (int i = 0; i < 20; i++) {

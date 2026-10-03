@@ -180,8 +180,8 @@ public class DeployerRenderer extends SafeBlockEntityRenderer<DeployerBlockEntit
 			factor = .5f - Mth.clamp(Mth.lerp(AnimationTickHolder.getPartialTicks(), distance, nextDistance), 0, 1);
 		}
 
-		Vec3 offset = Vec3.atLowerCornerOf(blockState.getValue(FACING)
-			.getUnitVec3()).scale(factor);
+		Vec3 offset = blockState.getValue(FACING)
+			.getUnitVec3().scale(factor);
 
 		PoseStack m = matrices.getModel();
 		m.pushPose();

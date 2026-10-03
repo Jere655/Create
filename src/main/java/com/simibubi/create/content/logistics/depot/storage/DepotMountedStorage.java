@@ -15,11 +15,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -83,28 +86,39 @@ public class DepotMountedStorage extends WrapperMountedItemStorage<Handler> impl
 		return new DepotMountedStorage(held.copy());
 	}
 
-	public static DepotMountedStorage fromLegacy(HolderLookup.Provider registries, CompoundTag nbt) {
-		ItemStackHandler handler = new ItemStackHandler();
-		handler.deserializeNBT(registries, nbt);
-		if (handler.getSlots() == 1) {
-			ItemStack stack = handler.getStackInSlot(0);
-			return new DepotMountedStorage(stack);
-		} else {
-			return new DepotMountedStorage(ItemStack.EMPTY);
-		}
+
+public static DepotMountedStorage fromLegacy(HolderLookup.Provider registries, CompoundTag nbt) {
+	ItemStackHandler handler = new ItemStackHandler();
+	handler.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, registries, nbt));
+	if (handler.getSlots() == 1) {
+		ItemStack stack = handler.getStackInSlot(0);
+		return new DepotMountedStorage(stack);
+	} else {
+		return new DepotMountedStorage(ItemStack.EMPTY);
+	}
+}
+
+public static final class Handler extends ItemStackHandler {
+	private Runnable onChange = () -> {};
+
+	private Handler(ItemStack stack) {
+		super(1);
+		this.setStackInSlot(0, stack);
 	}
 
-	public static final class Handler extends ItemStackHandler {
-		private Runnable onChange = () -> {};
-
-		private Handler(ItemStack stack) {
-			super(1);
-			this.setStackInSlot(0, stack);
-		}
-
-		@Override
-		protected void onContentsChanged(int slot) {
-			this.onChange.run();
-		}
+	@Override
+	protected void onContentsChanged(int slot) {
+		this.onChange.run();
 	}
+
+	public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+		serialize(output);
+		return output.buildResult();
+	}
+
+	public void deserializeNBT(HolderLookup.Provider registries, CompoundTag nbt) {
+		deserialize(TagValueInput.create(ProblemReporter.DISCARDING, registries, nbt));
+	}
+}
 }

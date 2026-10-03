@@ -1,7 +1,6 @@
 package com.simibubi.create.content.trains.track;
 
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +9,8 @@ import com.tterrag.registrate.util.nullness.NonNullSupplier;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -17,13 +18,16 @@ import net.minecraft.world.level.ItemLike;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.Tags.Items;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
 public class TrackMaterialFactory {
 	private final ResourceLocation id;
 	private String langName;
 	private NonNullSupplier<NonNullSupplier<? extends TrackBlock>> trackBlock;
-	private Ingredient sleeperIngredient = Ingredient.EMPTY;
-	private Ingredient railsIngredient = Ingredient.fromValues(Stream.of(new Ingredient.TagValue(Items.NUGGETS_IRON), new Ingredient.TagValue(CommonMetal.ZINC.nuggets)));
+	private Ingredient sleeperIngredient = Ingredient.of(HolderSet.empty());
+	private Ingredient railsIngredient = CompoundIngredient.of(
+		Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(Items.NUGGETS_IRON)),
+		Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(CommonMetal.ZINC.nuggets)));
 	private ResourceLocation particle;
 	private TrackMaterial.TrackType trackType = TrackMaterial.TrackType.STANDARD;
 
@@ -83,8 +87,8 @@ public class TrackMaterialFactory {
 	}
 
 	public TrackMaterialFactory noRecipeGen() {
-		this.railsIngredient = Ingredient.EMPTY;
-		this.sleeperIngredient = Ingredient.EMPTY;
+		this.railsIngredient = Ingredient.of(HolderSet.empty());
+		this.sleeperIngredient = Ingredient.of(HolderSet.empty());
 		return this;
 	}
 

@@ -103,7 +103,7 @@ public class NixieTubeBlock extends DoubleFaceAttachedBlock
 		if (level.isClientSide)
 			return InteractionResult.SUCCESS;
 
-		String tagUsed = Component.Serializer.toJson(component, level.registryAccess());
+		String tagUsed = com.simibubi.create.foundation.utility.CreateNbt.writeComponent(level.registryAccess(), component);
 		// Skip computer check in this walk since it was already performed at the start.
 		walkNixies(level, pos, true, (currentPos, rowPosition) -> {
 			if (display)

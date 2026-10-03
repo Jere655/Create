@@ -131,7 +131,7 @@ public abstract class AbstractSimiContainerScreen<T extends AbstractContainerMen
 					continue;
 				int ttx = simiWidget.lockedTooltipX == -1 ? mouseX : simiWidget.lockedTooltipX + simiWidget.getX();
 				int tty = simiWidget.lockedTooltipY == -1 ? mouseY : simiWidget.lockedTooltipY + simiWidget.getY();
-				graphics.renderComponentTooltip(font, tooltip, ttx, tty);
+				graphics.setComponentTooltipForNextFrame(font, tooltip, ttx, tty);
 			}
 		}
 	}

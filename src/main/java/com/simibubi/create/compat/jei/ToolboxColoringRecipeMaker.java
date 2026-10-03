@@ -2,7 +2,7 @@ package com.simibubi.create.compat.jei;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -14,8 +14,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 public final class ToolboxColoringRecipeMaker {
@@ -33,12 +35,9 @@ public final class ToolboxColoringRecipeMaker {
 				DyeItem dye = DyeItem.byColor(color);
 				ItemStack dyeStack = new ItemStack(dye);
 				TagKey<Item> colorTag = color.getTag();
-				Ingredient.Value dyeList = new Ingredient.ItemValue(dyeStack);
-				Ingredient.Value colorList = new Ingredient.TagValue(colorTag);
-				Stream<Ingredient.Value> colorIngredientStream = Stream.of(dyeList, colorList);
-				Ingredient colorIngredient = Ingredient.fromValues(colorIngredientStream);
-				NonNullList<Ingredient> inputs =
-					NonNullList.of(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
+				Ingredient colorIngredient = CompoundIngredient.of(Ingredient.of(dye),
+					Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(colorTag)));
+				List<Ingredient> inputs = List.of(baseShulkerIngredient, colorIngredient);
 				Block coloredShulkerBox = AllBlocks.TOOLBOXES.get(color)
 					.get();
 				ItemStack output = new ItemStack(coloredShulkerBox);

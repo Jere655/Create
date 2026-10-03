@@ -280,7 +280,7 @@ public class BezierConnection implements Iterable<BezierConnection.Segment> {
 	}
 
 	public void spawnItems(Level level) {
-		if (!level.getGameRules()
+		if (!(level instanceof ServerLevel serverLevel) || !serverLevel.getGameRules()
 			.getBoolean(GameRules.RULE_DOBLOCKDROPS))
 			return;
 		Vec3 origin = Vec3.atLowerCornerOf(bePositions.getFirst());

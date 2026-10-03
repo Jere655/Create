@@ -203,11 +203,11 @@ public class CarriageBogey {
 
 	public static CarriageBogey read(CompoundTag tag, TrackGraph graph, DimensionPalette dimensions) {
 		ResourceLocation location = ResourceLocation.parse(tag.getString("Type").orElse(""));
-		AbstractBogeyBlock<?> type = (AbstractBogeyBlock<?>) BuiltInRegistries.BLOCK.get(location);
+		AbstractBogeyBlock<?> type = (AbstractBogeyBlock<?>) BuiltInRegistries.BLOCK.getValue(location);
 		boolean upsideDown = tag.getBoolean("UpsideDown").orElse(false);
 		Couple<TravellingPoint> points = Couple.deserializeEach(tag.getListOrEmpty("Points"),
 			c -> TravellingPoint.read(c, graph, dimensions));
-		CompoundTag data = tag.getCompound(AbstractBogeyBlockEntity.BOGEY_DATA_KEY);
+		CompoundTag data = tag.getCompoundOrEmpty(AbstractBogeyBlockEntity.BOGEY_DATA_KEY);
 		return new CarriageBogey(type, upsideDown, data, points.getFirst(), points.getSecond());
 	}
 

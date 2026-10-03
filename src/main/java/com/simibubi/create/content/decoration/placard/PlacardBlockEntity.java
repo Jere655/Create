@@ -80,10 +80,10 @@ public class PlacardBlockEntity extends SmartBlockEntity {
 		if (!AllBlocks.PLACARD.has(blockState))
 			return;
 
-		DustParticleOptions pParticleData = new DustParticleOptions(new Vector3f(1, .2f, 0), 1);
+		DustParticleOptions pParticleData = new DustParticleOptions(0xFF3300, 1);
 		Vec3 centerOf = VecHelper.getCenterOf(worldPosition);
-		Vec3 normal = Vec3.atLowerCornerOf(PlacardBlock.connectedDirection(blockState)
-			.getUnitVec3());
+		Vec3 normal = PlacardBlock.connectedDirection(blockState)
+			.getUnitVec3();
 		Vec3 offset = VecHelper.axisAlingedPlaneOf(normal);
 
 		for (int i = 0; i < 10; i++) {

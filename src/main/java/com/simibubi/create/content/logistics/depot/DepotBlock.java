@@ -88,8 +88,8 @@ public class DepotBlock extends Block implements IBE<DepotBlockEntity>, IWrencha
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
-		super.updateEntityAfterFallOn(worldIn, entityIn);
+	public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entityIn) {
+		super.updateEntityMovementAfterFallOn(worldIn, entityIn);
 		SharedDepotBlockMethods.onLanded(worldIn, entityIn);
 	}
 

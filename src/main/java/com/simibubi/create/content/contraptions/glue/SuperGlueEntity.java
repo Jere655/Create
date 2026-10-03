@@ -158,7 +158,7 @@ public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, 
 	}
 
 	@Override
-	protected boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		return false;
 	}
 

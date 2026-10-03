@@ -171,7 +171,8 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 		if (tag.contains("ForceFlag"))
 			trainPresent = tag.getBoolean("ForceFlag").orElse(false);
 		if (tag.contains("PrevTrainName"))
-			lastDisassembledTrainName = Component.Serializer.fromJson(tag.getString("PrevTrainName").orElse(""), registries);
+			lastDisassembledTrainName = com.simibubi.create.foundation.utility.CreateNbt.readComponent(registries,
+				tag.getString("PrevTrainName").orElse("")).orElse(null);
 		lastDisassembledMapColorIndex = tag.getInt("PrevTrainColor").orElse(0);
 
 		if (!clientPacket)
@@ -198,7 +199,8 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 		tag.putInt("FailedCarriageIndex", failedCarriageIndex);
 
 		if (lastDisassembledTrainName != null)
-			tag.putString("PrevTrainName", Component.Serializer.toJson(lastDisassembledTrainName, registries));
+			tag.putString("PrevTrainName", com.simibubi.create.foundation.utility.CreateNbt.writeComponent(registries,
+				lastDisassembledTrainName));
 		tag.putInt("PrevTrainColor", lastDisassembledMapColorIndex);
 
 		super.write(tag, registries, clientPacket);
@@ -989,8 +991,8 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 		if (diff.lengthSqr() == 0)
 			return true;
 
-		flagFlipped = diff.dot(Vec3.atLowerCornerOf(nearest.getClockWise()
-			.getUnitVec3())) > 0;
+		flagFlipped = diff.dot(nearest.getClockWise()
+			.getUnitVec3()) > 0;
 
 		return true;
 	}

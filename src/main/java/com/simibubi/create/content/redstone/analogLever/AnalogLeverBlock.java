@@ -106,7 +106,7 @@ public class AnalogLeverBlock extends FaceAttachedHorizontalDirectionalBlock imp
 			(double) pos.getY() + 0.5D + 0.1D * (double) direction.getStepY() + 0.2D * (double) direction1.getStepY();
 		double d2 =
 			(double) pos.getZ() + 0.5D + 0.1D * (double) direction.getStepZ() + 0.2D * (double) direction1.getStepZ();
-		worldIn.addParticle(new DustParticleOptions(new Vector3f(1.0F, 0.0F, 0.0F), alpha), d0, d1, d2, 0.0D, 0.0D,
+		worldIn.addParticle(new DustParticleOptions(0xFF0000, alpha), d0, d1, d2, 0.0D, 0.0D,
 			0.0D);
 	}
 

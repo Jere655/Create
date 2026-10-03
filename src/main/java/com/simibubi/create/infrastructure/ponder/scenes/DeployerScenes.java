@@ -21,9 +21,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.WalkAnimationState;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -180,7 +181,7 @@ public class DeployerScenes {
 		scene.idle(70);
 
 		ElementLink<EntityElement> sheep = scene.world().createEntity(w -> {
-			Sheep entity = EntityType.SHEEP.create(w);
+			Sheep entity = EntityType.SHEEP.create(w, EntitySpawnReason.COMMAND);
 			entity.setColor(DyeColor.PINK);
 			Vec3 p = util.vector().topOf(util.grid().at(1, 0, 2));
 			entity.setPos(p.x, p.y, p.z);
@@ -188,7 +189,7 @@ public class DeployerScenes {
 			entity.yo = p.y;
 			entity.zo = p.z;
 			WalkAnimationState animation = entity.walkAnimation;
-			animation.update(-animation.position(), 1);
+			animation.update(-animation.position(), 1, 1);
 			animation.setSpeed(1);
 			entity.yRotO = 210;
 			entity.setYRot(210);

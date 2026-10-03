@@ -129,8 +129,8 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
-		super.updateEntityAfterFallOn(worldIn, entityIn);
+	public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entityIn) {
+		super.updateEntityMovementAfterFallOn(worldIn, entityIn);
 		if (!worldIn.getBlockState(entityIn.blockPosition())
 			.is(this))
 			return;

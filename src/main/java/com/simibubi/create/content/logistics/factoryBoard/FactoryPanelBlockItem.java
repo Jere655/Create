@@ -46,17 +46,17 @@ public class FactoryPanelBlockItem extends LogisticallyLinkedBlockItem {
 	@Override
 	protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, Player player, ItemStack stack,
 		BlockState state) {
-		return super.updateCustomBlockEntityTag(pos, level, player, fixCtrlCopiedStack(stack), state);
+		return super.updateCustomBlockEntityTag(pos, level, player, fixCtrlCopiedStack(stack, level.registryAccess()), state);
 	}
 
-	public static ItemStack fixCtrlCopiedStack(ItemStack stack) {
+	public static ItemStack fixCtrlCopiedStack(ItemStack stack, net.minecraft.core.HolderLookup.Provider registries) {
 		// Salvage frequency data from one of the panel slots
 		if (isTuned(stack) && networkFromStack(stack) == null) {
 			CompoundTag bet = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
 			UUID frequency = UUID.randomUUID();
 
 			for (PanelSlot slot : PanelSlot.values()) {
-				CompoundTag panelTag = bet.getCompound(CreateLang.asId(slot.name()));
+				CompoundTag panelTag = bet.getCompoundOrEmpty(CreateLang.asId(slot.name()));
 				if (panelTag.contains("Freq"))
 					frequency = com.simibubi.create.foundation.utility.CreateNbt.readUUID(net.createmod.catnip.nbt.NBTHelper.getINBT(panelTag, "Freq"));
 			}
@@ -64,7 +64,8 @@ public class FactoryPanelBlockItem extends LogisticallyLinkedBlockItem {
 			bet = new CompoundTag();
 			bet.put("Freq", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(frequency));
 
-			BlockEntity.addEntityType(bet, ((IBE<?>) ((BlockItem) stack.getItem()).getBlock()).getBlockEntityType());
+			com.simibubi.create.foundation.utility.CreateNbt.addBlockEntityType(bet, registries,
+				((IBE<?>) ((BlockItem) stack.getItem()).getBlock()).getBlockEntityType());
 			stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(bet));
 		}
 

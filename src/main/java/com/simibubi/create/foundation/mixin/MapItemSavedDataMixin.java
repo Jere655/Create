@@ -67,7 +67,7 @@ public class MapItemSavedDataMixin implements StationMapData {
 
 		ListTag listTag = tag.getListOrEmpty(STATION_MARKERS_KEY);
 		for (int i = 0; i < listTag.size(); ++i) {
-			StationMarker stationMarker = StationMarker.load(listTag.getCompound(i), levelRegistry);
+			StationMarker stationMarker = StationMarker.load(listTag.getCompoundOrEmpty(i), levelRegistry);
 			stationMapData.addStationMarker(stationMarker);
 		}
 	}

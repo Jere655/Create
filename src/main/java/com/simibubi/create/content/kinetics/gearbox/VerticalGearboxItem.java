@@ -9,6 +9,7 @@ import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -25,8 +26,8 @@ public class VerticalGearboxItem extends BlockItem {
 	}
 
 	@Override
-	public String getDescriptionId() {
-		return "item.create.vertical_gearbox";
+	public Component getName(ItemStack stack) {
+		return Component.translatable("item.create.vertical_gearbox");
 	}
 
 	@Override

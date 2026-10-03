@@ -15,9 +15,9 @@ import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.random.WeightedEntry.Wrapper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -62,8 +62,9 @@ public class BlazeBurnerBlockItem extends BlockItem {
 	}
 
 	@Override
-	public String getDescriptionId() {
-		return hasCapturedBlaze() ? super.getDescriptionId() : "item.create." + RegisteredObjectsHelper.getKeyOrThrow(this).getPath();
+	public Component getName(ItemStack stack) {
+		return hasCapturedBlaze() ? super.getName(stack)
+			: Component.translatable("item.create." + RegisteredObjectsHelper.getKeyOrThrow(this).getPath());
 	}
 
 	@Override

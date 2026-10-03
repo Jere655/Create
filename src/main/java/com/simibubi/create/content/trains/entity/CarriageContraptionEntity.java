@@ -29,6 +29,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.core.BlockPos;
@@ -61,7 +62,7 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	private static final EntityDataAccessor<CarriageSyncData> CARRIAGE_DATA =
 		SynchedEntityData.defineId(CarriageContraptionEntity.class, AllEntityDataSerializers.CARRIAGE_DATA);
 	private static final EntityDataAccessor<Optional<UUID>> TRACK_GRAPH =
-		SynchedEntityData.defineId(CarriageContraptionEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+		SynchedEntityData.defineId(CarriageContraptionEntity.class, AllEntityDataSerializers.OPTIONAL_UUID);
 	private static final EntityDataAccessor<Boolean> SCHEDULED =
 		SynchedEntityData.defineId(CarriageContraptionEntity.class, EntityDataSerializers.BOOLEAN);
 

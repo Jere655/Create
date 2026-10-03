@@ -103,11 +103,8 @@ public class AddressEditBox extends EditBox {
 	@Override
 	public void renderWidget(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
 		super.renderWidget(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
-		PoseStack matrixStack = pGuiGraphics.pose();
-		matrixStack.pushPose();
-		matrixStack.translate(0, 0, 500);
+		pGuiGraphics.nextStratum();
 		destinationSuggestions.render(pGuiGraphics, pMouseX, pMouseY);
-		matrixStack.popPose();
 
 		if (!destinationSuggestions.isEmpty())
 			return;
@@ -132,7 +129,7 @@ public class AddressEditBox extends EditBox {
 				CreateLang.translate("gui.address_box.clipboard_tip_4")
 					.style(ChatFormatting.DARK_GRAY)
 					.component());
-			pGuiGraphics.renderComponentTooltip(Minecraft.getInstance().font, promiseTip, pMouseX, pMouseY);
+			pGuiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, promiseTip, pMouseX, pMouseY);
 		}
 	}
 

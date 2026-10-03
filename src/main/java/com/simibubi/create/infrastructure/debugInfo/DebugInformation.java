@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.platform.GlUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.simibubi.create.Create;
 import com.simibubi.create.CreateBuildInfo;
 import com.simibubi.create.compat.pojav.PojavChecker;
@@ -74,7 +74,7 @@ public class DebugInformation {
 			.put("Mod Git Commit", CreateBuildInfo.GIT_COMMIT)
 			.put("Ponder Version", getVersionOfMod("ponder"))
 			.put("NeoForge Version", getVersionOfMod("neoforge"))
-			.put("Minecraft Version", SharedConstants.getCurrentVersion().getName())
+			.put("Minecraft Version", SharedConstants.getCurrentVersion().name())
 			.buildTo(DebugInformation::registerBothInfo);
 
 		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> {
@@ -86,8 +86,8 @@ public class DebugInformation {
 						.toString())
 					.orElse("None"))
 				.put("Flywheel Backend", () -> Backend.REGISTRY.getIdOrThrow(BackendManager.currentBackend()).toString())
-				.put("OpenGL Renderer", GlUtil::getRenderer)
-				.put("OpenGL Version", GlUtil::getOpenGLVersion)
+				.put("OpenGL Renderer", () -> RenderSystem.getDevice().getRenderer())
+				.put("OpenGL Version", () -> RenderSystem.getDevice().getVersion())
 				.put("Graphics Mode", () -> Minecraft.getInstance().options.graphicsMode().get().name().toLowerCase(Locale.ROOT))
 				.put("PojavLauncher Detected", () -> String.valueOf(PojavChecker.IS_PRESENT))
 				.buildTo(DebugInformation::registerClientInfo);

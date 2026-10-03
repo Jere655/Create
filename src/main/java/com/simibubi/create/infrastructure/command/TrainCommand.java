@@ -92,8 +92,10 @@ public class TrainCommand {
 			pos.getX(),
 			pos.getY() + 5,
 			pos.getZ(),
+			java.util.Set.of(),
 			serverPlayer.getViewYRot(0),
-			serverPlayer.getViewXRot(0)
+			serverPlayer.getViewXRot(0),
+			false
 		);
 
 		source.sendSuccess(() -> {

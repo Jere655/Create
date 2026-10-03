@@ -162,8 +162,8 @@ public class BeltBlock extends HorizontalKineticBlock
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
-		super.updateEntityAfterFallOn(worldIn, entityIn);
+	public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entityIn) {
+		super.updateEntityMovementAfterFallOn(worldIn, entityIn);
 		BlockPos entityPosition = entityIn.blockPosition();
 		BlockPos beltPos = null;
 
@@ -180,7 +180,8 @@ public class BeltBlock extends HorizontalKineticBlock
 	}
 
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
+	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn,
+							 net.minecraft.world.entity.InsideBlockEffectApplier effectApplier) {
 		if (!canTransportObjects(state))
 			return;
 		if (entityIn instanceof Player player) {
@@ -406,7 +407,7 @@ public class BeltBlock extends HorizontalKineticBlock
 
 	@Override
 	public RenderShape getRenderShape(BlockState state) {
-		return state.getValue(CASING) ? RenderShape.MODEL : RenderShape.ENTITYBLOCK_ANIMATED;
+		return state.getValue(CASING) ? RenderShape.MODEL : RenderShape.INVISIBLE;
 	}
 
 	public static void initBelt(Level world, BlockPos pos) {

@@ -241,7 +241,7 @@ public class StationPeripheral extends SyncedPeripheral<StationBlockEntity> {
 			return tag.getAsString();
 		else if (type == Tag.TAG_LIST || type == Tag.TAG_BYTE_ARRAY || type == Tag.TAG_INT_ARRAY || type == Tag.TAG_LONG_ARRAY) {
 			CreateLuaTable list = new CreateLuaTable();
-			CollectionTag<?> listTag = (CollectionTag<?>) tag;
+			CollectionTag listTag = (CollectionTag) tag;
 
 			for (int i = 0; i < listTag.size(); i++) {
 				list.put(i + 1, fromNBTTag(null, listTag.get(i)));

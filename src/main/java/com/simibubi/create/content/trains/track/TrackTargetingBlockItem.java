@@ -143,7 +143,8 @@ public class TrackTargetingBlockItem extends BlockItem {
 
 		blockEntityData.put("TargetTrack", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(selectedPos.subtract(placedPos)));
 		blockEntityData.putString("id", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
-		BlockEntity.addEntityType(blockEntityData, ((IBE<?>) this.getBlock()).getBlockEntityType());
+		com.simibubi.create.foundation.utility.CreateNbt.addBlockEntityType(blockEntityData, level.registryAccess(),
+			((IBE<?>) this.getBlock()).getBlockEntityType());
 
 		stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityData));
 		stack.remove(AllDataComponents.TRACK_TARGETING_ITEM_SELECTED_POS);

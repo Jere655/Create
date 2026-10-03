@@ -101,7 +101,7 @@ public class PoweredShaftBlockEntity extends GeneratingKineticBlockEntity {
 		if (compound.contains("EnginePos")) {
 			enginePos = NBTHelper.readBlockPos(compound, "EnginePos");
 			engineEfficiency = compound.getFloat("EnginePower").orElse(0.0F);
-			capacityKey = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(compound.getString("EngineType").orElse("")));
+			capacityKey = BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(compound.getString("EngineType").orElse("")));
 		}
 	}
 

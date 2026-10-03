@@ -241,7 +241,7 @@ public class PipeConnection {
 	}
 
 	public void deserializeNBT(CompoundTag tag, HolderLookup.Provider registries, BlockPos blockEntityPos, boolean clientPacket) {
-		CompoundTag connectionData = tag.getCompound(side.getName());
+		CompoundTag connectionData = tag.getCompoundOrEmpty(side.getName());
 
 		if (connectionData.contains("Pressure")) {
 			ListTag pressureData = connectionData.getListOrEmpty("Pressure");

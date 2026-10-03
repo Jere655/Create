@@ -33,7 +33,8 @@ public record ItemNameAttribute(String itemName) implements ItemAttribute {
 		if (stack.has(DataComponents.CUSTOM_NAME)) {
 			try {
 				String customName = stack.getOrDefault(DataComponents.CUSTOM_NAME, Component.empty()).getString();
-				Component component = Component.Serializer.fromJson(customName, level.registryAccess());
+				Component component = com.simibubi.create.foundation.utility.CreateNbt.readComponent(level.registryAccess(), customName)
+					.orElse(null);
 				if (component != null) {
 					return component.getString();
 				}

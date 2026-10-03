@@ -25,7 +25,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 
@@ -88,7 +88,7 @@ public class TrainMapRenderer implements AutoCloseable {
 		xCoord = Mth.positiveModulo(xCoord, WIDTH);
 		zCoord = Mth.positiveModulo(zCoord, HEIGHT);
 		instance.getImage()
-			.blendPixel(xCoord, zCoord, FastColor.ABGR32.color(alpha, color));
+			.blendPixel(xCoord, zCoord, ARGB.toABGR(ARGB.color(alpha, color)));
 	}
 
 	public void blendPixels(int xCoordFrom, int zCoordFrom, int xCoordTo, int zCoordTo, int color, int alpha) {

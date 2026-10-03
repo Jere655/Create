@@ -3,8 +3,14 @@ package com.simibubi.create.content.schematics.cannon;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class SchematicannonInventory extends ItemStackHandler {
@@ -38,5 +44,15 @@ public class SchematicannonInventory extends ItemStackHandler {
 		default:
 			return super.isItemValid(slot, stack);
 		}
+	}
+
+	public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+		serialize(output);
+		return output.buildResult();
+	}
+
+	public void deserializeNBT(HolderLookup.Provider registries, CompoundTag nbt) {
+		deserialize(TagValueInput.create(ProblemReporter.DISCARDING, registries, nbt));
 	}
 }

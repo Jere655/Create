@@ -84,7 +84,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	private static final EntityDataAccessor<Boolean> STALLED =
 		SynchedEntityData.defineId(AbstractContraptionEntity.class, EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Optional<UUID>> CONTROLLED_BY =
-		SynchedEntityData.defineId(AbstractContraptionEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+		SynchedEntityData.defineId(AbstractContraptionEntity.class, com.simibubi.create.AllEntityDataSerializers.OPTIONAL_UUID);
 
 	public final Map<Entity, MutableInt> collidingEntities;
 
@@ -827,7 +827,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	@Override
-	protected boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		return false;
 	}
 

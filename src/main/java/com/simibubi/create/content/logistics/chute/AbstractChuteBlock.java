@@ -75,8 +75,8 @@ public abstract class AbstractChuteBlock extends Block implements IWrenchable, I
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
-		super.updateEntityAfterFallOn(worldIn, entityIn);
+	public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entityIn) {
+		super.updateEntityMovementAfterFallOn(worldIn, entityIn);
 		ItemStack stack = ItemHelper.fromItemEntity(entityIn);
 		if (stack.isEmpty())
 			return;

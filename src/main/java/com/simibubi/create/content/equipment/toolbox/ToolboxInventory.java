@@ -16,14 +16,17 @@ import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.item.ItemSlots;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
-import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -161,11 +164,16 @@ public class ToolboxInventory extends ItemStackHandler {
 		return insertItem;
 	}
 
-	@Override
 	public @NotNull CompoundTag serializeNBT(@NotNull HolderLookup.Provider registries) {
-		CompoundTag compound = super.serializeNBT(registries);
-		compound.put("Compartments", NBTHelper.writeItemList(filters, registries));
-		return compound;
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+		serialize(output);
+		return output.buildResult();
+	}
+
+	@Override
+	public void serialize(ValueOutput output) {
+		super.serialize(output);
+		output.store("Compartments", ItemStack.OPTIONAL_CODEC.listOf(), filters);
 	}
 
 	@Override
@@ -176,15 +184,20 @@ public class ToolboxInventory extends ItemStackHandler {
 		super.onContentsChanged(slot);
 	}
 
-	@Override
 	public void deserializeNBT(@NotNull HolderLookup.Provider registries, CompoundTag nbt) {
-		filters = NBTHelper.readItemList(nbt.getListOrEmpty("Compartments"), registries);
+		deserialize(TagValueInput.create(ProblemReporter.DISCARDING, registries, nbt));
+	}
+
+	@Override
+	public void deserialize(ValueInput input) {
+		super.deserialize(input);
+		filters = new ArrayList<>(input.read("Compartments", ItemStack.OPTIONAL_CODEC.listOf())
+			.orElse(List.of()));
 		if (filters.size() != 8) {
 			filters.clear();
 			for (int i = 0; i < 8; i++)
 				filters.add(ItemStack.EMPTY);
 		}
-		super.deserializeNBT(registries, nbt);
 	}
 
 	public ItemStack distributeToCompartment(@NotNull ItemStack stack, int compartment, boolean simulate) {

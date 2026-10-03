@@ -67,8 +67,8 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
-		super.updateEntityAfterFallOn(worldIn, entityIn);
+	public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entityIn) {
+		super.updateEntityMovementAfterFallOn(worldIn, entityIn);
 		if (!(entityIn instanceof ItemEntity itemEntity))
 			return;
 		if (!entityIn.isAlive())

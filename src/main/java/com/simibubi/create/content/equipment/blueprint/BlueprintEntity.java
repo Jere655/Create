@@ -525,7 +525,7 @@ public class BlueprintEntity extends HangingEntity
 		public ItemStackHandler getItems() {
 			ItemStackHandler newInv = new ItemStackHandler(11);
 			CompoundTag list = getOrCreateRecipeCompound();
-			CompoundTag invNBT = list.getCompound(index + "");
+			CompoundTag invNBT = list.getCompoundOrEmpty(index + "");
 			inferredIcon = list.getBoolean("InferredIcon").orElse(false);
 			if (!invNBT.isEmpty())
 				newInv.deserializeNBT(registryAccess(), invNBT);

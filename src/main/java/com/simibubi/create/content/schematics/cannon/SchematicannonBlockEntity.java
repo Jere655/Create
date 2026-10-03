@@ -208,7 +208,7 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 		boolean pastDead = false;
 
 		for (int i = 0; i < tagBlocks.size(); i++) {
-			CompoundTag c = tagBlocks.getCompound(i);
+			CompoundTag c = tagBlocks.getCompoundOrEmpty(i);
 			LaunchedItem launched = LaunchedItem.fromNBT(c, registries, blockHolderGetter());
 			BlockPos readBlockPos = launched.target;
 

@@ -74,7 +74,7 @@ public abstract class AbstractBogeyBlockEntity extends CachedRenderBBBlockEntity
 	@Override
 	protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
 		if (tag.contains(BOGEY_DATA_KEY))
-			this.bogeyData = tag.getCompound(BOGEY_DATA_KEY);
+			this.bogeyData = tag.getCompoundOrEmpty(BOGEY_DATA_KEY);
 		else
 			this.bogeyData = this.createBogeyData();
 		super.loadAdditional(tag, registries);

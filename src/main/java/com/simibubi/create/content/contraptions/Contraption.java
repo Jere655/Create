@@ -969,7 +969,7 @@ public abstract class Contraption {
 			ListTag list = c.getListOrEmpty("Palette");
 			palette.values.clear();
 			for (int i = 0; i < list.size(); ++i)
-				palette.values.add(NbtUtils.readBlockState(holderGetter, list.getCompound(i)));
+				palette.values.add(NbtUtils.readBlockState(holderGetter, list.getCompoundOrEmpty(i)));
 
 			blockList = c.getListOrEmpty("BlockList");
 		} else {

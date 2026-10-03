@@ -856,7 +856,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 
 	private void renderActionTooltip(@Nullable GuiGraphics graphics, List<Component> tooltip, int mx, int my) {
 		if (graphics != null)
-			graphics.renderTooltip(font, tooltip, Optional.empty(), mx, my);
+			graphics.setTooltipForNextFrame(font, tooltip, Optional.empty(), mx, my);
 	}
 
 	private int getFieldSize(int minSize, Pair<ItemStack, Component> pair) {

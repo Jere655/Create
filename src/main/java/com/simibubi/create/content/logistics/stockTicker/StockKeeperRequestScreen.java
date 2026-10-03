@@ -793,9 +793,9 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 				if (lines.size() > 0)
 					lines.set(0, CreateLang.translateDirect("gui.stock_keeper.craft", lines.get(0)
 						.copy()));
-				graphics.renderComponentTooltip(font, lines, mouseX, mouseY);
+				graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
 			} else
-				graphics.renderTooltip(font, entry.stack, mouseX, mouseY);
+				graphics.setTooltipForNextFrame(font, entry.stack, mouseX, mouseY);
 		}
 
 		if (currentScroll < 1 && mouseY > besideSearchButtonY && mouseY <= besideSearchButtonY + 15) {
@@ -803,7 +803,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			if (Mods.JEI.isLoaded() && mouseX > jeiSyncX && mouseX <= jeiSyncX + 15) {
 				SearchSyncMode mode = AllConfigs.client().syncRecipeViewerSearch.get();
 				String langKey = "gui.stock_keeper.jei_sync." + mode.getSerializedName();
-				graphics.renderComponentTooltip(font,
+				graphics.setComponentTooltipForNextFrame(font,
 					List.of(
 						CreateLang.translate(langKey)
 							.component(),
@@ -819,7 +819,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 
 			// Render tooltip of lock option
 			if (isAdmin && mouseX > lockX && mouseX <= lockX + 15) {
-				graphics.renderComponentTooltip(font,
+				graphics.setComponentTooltipForNextFrame(font,
 					List.of(
 						CreateLang.translate(isLocked ? "gui.stock_keeper.network_locked" : "gui.stock_keeper.network_open")
 							.component(),
@@ -840,7 +840,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		// Render tooltip of address input
 		if (addressBox.getValue()
 			.isBlank() && !addressBox.isFocused() && addressBox.isHovered()) {
-			graphics.renderComponentTooltip(font, List.of(CreateLang.translate("gui.factory_panel.restocker_address")
+			graphics.setComponentTooltipForNextFrame(font, List.of(CreateLang.translate("gui.factory_panel.restocker_address")
 						.color(ScrollInput.HEADER_RGB)
 						.component(),
 					CreateLang.translate("gui.schedule.lmb_edit")

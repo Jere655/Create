@@ -354,7 +354,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 
 	private void renderActionTooltip(@Nullable GuiGraphics graphics, List<Component> tooltip, int mx, int my) {
 		if (graphics != null)
-			graphics.renderTooltip(font, tooltip, Optional.empty(), mx, my);
+			graphics.setTooltipForNextFrame(font, tooltip, Optional.empty(), mx, my);
 	}
 
 	@Override
@@ -431,7 +431,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 
 		if (hoveredSlot instanceof SlotItemHandler && hoveredSlot.getItem()
 			.isEmpty()) {
-			graphics.renderComponentTooltip(font, List.of(CreateLang.translate("gui.stock_ticker.category_filter")
+			graphics.setComponentTooltipForNextFrame(font, List.of(CreateLang.translate("gui.stock_ticker.category_filter")
 						.color(ScrollInput.HEADER_RGB)
 						.component(),
 					CreateLang.translate("gui.stock_ticker.category_filter_tip")
@@ -444,7 +444,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		}
 
 		if (editorEditBox != null && editorEditBox.isHovered() && !editorEditBox.isFocused()) {
-			graphics.renderComponentTooltip(font, List.of(CreateLang.translate("gui.stock_ticker.category_name")
+			graphics.setComponentTooltipForNextFrame(font, List.of(CreateLang.translate("gui.stock_ticker.category_name")
 				.color(ScrollInput.HEADER_RGB)
 				.component(), clickToEdit), mouseX, mouseY);
 		}

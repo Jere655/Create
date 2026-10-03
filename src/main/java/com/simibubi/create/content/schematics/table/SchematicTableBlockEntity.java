@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,6 +21,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -39,6 +42,16 @@ public class SchematicTableBlockEntity extends SmartBlockEntity implements MenuP
 		protected void onContentsChanged(int slot) {
 			super.onContentsChanged(slot);
 			setChanged();
+		}
+
+		public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+			TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+			serialize(output);
+			return output.buildResult();
+		}
+
+		public void deserializeNBT(HolderLookup.Provider registries, CompoundTag nbt) {
+			deserialize(TagValueInput.create(ProblemReporter.DISCARDING, registries, nbt));
 		}
 	}
 

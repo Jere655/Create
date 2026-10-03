@@ -290,8 +290,9 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity implements 
 					List<ItemStack> containers = new ArrayList<>();
 					groupedItems.grid.values()
 						.forEach(stack -> {
-							if (stack.hasCraftingRemainingItem())
-								containers.add(stack.getCraftingRemainingItem()
+							ItemStack craftingRemainder = stack.getCraftingRemainder();
+							if (!craftingRemainder.isEmpty())
+								containers.add(craftingRemainder
 									.copy());
 						});
 
@@ -462,8 +463,8 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity implements 
 	public void eject() {
 		BlockState blockState = getBlockState();
 		boolean present = AllBlocks.MECHANICAL_CRAFTER.has(blockState);
-		Vec3 vec = present ? Vec3.atLowerCornerOf(blockState.getValue(HORIZONTAL_FACING)
-			.getUnitVec3())
+		Vec3 vec = present ? blockState.getValue(HORIZONTAL_FACING)
+			.getUnitVec3()
 			.scale(.75f) : Vec3.ZERO;
 		Vec3 ejectPos = VecHelper.getCenterOf(worldPosition)
 			.add(vec);

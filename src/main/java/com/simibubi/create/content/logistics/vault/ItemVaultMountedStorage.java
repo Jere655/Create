@@ -13,10 +13,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -53,7 +56,7 @@ public class ItemVaultMountedStorage extends WrapperMountedItemStorage<ItemStack
 
 	public static ItemVaultMountedStorage fromLegacy(HolderLookup.Provider registries,  CompoundTag nbt) {
 		ItemStackHandler handler = new ItemStackHandler();
-		handler.deserializeNBT(registries, nbt);
+		handler.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, registries, nbt));
 		return new ItemVaultMountedStorage(handler);
 	}
 }

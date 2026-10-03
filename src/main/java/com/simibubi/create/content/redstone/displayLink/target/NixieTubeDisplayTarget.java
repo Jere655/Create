@@ -21,7 +21,7 @@ public class NixieTubeDisplayTarget extends SingleLineDisplayTarget {
 
 	@Override
 	protected void acceptLine(MutableComponent text, DisplayLinkContext context) {
-		String tagElement = Component.Serializer.toJson(text, context.level().registryAccess());
+		String tagElement = com.simibubi.create.foundation.utility.CreateNbt.writeComponent(context.level().registryAccess(), text);
 		NixieTubeBlock.walkNixies(context.level(), context.getTargetPos(), false, (currentPos, rowPosition) -> {
 			BlockEntity blockEntity = context.level()
 				.getBlockEntity(currentPos);

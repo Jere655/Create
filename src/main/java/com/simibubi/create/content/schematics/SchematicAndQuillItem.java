@@ -57,7 +57,7 @@ public class SchematicAndQuillItem extends Item {
 		for (SuperGlueEntity entity : SuperGlueEntity.collectCropped(level, aabb)) {
 			Vec3 vec3 = new Vec3(entity.getX() - aabb.minX, entity.getY() - aabb.minY, entity.getZ() - aabb.minZ);
 			CompoundTag compoundtag = new CompoundTag();
-			entity.save(compoundtag);
+			CreateNbt.saveEntity(entity, compoundtag);
 			BlockPos blockpos = BlockPos.containing(vec3);
 
 			CompoundTag entityTag = new CompoundTag();

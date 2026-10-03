@@ -69,9 +69,9 @@ public class PackagerLinkBlockEntity extends LinkWithBulbBlockEntity {
 		if (face == AttachFace.WALL)
 			vec3 = vec3.add(0, 0.25, 0);
 
-		vec3 = vec3.add(Vec3.atLowerCornerOf(state.getOptionalValue(PackagerLinkBlock.FACING)
+		vec3 = vec3.add(state.getOptionalValue(PackagerLinkBlock.FACING)
 				.orElse(Direction.SOUTH)
-				.getUnitVec3())
+				.getUnitVec3()
 			.scale(f * 0.125));
 
 		pulse();

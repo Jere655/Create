@@ -1215,7 +1215,7 @@ public class Train {
 		NBTHelper.iterateCompoundList(tag.getListOrEmpty("Carriages"),
 			c -> carriages.add(Carriage.read(c, registries, graph, dimensions)));
 		List<Integer> carriageSpacing = new ArrayList<>();
-		for (int i : tag.getIntArrayOrEmpty("CarriageSpacing"))
+		for (int i : tag.getIntArray("CarriageSpacing").orElseGet(() -> new int[0]))
 			carriageSpacing.add(i);
 		boolean doubleEnded = tag.getBooleanOr("DoubleEnded", false);
 		int mapColorIndex = tag.getIntOr("MapColorIndex", 0);

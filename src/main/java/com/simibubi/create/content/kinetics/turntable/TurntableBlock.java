@@ -33,7 +33,7 @@ public class TurntableBlock extends KineticBlock implements IBE<TurntableBlockEn
 
 	@Override
 	public RenderShape getRenderShape(BlockState state) {
-		return RenderShape.ENTITYBLOCK_ANIMATED;
+		return RenderShape.INVISIBLE;
 	}
 
 	@Override
@@ -42,7 +42,8 @@ public class TurntableBlock extends KineticBlock implements IBE<TurntableBlockEn
 	}
 
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity e) {
+	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity e,
+							 net.minecraft.world.entity.InsideBlockEffectApplier effectApplier) {
 		if (!e.onGround())
 			return;
 		if (e.getDeltaMovement().y > 0)
@@ -55,7 +56,7 @@ public class TurntableBlock extends KineticBlock implements IBE<TurntableBlockEn
 			if (speed == 0)
 				return;
 
-			Level world = e.getCommandSenderWorld();
+			Level world = e.level();
 			if (world.isClientSide && (e instanceof Player)) {
 				if (worldIn.getBlockState(e.blockPosition()) != state) {
 					Vec3 origin = VecHelper.getCenterOf(pos);

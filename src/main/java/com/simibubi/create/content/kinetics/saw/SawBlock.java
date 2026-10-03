@@ -149,7 +149,8 @@ public class SawBlock extends DirectionalAxisKineticBlock implements IBE<SawBloc
 	}
 
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
+	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn,
+							 net.minecraft.world.entity.InsideBlockEffectApplier effectApplier) {
 		if (entityIn instanceof ItemEntity)
 			return;
 		if (!new AABB(pos).deflate(.1f)
@@ -163,8 +164,8 @@ public class SawBlock extends DirectionalAxisKineticBlock implements IBE<SawBloc
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
-		super.updateEntityAfterFallOn(worldIn, entityIn);
+	public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entityIn) {
+		super.updateEntityMovementAfterFallOn(worldIn, entityIn);
 		if (!(entityIn instanceof ItemEntity))
 			return;
 		if (entityIn.level().isClientSide)

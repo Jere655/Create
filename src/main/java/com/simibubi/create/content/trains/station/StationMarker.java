@@ -34,8 +34,8 @@ public class StationMarker {
 	public static StationMarker load(CompoundTag tag, HolderLookup.Provider registries) {
 		BlockPos source = NBTHelper.readBlockPos(tag, "source");
 		BlockPos target = NBTHelper.readBlockPos(tag, "target");
-		Component name = Component.Serializer.fromJson(tag.getString("name").orElse(""), registries);
-		if (name == null) name = CommonComponents.EMPTY;
+		Component name = com.simibubi.create.foundation.utility.CreateNbt.readComponent(registries,
+			tag.getString("name").orElse("")).orElse(CommonComponents.EMPTY);
 
 		return new StationMarker(source, target, name);
 	}
@@ -56,7 +56,7 @@ public class StationMarker {
 		CompoundTag tag = new CompoundTag();
 		tag.put("source", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(source));
 		tag.put("target", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(target));
-		tag.putString("name", Component.Serializer.toJson(name, registries));
+		tag.putString("name", com.simibubi.create.foundation.utility.CreateNbt.writeComponent(registries, name));
 
 		return tag;
 	}

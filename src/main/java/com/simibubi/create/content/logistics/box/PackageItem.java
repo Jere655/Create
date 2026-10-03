@@ -65,8 +65,8 @@ public class PackageItem extends Item {
 	}
 
 	@Override
-	public String getDescriptionId() {
-		return "item." + Create.ID + (style.rare() ? ".rare_package" : ".package");
+	public Component getName(ItemStack stack) {
+		return Component.translatable("item." + Create.ID + (style.rare() ? ".rare_package" : ".package"));
 	}
 
 	public static boolean isPackage(ItemStack stack) {
@@ -347,8 +347,8 @@ public class PackageItem extends Item {
 		else if (context.getClickedFace()
 			.getAxis()
 			.isHorizontal())
-			point = point.add(Vec3.atLowerCornerOf(context.getClickedFace()
-					.getUnitVec3())
+			point = point.add(context.getClickedFace()
+					.getUnitVec3()
 				.scale(r));
 
 		AABB scanBB = new AABB(point, point).inflate(r, 0, r)

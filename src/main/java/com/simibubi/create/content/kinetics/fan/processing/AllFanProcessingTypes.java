@@ -38,6 +38,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.horse.Horse;
@@ -276,7 +277,7 @@ public class AllFanProcessingTypes {
 
 			if (entity instanceof LivingEntity livingEntity) {
 				livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false));
-				livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 1, false, false));
+				livingEntity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 20, 1, false, false));
 			}
 			if (entity instanceof Horse horse) {
 				int progress = horse.getPersistentData()
@@ -294,14 +295,15 @@ public class AllFanProcessingTypes {
 				level.playSound(null, entity.blockPosition(), SoundEvents.GENERIC_EXTINGUISH_FIRE,
 					SoundSource.NEUTRAL, 1.25f, 0.65f);
 
-				SkeletonHorse skeletonHorse = EntityType.SKELETON_HORSE.create(level);
-				CompoundTag serializeNBT = horse.saveWithoutId(new CompoundTag());
+				SkeletonHorse skeletonHorse = EntityType.SKELETON_HORSE.create(level, EntitySpawnReason.CONVERSION);
+				CompoundTag serializeNBT = new CompoundTag();
+				com.simibubi.create.foundation.utility.CreateNbt.saveEntityWithoutId(horse, serializeNBT);
 				serializeNBT.remove("UUID");
 				if (level instanceof ServerLevel serverLevel && !horse.getBodyArmorItem()
 					.isEmpty())
 					horse.spawnAtLocation(serverLevel, horse.getBodyArmorItem());
 
-				skeletonHorse.deserializeNBT(entity.registryAccess(), serializeNBT);
+				com.simibubi.create.foundation.utility.CreateNbt.loadEntity(skeletonHorse, serializeNBT);
 				skeletonHorse.setPos(horse.getPosition(0));
 				level.addFreshEntity(skeletonHorse);
 				horse.discard();
@@ -418,8 +420,7 @@ public class AllFanProcessingTypes {
 		public void spawnProcessingParticles(Level level, Vec3 pos) {
 			if (level.random.nextInt(8) != 0)
 				return;
-			Vector3f color = new Color(0x0055FF).asVectorF();
-			level.addParticle(new DustParticleOptions(color, 1), pos.x + (level.random.nextFloat() - .5f) * .5f,
+			level.addParticle(new DustParticleOptions(0x0055FF, 1), pos.x + (level.random.nextFloat() - .5f) * .5f,
 				pos.y + .5f, pos.z + (level.random.nextFloat() - .5f) * .5f, 0, 1 / 8f, 0);
 			level.addParticle(ParticleTypes.SPIT, pos.x + (level.random.nextFloat() - .5f) * .5f, pos.y + .5f,
 				pos.z + (level.random.nextFloat() - .5f) * .5f, 0, 1 / 8f, 0);

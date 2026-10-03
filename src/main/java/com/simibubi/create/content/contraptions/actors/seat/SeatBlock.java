@@ -86,12 +86,12 @@ public class SeatBlock extends Block implements ProperWaterloggedBlock {
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter reader, Entity entity) {
+	public void updateEntityMovementAfterFallOn(BlockGetter reader, Entity entity) {
 		BlockPos pos = entity.blockPosition();
 		if (entity instanceof Player || !(entity instanceof LivingEntity) || !canBePickedUp(entity)
 			|| isSeatOccupied(entity.level(), pos)) {
 			if (entity.isSuppressingBounce()) {
-				super.updateEntityAfterFallOn(reader, entity);
+				super.updateEntityMovementAfterFallOn(reader, entity);
 				return;
 			}
 

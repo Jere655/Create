@@ -20,7 +20,7 @@ public class ComputerDisplaySource extends DisplaySource {
 		ListTag tag = context.sourceConfig().getListOrEmpty("ComputerSourceList");
 
 		for (int i = 0; i < tag.size(); i++) {
-			components.add(Component.literal(tag.getString(i)));
+			components.add(Component.literal(tag.getStringOr(i, "")));
 		}
 
 		return components;

@@ -643,7 +643,7 @@ public class RedstoneScenes {
 			final int index = i;
 			scene.world().modifyBlockEntityNBT(util.select().position(3 - i, 1, 3), NixieTubeBlockEntity.class, nbt -> {
 				nbt.putString("RawCustomText", component.getString());
-				nbt.putString("CustomText", Component.Serializer.toJson(component, scene.world().getHolderLookupProvider()));
+				nbt.putString("CustomText", com.simibubi.create.foundation.utility.CreateNbt.writeComponent(scene.world().getHolderLookupProvider(), component));
 				nbt.putInt("CustomTextIndex", index);
 			});
 		}

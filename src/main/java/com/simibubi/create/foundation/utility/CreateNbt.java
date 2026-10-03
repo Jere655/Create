@@ -14,7 +14,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Optional;
@@ -70,8 +76,15 @@ public final class CreateNbt {
 
 	public static Optional<Component> readComponent(HolderLookup.Provider registries, String serialized) {
 		try {
-			return ComponentSerialization.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registries), JsonParser.parseString(serialized))
-				.result();
+			return readComponent(registries, JsonParser.parseString(serialized));
+		} catch (RuntimeException ignored) {
+			return Optional.empty();
+		}
+	}
+
+	public static Optional<Component> readComponent(HolderLookup.Provider registries, com.google.gson.JsonElement serialized) {
+		try {
+			return ComponentSerialization.CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registries), serialized).result();
 		} catch (RuntimeException ignored) {
 			return Optional.empty();
 		}
@@ -91,6 +104,43 @@ public final class CreateNbt {
 
 	public static UUID readUUID(Tag tag) {
 		return UUIDUtil.CODEC.parse(NbtOps.INSTANCE, tag).getOrThrow();
+	}
+
+	public static boolean saveAsPassenger(Entity entity, CompoundTag destination) {
+		TagValueOutput output = output(entity.registryAccess(), destination);
+		boolean saved = entity.saveAsPassenger(output);
+		destination.merge(output.buildResult());
+		return saved;
+	}
+
+	public static boolean saveEntity(Entity entity, CompoundTag destination) {
+		TagValueOutput output = output(entity.registryAccess(), destination);
+		boolean saved = entity.save(output);
+		destination.merge(output.buildResult());
+		return saved;
+	}
+
+	public static void saveEntityWithoutId(Entity entity, CompoundTag destination) {
+		TagValueOutput output = output(entity.registryAccess(), destination);
+		entity.saveWithoutId(output);
+		destination.merge(output.buildResult());
+	}
+
+	public static void loadEntity(Entity entity, CompoundTag source) {
+		entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), source));
+	}
+
+	public static void addBlockEntityType(CompoundTag destination, HolderLookup.Provider registries,
+									  BlockEntityType<?> type) {
+		TagValueOutput output = output(registries, destination);
+		BlockEntity.addEntityType(output, type);
+		destination.merge(output.buildResult());
+	}
+
+	private static TagValueOutput output(HolderLookup.Provider registries, CompoundTag initial) {
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+		output.store(initial);
+		return output;
 	}
 
 	private static <T> CompoundTag write(Codec<T> codec, HolderLookup.Provider registries, T value) {

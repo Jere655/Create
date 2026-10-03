@@ -31,7 +31,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -64,7 +63,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	private static final Ingredient FUEL_ITEMS = Ingredient.of(Items.COAL, Items.CHARCOAL);
 
 	private static final EntityDataAccessor<Optional<UUID>> COUPLING =
-		SynchedEntityData.defineId(OrientedContraptionEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+		SynchedEntityData.defineId(OrientedContraptionEntity.class, com.simibubi.create.AllEntityDataSerializers.OPTIONAL_UUID);
 	private static final EntityDataAccessor<Direction> INITIAL_ORIENTATION =
 		SynchedEntityData.defineId(OrientedContraptionEntity.class, EntityDataSerializers.DIRECTION);
 
@@ -167,13 +166,12 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		if (compound.contains("ForceYaw"))
 			startAtYaw(compound.getFloat("ForceYaw").orElse(0.0F));
 
-		ListTag vecNBT = compound.getListOrEmpty("CachedMotion");
-		if (!vecNBT.isEmpty()) {
-			motionBeforeStall = new Vec3(vecNBT.getDouble(0), vecNBT.getDouble(1), vecNBT.getDouble(2));
+		compound.read("CachedMotion", Vec3.CODEC).ifPresent(motion -> {
+			motionBeforeStall = motion;
 			if (!motionBeforeStall.equals(Vec3.ZERO))
 				targetYaw = prevYaw = yaw += yawFromVector(motionBeforeStall);
 			setDeltaMovement(Vec3.ZERO);
-		}
+		});
 
 		setCouplingId(compound.contains("OnCoupling") ? com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(compound, "OnCoupling")) : null);
 	}
@@ -183,7 +181,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		super.writeAdditional(compound, registries, spawnPacket);
 
 		if (motionBeforeStall != null)
-			compound.put("CachedMotion", newDoubleList(motionBeforeStall.x, motionBeforeStall.y, motionBeforeStall.z));
+			compound.store("CachedMotion", Vec3.CODEC, motionBeforeStall);
 
 		Direction optional = entityData.get(INITIAL_ORIENTATION);
 		if (optional.getAxis()

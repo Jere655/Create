@@ -85,7 +85,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 
 	public static PackageEntity fromDroppedItem(Level world, Entity originalEntity, ItemStack itemstack) {
 		PackageEntity packageEntity = AllEntityTypes.PACKAGE.get()
-			.create(world);
+			.create(world, EntitySpawnReason.SPAWN_ITEM_USE);
 
 		Vec3 position = originalEntity.position();
 		packageEntity.setPos(position);
@@ -103,7 +103,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 
 	public static PackageEntity fromItemStack(Level world, Vec3 position, ItemStack itemstack) {
 		PackageEntity packageEntity = AllEntityTypes.PACKAGE.get()
-			.create(world);
+			.create(world, EntitySpawnReason.SPAWN_ITEM_USE);
 		packageEntity.setPos(position);
 		packageEntity.setBox(itemstack);
 		return packageEntity;
@@ -191,7 +191,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		if (!(originalEntity instanceof ItemEntity itemEntity))
 			return;
 		CompoundTag nbt = new CompoundTag();
-		itemEntity.addAdditionalSaveData(nbt);
+		CreateNbt.saveEntityWithoutId(itemEntity, nbt);
 		if (nbt.getInt("PickupDelay").orElse(0) != 32767) // See: ItemEntity#makeFakeItem
 			return;
 		discard();
@@ -300,11 +300,11 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (source.getEntity() instanceof Player player && !CommonHooks.onPlayerAttackTarget(player, this))
 			return false;
 
-		if (level().isClientSide || !this.isAlive())
+		if (!this.isAlive())
 			return false;
 
 		if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
@@ -321,7 +321,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		if (source.is(DamageTypeTags.IS_FALL))
 			return false;
 
-		if (this.isInvulnerableTo(source))
+		if (this.isInvulnerableToBase(source))
 			return false;
 
 		if (source.is(DamageTypeTags.IS_EXPLOSION)) {

@@ -45,7 +45,7 @@ public class PotionFluidHandler {
 
 	public static boolean isPotionItem(ItemStack stack) {
 		return stack.getItem() instanceof PotionItem
-			&& !(stack.getCraftingRemainingItem().getItem() instanceof BucketItem)
+			&& !(stack.getCraftingRemainder().getItem() instanceof BucketItem)
 			&& !AllItemTags.NOT_POTION.matches(stack);
 	}
 

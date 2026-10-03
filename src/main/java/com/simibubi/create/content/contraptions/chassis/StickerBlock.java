@@ -98,10 +98,10 @@ public class StickerBlock extends WrenchableDirectionalBlock implements IBE<Stic
 	}
 
 	@Override
-	public void updateEntityAfterFallOn(BlockGetter p_176216_1_, Entity p_176216_2_) {
+	public void updateEntityMovementAfterFallOn(BlockGetter p_176216_1_, Entity p_176216_2_) {
 		if (!isUprightSticker(p_176216_1_, p_176216_2_.blockPosition()
 			.below()) || p_176216_2_.isSuppressingBounce()) {
-			super.updateEntityAfterFallOn(p_176216_1_, p_176216_2_);
+			super.updateEntityMovementAfterFallOn(p_176216_1_, p_176216_2_);
 		} else {
 			this.bounceUp(p_176216_2_);
 		}

@@ -484,7 +484,7 @@ public class Carriage {
 			for (Entity passenger : entity.getPassengers())
 				if (mapping.containsKey(passenger.getUUID())) {
 					CompoundTag data = new CompoundTag();
-					if (passenger.saveAsPassenger(data))
+					if (com.simibubi.create.foundation.utility.CreateNbt.saveAsPassenger(passenger, data))
 						passengerMap.put(mapping.get(passenger.getUUID()), data);
 				}
 		}
@@ -508,7 +508,7 @@ public class Carriage {
 
 	private void serialize(Entity entity) {
 		serialisedEntity = new CompoundTag();
-		entity.saveAsPassenger(serialisedEntity);
+		com.simibubi.create.foundation.utility.CreateNbt.saveAsPassenger(entity, serialisedEntity);
 		serialisedEntity.remove("Passengers");
 		serialisedEntity.getCompound("Contraption").orElseGet(CompoundTag::new)
 			.remove("Passengers");
@@ -766,7 +766,7 @@ public class Carriage {
 				}
 
 				CompoundTag passengerData = new CompoundTag();
-				passenger.saveAsPassenger(passengerData);
+				com.simibubi.create.foundation.utility.CreateNbt.saveAsPassenger(passenger, passengerData);
 				serialisedPassengers.put(seat, passengerData);
 				passenger.discard();
 			}
@@ -798,7 +798,7 @@ public class Carriage {
 					continue;
 				ServerLevel level = sLevel.getServer()
 					.getLevel(other.getKey());
-				sp.teleportTo(level, loc.x, loc.y, loc.z, sp.getYRot(), sp.getXRot());
+				sp.teleportTo(level, loc.x, loc.y, loc.z, java.util.Set.of(), sp.getYRot(), sp.getXRot(), false);
 				sp.setPortalCooldown();
 				AllAdvancements.TRAIN_PORTAL.awardTo(sp);
 			}
@@ -862,12 +862,12 @@ public class Carriage {
 					Integer seat = mapping.get(passenger.getUUID());
 
 					if (passenger instanceof ServerPlayer sp) {
-						dismountPlayer(sp.serverLevel(), sp, seat, portal);
+						dismountPlayer(sp.level(), sp, seat, portal);
 						continue;
 					}
 
 					CompoundTag passengerData = new CompoundTag();
-					passenger.saveAsPassenger(passengerData);
+					com.simibubi.create.foundation.utility.CreateNbt.saveAsPassenger(passenger, passengerData);
 					serialisedPassengers.put(seat, passengerData);
 				}
 			}

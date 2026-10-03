@@ -39,7 +39,7 @@ public class CustomItemModels {
 	private void loadEntries() {
 		finalModelFuncs.clear();
 		modelFuncs.asMap().forEach((location, funcList) -> {
-			Item item = BuiltInRegistries.ITEM.get(location);
+			Item item = BuiltInRegistries.ITEM.getValue(location);
 			if (item == Items.AIR) {
 				return;
 			}

@@ -62,8 +62,8 @@ public class ItemDrainRenderer extends SmartBlockEntityRenderer<ItemDrainBlockEn
 		float offset = Mth.lerp(partialTicks, transported.prevBeltPosition, transported.beltPosition);
 		float sideOffset = Mth.lerp(partialTicks, transported.prevSideOffset, transported.sideOffset);
 
-		Vec3 offsetVec = Vec3.atLowerCornerOf(insertedFrom.getOpposite()
-			.getUnitVec3())
+		Vec3 offsetVec = insertedFrom.getOpposite()
+			.getUnitVec3()
 			.scale(.5f - offset);
 		ms.translate(offsetVec.x, offsetVec.y, offsetVec.z);
 		boolean alongX = insertedFrom.getClockWise()

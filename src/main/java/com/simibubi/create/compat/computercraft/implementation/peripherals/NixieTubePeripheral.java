@@ -66,7 +66,8 @@ public class NixieTubePeripheral extends SyncedPeripheral<NixieTubeBlockEntity> 
 			return;
 		blockEntity.computerSignal = null;
 
-		String tagElement = Component.Serializer.toJson(Component.literal(arguments.getString(0)), level.registryAccess());
+		String tagElement = com.simibubi.create.foundation.utility.CreateNbt.writeComponent(level.registryAccess(),
+			Component.literal(arguments.getString(0)));
 
 		@Nullable String colour = arguments.optString(1, null);
 		BlockState state = null;

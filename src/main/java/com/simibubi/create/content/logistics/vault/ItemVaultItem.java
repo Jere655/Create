@@ -53,7 +53,8 @@ public class ItemVaultItem extends BlockItem {
 			nbt.remove("Size");
 			nbt.remove("Controller");
 			nbt.remove("LastKnownPos");
-			BlockEntity.addEntityType(nbt, ((IBE<?>) this.getBlock()).getBlockEntityType());
+			com.simibubi.create.foundation.utility.CreateNbt.addBlockEntityType(nbt, minecraftserver.registryAccess(),
+				((IBE<?>) this.getBlock()).getBlockEntityType());
 			itemStack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(nbt));
 		}
 		return super.updateCustomBlockEntityTag(blockPos, level, player, itemStack, blockState);

@@ -165,10 +165,10 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 
 		if (cart instanceof MinecartFurnace) {
 			CompoundTag nbt = new CompoundTag();
-			if (cart.save(nbt)) {
+			if (com.simibubi.create.foundation.utility.CreateNbt.saveEntity(cart, nbt)) {
 				nbt.putDouble("PushZ", 0);
 				nbt.putDouble("PushX", 0);
-				cart.load(nbt);
+				com.simibubi.create.foundation.utility.CreateNbt.loadEntity(cart, nbt);
 			}
 		}
 
@@ -222,10 +222,10 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 		cart.ejectPassengers();
 		if (cart instanceof MinecartFurnace) {
 			CompoundTag nbt = new CompoundTag();
-			cart.saveAsPassenger(nbt);
+			com.simibubi.create.foundation.utility.CreateNbt.saveAsPassenger(cart, nbt);
 			nbt.putDouble("PushZ", cart.getDeltaMovement().x);
 			nbt.putDouble("PushX", cart.getDeltaMovement().z);
-			cart.load(nbt);
+			com.simibubi.create.foundation.utility.CreateNbt.loadEntity(cart, nbt);
 		}
 	}
 

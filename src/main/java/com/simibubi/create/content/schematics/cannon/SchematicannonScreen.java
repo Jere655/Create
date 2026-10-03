@@ -352,20 +352,20 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 		if (mouseX >= fuelX && mouseY >= fuelY && mouseX <= fuelX + AllGuiTextures.SCHEMATICANNON_FUEL.getWidth()
 			&& mouseY <= fuelY + AllGuiTextures.SCHEMATICANNON_FUEL.getHeight()) {
 			List<Component> tooltip = getFuelLevelTooltip(be);
-			graphics.renderComponentTooltip(font, tooltip, mouseX, mouseY);
+			graphics.setComponentTooltipForNextFrame(font, tooltip, mouseX, mouseY);
 		}
 
 		if (hoveredSlot != null && !hoveredSlot.hasItem()) {
 			if (hoveredSlot.index == 0)
-				graphics.renderComponentTooltip(font,
+				graphics.setComponentTooltipForNextFrame(font,
 					TooltipHelper.cutTextComponent(CreateLang.translateDirect(_slotSchematic), Palette.GRAY_AND_BLUE), mouseX,
 					mouseY);
 			if (hoveredSlot.index == 2)
-				graphics.renderComponentTooltip(font,
+				graphics.setComponentTooltipForNextFrame(font,
 					TooltipHelper.cutTextComponent(CreateLang.translateDirect(_slotListPrinter), Palette.GRAY_AND_BLUE),
 					mouseX, mouseY);
 			if (hoveredSlot.index == 4)
-				graphics.renderComponentTooltip(font,
+				graphics.setComponentTooltipForNextFrame(font,
 					TooltipHelper.cutTextComponent(CreateLang.translateDirect(_slotGunpowder), Palette.GRAY_AND_BLUE), mouseX,
 					mouseY);
 		}
@@ -374,13 +374,13 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 			int missingBlockX = x + 128, missingBlockY = y + 49;
 			if (mouseX >= missingBlockX && mouseY >= missingBlockY && mouseX <= missingBlockX + 16
 				&& mouseY <= missingBlockY + 16) {
-				graphics.renderTooltip(font, be.missingItem, mouseX, mouseY);
+				graphics.setTooltipForNextFrame(font, be.missingItem, mouseX, mouseY);
 			}
 		}
 
 		int paperX = x + 112, paperY = y + 19;
 		if (mouseX >= paperX && mouseY >= paperY && mouseX <= paperX + 16 && mouseY <= paperY + 16)
-			graphics.renderTooltip(font, listPrinter, mouseX, mouseY);
+			graphics.setTooltipForNextFrame(font, listPrinter, mouseX, mouseY);
 
 		super.renderForeground(graphics, mouseX, mouseY, partialTicks);
 	}

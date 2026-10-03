@@ -61,7 +61,8 @@ public class FluidTankItem extends BlockItem {
 					nbt.put("TankContent", CreateNbt.writeFluidStack(minecraftserver.registryAccess(), fluid));
 				}
 			}
-			BlockEntity.addEntityType(nbt, ((IBE<?>) this.getBlock()).getBlockEntityType());
+			CreateNbt.addBlockEntityType(nbt, minecraftserver.registryAccess(),
+				((IBE<?>) this.getBlock()).getBlockEntityType());
 			itemStack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(nbt));
 		}
 		return super.updateCustomBlockEntityTag(blockPos, level, player, itemStack, blockState);

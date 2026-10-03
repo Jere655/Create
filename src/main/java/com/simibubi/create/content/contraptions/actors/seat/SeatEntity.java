@@ -10,6 +10,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.storage.ValueInput;
@@ -131,6 +133,11 @@ public class SeatEntity extends Entity implements IEntityWithComplexSpawn {
 
 	@Override
 	protected void addAdditionalSaveData(ValueOutput output) {
+	}
+
+	@Override
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+		return false;
 	}
 
 	public static class Render extends EntityRenderer<SeatEntity> {

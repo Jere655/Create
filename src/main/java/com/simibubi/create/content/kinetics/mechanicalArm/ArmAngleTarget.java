@@ -28,8 +28,8 @@ public class ArmAngleTarget {
 		Vec3 origin = VecHelper.getCenterOf(armPos)
 			.add(0, ceiling ? -6 / 16f : 6 / 16f, 0);
 		Vec3 clawTarget = target;
-		target = target.add(Vec3.atLowerCornerOf(clawFacing.getOpposite()
-			.getUnitVec3())
+		target = target.add(clawFacing.getOpposite()
+			.getUnitVec3()
 			.scale(.5f));
 
 		Vec3 diff = target.subtract(origin);

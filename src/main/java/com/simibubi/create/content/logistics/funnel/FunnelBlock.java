@@ -112,7 +112,8 @@ public abstract class FunnelBlock extends AbstractDirectionalFunnelBlock {
 	}
 
 	@Override
-	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
+	public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn,
+							 net.minecraft.world.entity.InsideBlockEffectApplier effectApplier) {
 		if (worldIn.isClientSide)
 			return;
 		ItemStack stack = ItemHelper.fromItemEntity(entityIn);

@@ -192,8 +192,8 @@ public class SawRenderer extends SafeBlockEntityRenderer<SawBlockEntity> {
 		BlockState state = context.state;
 		Direction facing = state.getValue(SawBlock.FACING);
 
-		Vec3 facingVec = Vec3.atLowerCornerOf(context.state.getValue(SawBlock.FACING)
-			.getUnitVec3());
+		Vec3 facingVec = context.state.getValue(SawBlock.FACING)
+			.getUnitVec3();
 		facingVec = context.rotation.apply(facingVec);
 
 		Direction closestToFacing = Direction.getApproximateNearest(new Vec3(facingVec.x, facingVec.y, facingVec.z));

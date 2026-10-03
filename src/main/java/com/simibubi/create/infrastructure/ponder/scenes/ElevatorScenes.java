@@ -370,7 +370,7 @@ public class ElevatorScenes {
 		scene.world().modifyBlockEntityNBT(util.select().position(nixiePos), NixieTubeBlockEntity.class, nbt -> {
 			Component component = Component.literal("0F");
 			nbt.putString("RawCustomText", component.getString());
-			nbt.putString("CustomText", Component.Serializer.toJson(component, scene.world().getHolderLookupProvider()));
+			nbt.putString("CustomText", com.simibubi.create.foundation.utility.CreateNbt.writeComponent(scene.world().getHolderLookupProvider(), component));
 		});
 
 		scene.overlay().showText(90)
@@ -401,7 +401,7 @@ public class ElevatorScenes {
 		scene.world().modifyBlockEntityNBT(util.select().position(nixiePos), NixieTubeBlockEntity.class, nbt -> {
 			Component component = Component.literal("1F");
 			nbt.putString("RawCustomText", component.getString());
-			nbt.putString("CustomText", Component.Serializer.toJson(component, scene.world().getHolderLookupProvider()));
+			nbt.putString("CustomText", com.simibubi.create.foundation.utility.CreateNbt.writeComponent(scene.world().getHolderLookupProvider(), component));
 		});
 
 		scene.idle(40);
@@ -417,7 +417,7 @@ public class ElevatorScenes {
 		scene.world().modifyBlockEntityNBT(util.select().position(nixiePos), NixieTubeBlockEntity.class, nbt -> {
 			Component component = Component.literal("2F");
 			nbt.putString("RawCustomText", component.getString());
-			nbt.putString("CustomText", Component.Serializer.toJson(component, scene.world().getHolderLookupProvider()));
+			nbt.putString("CustomText", com.simibubi.create.foundation.utility.CreateNbt.writeComponent(scene.world().getHolderLookupProvider(), component));
 		});
 	}
 

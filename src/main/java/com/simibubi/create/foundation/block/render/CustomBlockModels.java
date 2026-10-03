@@ -39,7 +39,7 @@ public class CustomBlockModels {
 	private void loadEntries() {
 		finalModelFuncs.clear();
 		modelFuncs.asMap().forEach((location, funcList) -> {
-			Block block = BuiltInRegistries.BLOCK.get(location);
+			Block block = BuiltInRegistries.BLOCK.getValue(location);
 			if (block == Blocks.AIR) {
 				return;
 			}

@@ -125,9 +125,9 @@ public class ClipboardValueSettingsHandler {
 		boolean canPaste = tagElement != null && (smartBE.getAllBehaviours()
 			.stream()
 			.anyMatch(b -> b instanceof ClipboardCloneable cc && cc.readFromClipboard(mc.level.registryAccess(),
-				tagElement.getCompound(cc.getClipboardKey()), mc.player, target.getDirection(), true))
+				tagElement.getCompoundOrEmpty(cc.getClipboardKey()), mc.player, target.getDirection(), true))
 			|| smartBE instanceof ClipboardCloneable ccbe && ccbe.readFromClipboard(mc.level.registryAccess(),
-				tagElement.getCompound(ccbe.getClipboardKey()), mc.player, target.getDirection(), true));
+				tagElement.getCompoundOrEmpty(ccbe.getClipboardKey()), mc.player, target.getDirection(), true));
 
 		if (!canCopy && !canPaste)
 			return;
@@ -244,7 +244,7 @@ public class ClipboardValueSettingsHandler {
 			String clipboardKey = cc.getClipboardKey();
 			if (paste) {
 				anySuccess |=
-					cc.readFromClipboard(world.registryAccess(), tag.getCompound(clipboardKey), player, event.getFace(), world.isClientSide());
+					cc.readFromClipboard(world.registryAccess(), tag.getCompoundOrEmpty(clipboardKey), player, event.getFace(), world.isClientSide());
 				continue;
 			}
 			CompoundTag compoundTag = new CompoundTag();
@@ -258,7 +258,7 @@ public class ClipboardValueSettingsHandler {
 			anyValid = true;
 			String clipboardKey = ccbe.getClipboardKey();
 			if (paste) {
-				anySuccess |= ccbe.readFromClipboard(world.registryAccess(), tag.getCompound(clipboardKey), player, event.getFace(),
+				anySuccess |= ccbe.readFromClipboard(world.registryAccess(), tag.getCompoundOrEmpty(clipboardKey), player, event.getFace(),
 					world.isClientSide());
 			} else {
 				CompoundTag compoundTag = new CompoundTag();
