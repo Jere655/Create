@@ -510,27 +510,27 @@ public class Carriage {
 		serialisedEntity = new CompoundTag();
 		entity.saveAsPassenger(serialisedEntity);
 		serialisedEntity.remove("Passengers");
-		serialisedEntity.getCompound("Contraption")
+		serialisedEntity.getCompound("Contraption").orElseGet(CompoundTag::new)
 			.remove("Passengers");
 	}
 
 	public static Carriage read(CompoundTag tag, HolderLookup.Provider registries, TrackGraph graph, DimensionPalette dimensions) {
-		CarriageBogey bogey1 = CarriageBogey.read(tag.getCompound("FirstBogey"), graph, dimensions);
+		CarriageBogey bogey1 = CarriageBogey.read(tag.getCompound("FirstBogey").orElseGet(CompoundTag::new), graph, dimensions);
 		CarriageBogey bogey2 =
-			tag.contains("SecondBogey") ? CarriageBogey.read(tag.getCompound("SecondBogey"), graph, dimensions) : null;
+			tag.contains("SecondBogey") ? CarriageBogey.read(tag.getCompound("SecondBogey").orElseGet(CompoundTag::new), graph, dimensions) : null;
 
-		Carriage carriage = new Carriage(bogey1, bogey2, tag.getInt("Spacing"));
+		Carriage carriage = new Carriage(bogey1, bogey2, tag.getInt("Spacing").orElse(0));
 
-		carriage.stalled = tag.getBoolean("Stalled");
-		carriage.presentConductors = Couple.create(tag.getBoolean("FrontConductor"), tag.getBoolean("BackConductor"));
-		carriage.serialisedEntity = tag.getCompound("Entity")
+		carriage.stalled = tag.getBoolean("Stalled").orElse(false);
+		carriage.presentConductors = Couple.create(tag.getBoolean("FrontConductor").orElse(false), tag.getBoolean("BackConductor").orElse(false));
+		carriage.serialisedEntity = tag.getCompound("Entity").orElseGet(CompoundTag::new)
 			.copy();
 
-		NBTHelper.iterateCompoundList(tag.getList("EntityPositioning", Tag.TAG_COMPOUND),
-			c -> carriage.getDimensional(dimensions.decode(c.getInt("Dim")))
+		NBTHelper.iterateCompoundList(tag.getListOrEmpty("EntityPositioning"),
+			c -> carriage.getDimensional(dimensions.decode(c.getInt("Dim").orElse(0)))
 				.read(c, registries));
 
-		CompoundTag passengersTag = tag.getCompound("Passengers");
+		CompoundTag passengersTag = tag.getCompound("Passengers").orElseGet(CompoundTag::new);
 		passengersTag.getAllKeys()
 			.forEach(key -> carriage.serialisedPassengers.put(Integer.valueOf(key.substring(4)),
 				passengersTag.getCompound(key)));
@@ -660,17 +660,17 @@ public class Carriage {
 		}
 
 		public void read(CompoundTag tag, HolderLookup.Provider registries) {
-			cutoff = tag.getFloat("Cutoff");
-			discardTicks = tag.getInt("DiscardTicks");
+			cutoff = tag.getFloat("Cutoff").orElse(0.0F);
+			discardTicks = tag.getInt("DiscardTicks").orElse(0);
 			storage.read(tag, registries, false, null);
 			if (tag.contains("Pivot"))
-				pivot = TrackNodeLocation.read(tag.getCompound("Pivot"), null);
+				pivot = TrackNodeLocation.read(tag.getCompound("Pivot").orElseGet(CompoundTag::new), null);
 			if (positionAnchor != null)
 				return;
 			if (tag.contains("PositionAnchor"))
-				positionAnchor = VecHelper.readNBT(tag.getList("PositionAnchor", Tag.TAG_DOUBLE));
+				positionAnchor = VecHelper.readNBT(tag.getListOrEmpty("PositionAnchor"));
 			if (tag.contains("RotationAnchors"))
-				rotationAnchors = Couple.deserializeEach(tag.getList("RotationAnchors", Tag.TAG_COMPOUND),
+				rotationAnchors = Couple.deserializeEach(tag.getListOrEmpty("RotationAnchors"),
 					VecHelper::readNBTCompound);
 		}
 
@@ -726,7 +726,7 @@ public class Carriage {
 				if (tag.contains("PlayerPassenger")) {
 					passenger = sLevel.getServer()
 						.getPlayerList()
-						.getPlayer(tag.getUUID("PlayerPassenger"));
+						.getPlayer(com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(tag, "PlayerPassenger")));
 
 				} else {
 					passenger = EntityType.loadEntityRecursive(tag, entity.level(), e -> {
@@ -780,7 +780,7 @@ public class Carriage {
 			}
 
 			CompoundTag tag = new CompoundTag();
-			tag.putUUID("PlayerPassenger", sp.getUUID());
+			tag.put("PlayerPassenger", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(sp.getUUID()));
 			serialisedPassengers.put(seat, tag);
 			sp.stopRiding();
 			sp.getPersistentData()

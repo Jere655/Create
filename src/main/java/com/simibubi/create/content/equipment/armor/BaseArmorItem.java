@@ -1,27 +1,28 @@
 package com.simibubi.create.content.equipment.armor;
 
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Locale;
-
-public class BaseArmorItem extends ArmorItem {
+/** Common component-backed armor item base for Create's custom armor behavior. */
+public class BaseArmorItem extends Item {
 	protected final ResourceLocation textureLoc;
+	protected final ArmorMaterial material;
+	protected final ArmorType type;
 
-	public BaseArmorItem(Holder<ArmorMaterial> armorMaterial, ArmorItem.Type type, Properties properties, ResourceLocation textureLoc) {
-		super(armorMaterial, type, properties.stacksTo(1));
+	public BaseArmorItem(ArmorMaterial material, ArmorType type, Properties properties, ResourceLocation textureLoc) {
+		super(properties.humanoidArmor(material, type).stacksTo(1));
 		this.textureLoc = textureLoc;
+		this.material = material;
+		this.type = type;
 	}
 
-	@Override
-	public @Nullable ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
-		return ResourceLocation.parse(String.format(Locale.ROOT, "%s:textures/models/armor/%s_layer_%d.png", textureLoc.getNamespace(), textureLoc.getPath(), slot == EquipmentSlot.LEGS ? 2 : 1));
+	public ArmorMaterial getMaterial() {
+		return material;
+	}
+
+	public ArmorType getType() {
+		return type;
 	}
 }

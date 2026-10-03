@@ -45,6 +45,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
@@ -158,14 +160,14 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		if (compound.contains("InitialOrientation"))
 			setInitialOrientation(NBTHelper.readEnum(compound, "InitialOrientation", Direction.class));
 
-		yaw = compound.getFloat("Yaw");
-		pitch = compound.getFloat("Pitch");
-		manuallyPlaced = compound.getBoolean("Placed");
+		yaw = compound.getFloat("Yaw").orElse(0.0F);
+		pitch = compound.getFloat("Pitch").orElse(0.0F);
+		manuallyPlaced = compound.getBoolean("Placed").orElse(false);
 
 		if (compound.contains("ForceYaw"))
-			startAtYaw(compound.getFloat("ForceYaw"));
+			startAtYaw(compound.getFloat("ForceYaw").orElse(0.0F));
 
-		ListTag vecNBT = compound.getList("CachedMotion", 6);
+		ListTag vecNBT = compound.getListOrEmpty("CachedMotion");
 		if (!vecNBT.isEmpty()) {
 			motionBeforeStall = new Vec3(vecNBT.getDouble(0), vecNBT.getDouble(1), vecNBT.getDouble(2));
 			if (!motionBeforeStall.equals(Vec3.ZERO))
@@ -173,7 +175,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 			setDeltaMovement(Vec3.ZERO);
 		}
 
-		setCouplingId(compound.contains("OnCoupling") ? compound.getUUID("OnCoupling") : null);
+		setCouplingId(compound.contains("OnCoupling") ? com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(compound, "OnCoupling")) : null);
 	}
 
 	@Override
@@ -197,7 +199,42 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		compound.putFloat("Pitch", pitch);
 
 		if (getCouplingId() != null)
-			compound.putUUID("OnCoupling", getCouplingId());
+			compound.put("OnCoupling", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(getCouplingId()));
+	}
+
+	@Override
+	protected void writePersistentData(ValueOutput output) {
+		super.writePersistentData(output);
+		if (motionBeforeStall != null)
+			output.store("CachedMotion", Vec3.CODEC, motionBeforeStall);
+		Direction optional = entityData.get(INITIAL_ORIENTATION);
+		if (optional.getAxis().isHorizontal())
+			output.store("InitialOrientation", Direction.CODEC, optional);
+		if (forceAngle) {
+			output.putFloat("ForceYaw", yaw);
+			forceAngle = false;
+		}
+		output.putBoolean("Placed", manuallyPlaced);
+		output.putFloat("Yaw", yaw);
+		output.putFloat("Pitch", pitch);
+		output.storeNullable("OnCoupling", net.minecraft.core.UUIDUtil.CODEC, getCouplingId());
+	}
+
+	@Override
+	protected void readPersistentData(ValueInput input) {
+		super.readPersistentData(input);
+		input.read("InitialOrientation", Direction.CODEC).ifPresent(this::setInitialOrientation);
+		yaw = input.getFloatOr("Yaw", 0.0F);
+		pitch = input.getFloatOr("Pitch", 0.0F);
+		manuallyPlaced = input.getBooleanOr("Placed", false);
+		input.read("ForceYaw", com.mojang.serialization.Codec.FLOAT).ifPresent(this::startAtYaw);
+		input.read("CachedMotion", Vec3.CODEC).ifPresent(motion -> {
+			motionBeforeStall = motion;
+			if (!motion.equals(Vec3.ZERO))
+				targetYaw = prevYaw = yaw += yawFromVector(motion);
+			setDeltaMovement(Vec3.ZERO);
+		});
+		setCouplingId(input.read("OnCoupling", net.minecraft.core.UUIDUtil.CODEC).orElse(null));
 	}
 
 	@Override
@@ -367,7 +404,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 
 		if (!rotationLock) {
 			if (riding instanceof AbstractMinecart minecartEntity) {
-				BlockPos railPosition = minecartEntity.getCurrentRailPosition();
+				BlockPos railPosition = MinecartSim2020.getCurrentRailPosition(minecartEntity);
 				BlockState blockState = level().getBlockState(railPosition);
 				if (blockState.getBlock() instanceof BaseRailBlock abstractRailBlock) {
 					RailShape railDirection =
@@ -406,8 +443,8 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 
 		int fuel = furnaceCartAccessor.create$getFuel();
 		int fuelBefore = fuel;
-		double pushX = furnaceCart.xPush;
-		double pushZ = furnaceCart.zPush;
+		double pushX = furnaceCart.push.x;
+		double pushZ = furnaceCart.push.z;
 
 		int i = Mth.floor(furnaceCart.getX());
 		int j = Mth.floor(furnaceCart.getY());
@@ -418,7 +455,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 
 		BlockPos blockpos = new BlockPos(i, j, k);
 		BlockState blockstate = this.level().getBlockState(blockpos);
-		if (furnaceCart.canUseRail() && blockstate.is(BlockTags.RAILS))
+		if (blockstate.is(BlockTags.RAILS))
 			if (fuel > 1)
 				riding.setDeltaMovement(riding.getDeltaMovement()
 					.normalize()
@@ -433,8 +470,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		}
 
 		if (fuel != fuelBefore || pushX != 0 || pushZ != 0) {
-			furnaceCart.xPush = pushX;
-			furnaceCart.zPush = pushZ;
+			furnaceCart.push = new Vec3(pushX, 0, pushZ);
 			furnaceCartAccessor.create$setFuel(fuel);
 		}
 	}
@@ -577,11 +613,11 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		double cartX = Mth.lerp(partialTicks, cart.xOld, cart.getX());
 		double cartY = Mth.lerp(partialTicks, cart.yOld, cart.getY());
 		double cartZ = Mth.lerp(partialTicks, cart.zOld, cart.getZ());
-		Vec3 cartPos = cart.getPos(cartX, cartY, cartZ);
+		Vec3 cartPos = MinecartSim2020.getRailPosition(cart, cartX, cartY, cartZ);
 
 		if (cartPos != null) {
-			Vec3 cartPosFront = cart.getPosOffs(cartX, cartY, cartZ, (double) 0.3F);
-			Vec3 cartPosBack = cart.getPosOffs(cartX, cartY, cartZ, (double) -0.3F);
+			Vec3 cartPosFront = MinecartSim2020.getRailPositionOffset(cart, cartX, cartY, cartZ, 0.3F);
+			Vec3 cartPosBack = MinecartSim2020.getRailPositionOffset(cart, cartX, cartY, cartZ, -0.3F);
 			if (cartPosFront == null)
 				cartPosFront = cartPos;
 			if (cartPosBack == null)

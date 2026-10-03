@@ -7,8 +7,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelBehaviour;
 import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelConnectionHandler;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -35,10 +37,10 @@ public class LogisticallyLinkedClientHandler {
 			return;
 
 		CompoundTag tag = mainHandItem.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
-		if (!tag.hasUUID("Freq"))
+		if (!tag.contains("Freq"))
 			return;
 
-		UUID uuid = tag.getUUID("Freq");
+		UUID uuid = CreateNbt.readUUID(NBTHelper.getINBT(tag, "Freq"));
 		previouslyHeldFrequency = uuid;
 
 		for (LogisticallyLinkedBehaviour behaviour : LogisticallyLinkedBehaviour.getAllPresent(uuid, false, true)) {

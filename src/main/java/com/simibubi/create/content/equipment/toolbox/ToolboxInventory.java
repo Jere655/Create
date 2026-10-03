@@ -178,7 +178,7 @@ public class ToolboxInventory extends ItemStackHandler {
 
 	@Override
 	public void deserializeNBT(@NotNull HolderLookup.Provider registries, CompoundTag nbt) {
-		filters = NBTHelper.readItemList(nbt.getList("Compartments", Tag.TAG_COMPOUND), registries);
+		filters = NBTHelper.readItemList(nbt.getListOrEmpty("Compartments"), registries);
 		if (filters.size() != 8) {
 			filters.clear();
 			for (int i = 0; i < 8; i++)

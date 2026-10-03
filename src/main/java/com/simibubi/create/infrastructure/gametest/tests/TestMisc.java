@@ -14,12 +14,12 @@ import com.simibubi.create.infrastructure.gametest.CreateGameTestHelper;
 import com.simibubi.create.infrastructure.gametest.GameTestGroup;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
+import com.simibubi.create.infrastructure.gametest.GameTest;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +65,7 @@ public class TestMisc {
 	public static void shearing(CreateGameTestHelper helper) {
 		BlockPos sheepPos = new BlockPos(2, 1, 2);
 		Sheep sheep = helper.getFirstEntity(EntityType.SHEEP, sheepPos);
-		sheep.shear(SoundSource.NEUTRAL);
+		sheep.shear(helper.getLevel(), SoundSource.NEUTRAL, new ItemStack(Items.SHEARS));
 		helper.succeedWhen(() -> {
 			helper.assertItemEntityPresent(Items.WHITE_WOOL, sheepPos, 2);
 		});

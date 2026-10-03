@@ -11,6 +11,7 @@ import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.mounted.MountedContraption;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
@@ -45,11 +46,11 @@ public class DeployerMovingInteraction extends MovingInteractionBehaviour {
 			DeployerFakePlayer fake = null;
 
 			if (!(ctx.temporaryData instanceof DeployerFakePlayer) && ctx.world instanceof ServerLevel) {
-				UUID owner = ctx.blockEntityData.contains("Owner") ? ctx.blockEntityData.getUUID("Owner") : null;
+				UUID owner = ctx.blockEntityData.contains("Owner") ? CreateNbt.readUUID(NBTHelper.getINBT(ctx.blockEntityData, "Owner")) : null;
 				DeployerFakePlayer deployerFakePlayer = new DeployerFakePlayer((ServerLevel) ctx.world, owner);
 				deployerFakePlayer.onMinecartContraption = ctx.contraption instanceof MountedContraption;
 				deployerFakePlayer.getInventory()
-					.load(ctx.blockEntityData.getList("Inventory", Tag.TAG_COMPOUND));
+					.load(ctx.blockEntityData.getListOrEmpty("Inventory"));
 				ctx.temporaryData = fake = deployerFakePlayer;
 				ctx.blockEntityData.remove("Inventory");
 			} else
@@ -61,8 +62,8 @@ public class DeployerMovingInteraction extends MovingInteractionBehaviour {
 			ItemStack deployerItem = fake.getMainHandItem();
 			player.setItemInHand(activeHand, deployerItem.copy());
 			fake.setItemInHand(InteractionHand.MAIN_HAND, heldStack.copy());
-			ctx.blockEntityData.put("HeldItem", heldStack.saveOptional(player.registryAccess()));
-			ctx.data.put("HeldItem", heldStack.saveOptional(player.registryAccess()));
+			ctx.blockEntityData.put("HeldItem", CreateNbt.writeItemStack(player.registryAccess(), heldStack));
+			ctx.data.put("HeldItem", CreateNbt.writeItemStack(player.registryAccess(), heldStack));
 		}
 //		if (index >= 0)
 //			setContraptionActorData(contraptionEntity, index, info, ctx);

@@ -27,6 +27,7 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.ponder.element.BeltItemElement;
 import com.simibubi.create.foundation.ponder.element.ExpandedParrotElement;
 import com.simibubi.create.foundation.ponder.instruction.AnimateBlockEntityInstruction;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.FunctionalHelper;
 import net.createmod.catnip.math.VecHelper;
@@ -227,11 +228,11 @@ public class CreateSceneBuilder extends PonderSceneBuilder {
 
 		public void modifyKineticSpeed(Selection selection, UnaryOperator<Float> speedFunc) {
 			modifyBlockEntityNBT(selection, SpeedGaugeBlockEntity.class, nbt -> {
-				float newSpeed = speedFunc.apply(nbt.getFloat("Speed"));
+				float newSpeed = speedFunc.apply(nbt.getFloat("Speed").orElse(0.0F));
 				nbt.putFloat("Value", SpeedGaugeBlockEntity.getDialTarget(newSpeed));
 			});
 			modifyBlockEntityNBT(selection, KineticBlockEntity.class, nbt -> {
-				nbt.putFloat("Speed", speedFunc.apply(nbt.getFloat("Speed")));
+				nbt.putFloat("Speed", speedFunc.apply(nbt.getFloat("Speed").orElse(0.0F)));
 			});
 		}
 
@@ -241,7 +242,7 @@ public class CreateSceneBuilder extends PonderSceneBuilder {
 
 		public void setFilterData(Selection selection, Class<? extends BlockEntity> teType, ItemStack filter) {
 			modifyBlockEntityNBT(selection, teType, nbt -> {
-				nbt.put("Filter", filter.saveOptional(world().getHolderLookupProvider()));
+				nbt.put("Filter", CreateNbt.writeItemStack(world().getHolderLookupProvider(), filter));
 			});
 		}
 
@@ -250,7 +251,7 @@ public class CreateSceneBuilder extends PonderSceneBuilder {
 			modifyBlockEntityNBT(scene.getSceneBuildingUtil().select().position(armLocation), ArmBlockEntity.class,
 				compound -> {
 					NBTHelper.writeEnum(compound, "Phase", phase);
-					compound.put("HeldItem", heldItem.saveOptional(world().getHolderLookupProvider()));
+					compound.put("HeldItem", CreateNbt.writeItemStack(world().getHolderLookupProvider(), heldItem));
 					compound.putInt("TargetPointIndex", targetedPoint);
 					compound.putFloat("MovementProgress", 0);
 				});

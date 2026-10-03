@@ -39,7 +39,7 @@ public class ScheduleItemEntityInteraction {
 		if (!(entity instanceof LivingEntity living))
 			return;
 		if (player.getCooldowns()
-			.isOnCooldown(AllItems.SCHEDULE.get()))
+			.isOnCooldown(event.getItemStack()))
 			return;
 
 		ItemStack itemStack = event.getItemStack();
@@ -47,7 +47,7 @@ public class ScheduleItemEntityInteraction {
 			InteractionResult result = si.handScheduleTo(itemStack, player, living, event.getHand());
 			if (result.consumesAction()) {
 				player.getCooldowns()
-					.addCooldown(AllItems.SCHEDULE.get(), 5);
+					.addCooldown(itemStack, 5);
 				event.setCancellationResult(result);
 				event.setCanceled(true);
 				return;
@@ -87,7 +87,7 @@ public class ScheduleItemEntityInteraction {
 			}
 
 			player.getCooldowns()
-				.addCooldown(AllItems.SCHEDULE.get(), 5);
+				.addCooldown(itemStack, 5);
 			event.setCancellationResult(InteractionResult.SUCCESS);
 			event.setCanceled(true);
 			return;
@@ -116,7 +116,7 @@ public class ScheduleItemEntityInteraction {
 		}
 
 		player.getCooldowns()
-			.addCooldown(AllItems.SCHEDULE.get(), 5);
+			.addCooldown(itemStack, 5);
 		event.setCancellationResult(InteractionResult.SUCCESS);
 		event.setCanceled(true);
 		return;

@@ -248,13 +248,13 @@ public class RadialToolboxMenu extends AbstractSimiScreen {
 		if (state == State.DETACH) {
 			if (selected == UNEQUIP)
 				CatnipServices.NETWORK.sendToServer(
-					new ToolboxEquipPacket(null, selected, minecraft.player.getInventory().selected));
+					new ToolboxEquipPacket(null, selected, minecraft.player.getInventory().getSelectedSlot()));
 			return;
 		}
 
 		if (selected == UNEQUIP)
 			CatnipServices.NETWORK.sendToServer(new ToolboxEquipPacket(selectedBox.getBlockPos(), selected,
-				minecraft.player.getInventory().selected));
+				minecraft.player.getInventory().getSelectedSlot()));
 
 		if (selected < 0)
 			return;
@@ -267,7 +267,7 @@ public class RadialToolboxMenu extends AbstractSimiScreen {
 			return;
 
 		CatnipServices.NETWORK.sendToServer(new ToolboxEquipPacket(selectedBox.getBlockPos(), selected,
-			minecraft.player.getInventory().selected));
+			minecraft.player.getInventory().getSelectedSlot()));
 	}
 
 	@Override
@@ -340,7 +340,7 @@ public class RadialToolboxMenu extends AbstractSimiScreen {
 			if (state == State.SELECT_ITEM_UNEQUIP && selected == UNEQUIP) {
 				if (toolboxes.size() > 1) {
 					CatnipServices.NETWORK.sendToServer(new ToolboxEquipPacket(selectedBox.getBlockPos(), selected,
-						minecraft.player.getInventory().selected));
+						minecraft.player.getInventory().getSelectedSlot()));
 					state = State.SELECT_BOX;
 					return true;
 				}

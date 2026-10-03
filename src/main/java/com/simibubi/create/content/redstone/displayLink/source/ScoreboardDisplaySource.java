@@ -25,7 +25,7 @@ public class ScoreboardDisplaySource extends ValueListDisplaySource {
 			return Stream.empty();
 
 		String name = context.sourceConfig()
-			.getString("Objective");
+			.getString("Objective").orElse("");
 
 		return showScoreboard(sLevel, name, maxRows);
 	}

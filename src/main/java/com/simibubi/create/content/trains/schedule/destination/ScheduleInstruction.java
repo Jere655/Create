@@ -39,7 +39,7 @@ public abstract class ScheduleInstruction extends ScheduleDataEntry {
 	}
 
 	public static ScheduleInstruction fromTag(HolderLookup.Provider registries, CompoundTag tag) {
-		ResourceLocation location = ResourceLocation.parse(tag.getString("Id"));
+		ResourceLocation location = ResourceLocation.parse(tag.getStringOr("Id", "minecraft:empty"));
 		Supplier<? extends ScheduleInstruction> supplier = null;
 		for (Pair<ResourceLocation, Supplier<? extends ScheduleInstruction>> pair : Schedule.INSTRUCTION_TYPES)
 			if (pair.getFirst()
@@ -54,7 +54,7 @@ public abstract class ScheduleInstruction extends ScheduleDataEntry {
 		ScheduleInstruction scheduleDestination = supplier.get();
 		// Left around for migration purposes. Data added in writeAdditional has moved into the "Data" tag
 		scheduleDestination.readAdditional(registries, tag);
-		CompoundTag data = tag.getCompound("Data");
+		CompoundTag data = tag.getCompoundOrEmpty("Data");
 		scheduleDestination.readAdditional(registries, data);
 		scheduleDestination.data = data;
 		return scheduleDestination;

@@ -53,7 +53,7 @@ public class SuperGlueItem extends Item {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void spawnParticles(Level world, BlockPos pos, Direction direction, boolean fullBlock) {
-		Vec3 vec = Vec3.atLowerCornerOf(direction.getNormal());
+		Vec3 vec = direction.getUnitVec3();
 		Vec3 plane = VecHelper.axisAlingedPlaneOf(vec);
 		Vec3 facePos = VecHelper.getCenterOf(pos)
 			.add(vec.scale(.5f));

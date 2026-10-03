@@ -407,11 +407,11 @@ public class BeltInventory {
 
 	public void read(CompoundTag nbt, HolderLookup.Provider registries) {
 		items.clear();
-		nbt.getList("Items", Tag.TAG_COMPOUND)
+		nbt.getListOrEmpty("Items")
 			.forEach(inbt -> items.add(TransportedItemStack.read((CompoundTag) inbt, registries)));
 		if (nbt.contains("LazyItem"))
-			lazyClientItem = TransportedItemStack.read(nbt.getCompound("LazyItem"), registries);
-		beltMovementPositive = nbt.getBoolean("PositiveOrder");
+			lazyClientItem = TransportedItemStack.read(nbt.getCompound("LazyItem").orElseGet(CompoundTag::new), registries);
+		beltMovementPositive = nbt.getBoolean("PositiveOrder").orElse(false);
 	}
 
 	public CompoundTag write(HolderLookup.Provider registries) {

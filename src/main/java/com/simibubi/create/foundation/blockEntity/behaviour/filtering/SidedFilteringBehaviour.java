@@ -77,8 +77,8 @@ public class SidedFilteringBehaviour extends FilteringBehaviour {
 
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-		NBTHelper.iterateCompoundList(nbt.getList("Filters", Tag.TAG_COMPOUND), compound -> {
-			Direction face = Direction.from3DDataValue(compound.getInt("Side"));
+		NBTHelper.iterateCompoundList(nbt.getListOrEmpty("Filters"), compound -> {
+			Direction face = Direction.from3DDataValue(compound.getInt("Side").orElse(0));
 			if (sidedFilters.containsKey(face))
 				sidedFilters.get(face)
 					.read(compound, registries, clientPacket);

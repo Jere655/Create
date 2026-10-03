@@ -23,7 +23,7 @@ public class DirectionalExtenderScrollOptionSlot extends CenteredSideValueBoxTra
 	@Override
 	public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
 		return super.getLocalOffset(level, pos, state)
-				.add(Vec3.atLowerCornerOf(state.getValue(BlockStateProperties.FACING).getNormal()).scale(-2 / 16f));
+				.add(state.getValue(BlockStateProperties.FACING).getUnitVec3().scale(-2 / 16f));
 	}
 
 	@Override

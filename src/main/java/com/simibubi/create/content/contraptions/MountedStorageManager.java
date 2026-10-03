@@ -24,6 +24,7 @@ import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageWrap
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType;
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorageWrapper;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.content.equipment.toolbox.ToolboxMountedStorage;
 import com.simibubi.create.content.fluids.tank.storage.FluidTankMountedStorage;
 import com.simibubi.create.content.fluids.tank.storage.creative.CreativeFluidTankMountedStorage;
@@ -255,9 +256,9 @@ public class MountedStorageManager {
 		this.reset();
 
 		try {
-			NBTHelper.iterateCompoundList(nbt.getList("items", Tag.TAG_COMPOUND), tag -> {
+			NBTHelper.iterateCompoundList(nbt.getListOrEmpty("items"), tag -> {
 				BlockPos pos = NBTHelper.readBlockPos(tag, "pos");
-				CompoundTag data = tag.getCompound("storage");
+				CompoundTag data = tag.getCompound("storage").orElseGet(CompoundTag::new);
 				// TODO - Use CatnipCodecUtils
 				MountedItemStorage.CODEC.decode(registryOps, data)
 					.resultOrPartial(err -> Create.LOGGER.error("Failed to deserialize mounted item storage: {}", err))
@@ -265,9 +266,9 @@ public class MountedStorageManager {
 					.ifPresent(storage -> this.addStorage(storage, pos));
 			});
 
-			NBTHelper.iterateCompoundList(nbt.getList("fluids", Tag.TAG_COMPOUND), tag -> {
+			NBTHelper.iterateCompoundList(nbt.getListOrEmpty("fluids"), tag -> {
 				BlockPos pos = NBTHelper.readBlockPos(tag, "pos");
-				CompoundTag data = tag.getCompound("storage");
+				CompoundTag data = tag.getCompound("storage").orElseGet(CompoundTag::new);
 				// TODO - Use CatnipCodecUtils
 				MountedFluidStorage.CODEC.decode(registryOps, data)
 					.resultOrPartial(err -> Create.LOGGER.error("Failed to deserialize mounted fluid storage: {}", err))
@@ -279,8 +280,8 @@ public class MountedStorageManager {
 
 			if (nbt.contains("interactable_positions")) {
 				this.interactablePositions = new HashSet<>();
-				NBTHelper.iterateCompoundList(nbt.getList("interactable_positions", Tag.TAG_COMPOUND), tag -> {
-					BlockPos pos = new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
+				NBTHelper.iterateCompoundList(nbt.getListOrEmpty("interactable_positions"), tag -> {
+					BlockPos pos = new BlockPos(tag.getInt("X").orElse(0), tag.getInt("Y").orElse(0), tag.getInt("Z").orElse(0));
 					this.interactablePositions.add(pos);
 				});
 			}
@@ -317,7 +318,7 @@ public class MountedStorageManager {
 						.resultOrPartial(err -> Create.LOGGER.error("Failed to serialize mounted item storage: {}", err))
 						.ifPresent(encoded -> {
 							CompoundTag tag = new CompoundTag();
-							tag.put("pos", NbtUtils.writeBlockPos(pos));
+							tag.put("pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
 							tag.put("storage", encoded);
 							items.add(tag);
 						});
@@ -336,7 +337,7 @@ public class MountedStorageManager {
 						.resultOrPartial(err -> Create.LOGGER.error("Failed to serialize mounted fluid storage: {}", err))
 						.ifPresent(encoded -> {
 							CompoundTag tag = new CompoundTag();
-							tag.put("pos", NbtUtils.writeBlockPos(pos));
+							tag.put("pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
 							tag.put("storage", encoded);
 							fluids.add(tag);
 						});
@@ -439,16 +440,16 @@ public class MountedStorageManager {
 	}
 
 	private void readLegacy(HolderLookup.Provider registries, CompoundTag nbt) {
-		NBTHelper.iterateCompoundList(nbt.getList("Storage", Tag.TAG_COMPOUND), tag -> {
+		NBTHelper.iterateCompoundList(nbt.getListOrEmpty("Storage"), tag -> {
 			BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-			CompoundTag data = tag.getCompound("Data");
+			CompoundTag data = tag.getCompound("Data").orElseGet(CompoundTag::new);
 
 			if (data.contains("Toolbox")) {
 				this.addStorage(ToolboxMountedStorage.fromLegacy(registries, data), pos);
 			} else if (data.contains("NoFuel")) {
 				this.addStorage(ItemVaultMountedStorage.fromLegacy(registries, data), pos);
 			} else if (data.contains("Bottomless")) {
-				ItemStack supplied = ItemStack.parseOptional(registries, data.getCompound("ProvidedStack"));
+				ItemStack supplied = CreateNbt.readItemStack(registries, data.getCompound("ProvidedStack").orElseGet(CompoundTag::new));
 				this.addStorage(new CreativeCrateMountedStorage(supplied), pos);
 			} else if (data.contains("Synced")) {
 				this.addStorage(DepotMountedStorage.fromLegacy(registries, data), pos);
@@ -460,9 +461,9 @@ public class MountedStorageManager {
 			}
 		});
 
-		NBTHelper.iterateCompoundList(nbt.getList("FluidStorage", Tag.TAG_COMPOUND), tag -> {
+		NBTHelper.iterateCompoundList(nbt.getListOrEmpty("FluidStorage"), tag -> {
 			BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
-			CompoundTag data = tag.getCompound("Data");
+			CompoundTag data = tag.getCompound("Data").orElseGet(CompoundTag::new);
 
 			if (data.contains("Bottomless")) {
 				this.addStorage(CreativeFluidTankMountedStorage.fromLegacy(registries, data), pos);

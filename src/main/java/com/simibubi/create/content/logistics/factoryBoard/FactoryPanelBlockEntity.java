@@ -198,7 +198,7 @@ public class FactoryPanelBlockEntity extends SmartBlockEntity {
 	@Override
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
-		restocker = tag.getBoolean("Restocker");
+		restocker = tag.getBooleanOr("Restocker", false);
 		if (clientPacket && tag.contains("Redraw")) {
 			lastShape = null;
 			level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 16);

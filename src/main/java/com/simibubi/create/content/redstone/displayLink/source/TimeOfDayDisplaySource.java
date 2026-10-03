@@ -31,7 +31,7 @@ public class TimeOfDayDisplaySource extends SingleLineDisplaySource {
 			return EMPTY_TIME;
 
 		boolean c12 = context.sourceConfig()
-			.getInt("Cycle") == 0;
+			.getInt("Cycle").orElse(0) == 0;
 		boolean isNatural = sLevel.dimensionType()
 			.natural();
 

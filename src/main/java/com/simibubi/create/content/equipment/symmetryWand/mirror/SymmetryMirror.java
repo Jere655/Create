@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
 
@@ -139,13 +138,17 @@ public abstract class SymmetryMirror {
 
 			if (property == BlockStateProperties.HALF)
 				return in.cycle(property);
-			// Directional Blocks
-			if (property instanceof DirectionProperty) {
-				if (in.getValue(property) == Direction.DOWN) {
-					return in.setValue((DirectionProperty) property, Direction.UP);
-				} else if (in.getValue(property) == Direction.UP) {
-					return in.setValue((DirectionProperty) property, Direction.DOWN);
-				}
+			// Directional Blocks. DirectionProperty was removed in 1.21.2+;
+			// inspect the value instead of relying on the old specialized class.
+			Comparable<?> value = in.getValue(property);
+			if (value == Direction.DOWN) {
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				BlockState flipped = in.setValue((Property) property, Direction.UP);
+				return flipped;
+			} else if (value == Direction.UP) {
+				@SuppressWarnings({ "rawtypes", "unchecked" })
+				BlockState flipped = in.setValue((Property) property, Direction.DOWN);
+				return flipped;
 			}
 		}
 		return in;

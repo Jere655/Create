@@ -326,9 +326,9 @@ public class ClockworkBearingBlockEntity extends KineticBlockEntity
 		float hourAngleBefore = hourAngle;
 		float minuteAngleBefore = minuteAngle;
 
-		running = compound.getBoolean("Running");
-		hourAngle = compound.getFloat("HourAngle");
-		minuteAngle = compound.getFloat("MinuteAngle");
+		running = compound.getBoolean("Running").orElse(false);
+		hourAngle = compound.getFloat("HourAngle").orElse(0.0F);
+		minuteAngle = compound.getFloat("MinuteAngle").orElse(0.0F);
 		lastException = AssemblyException.read(compound, registries);
 		super.read(compound, registries, clientPacket);
 

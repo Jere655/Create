@@ -191,7 +191,7 @@ public class AllIcons implements ScreenElement {
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void render(GuiGraphics graphics, int x, int y) {
-		graphics.blit(ICON_ATLAS, x, y, 0, iconX, iconY, 16, 16, 256, 256);
+		graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, ICON_ATLAS, x, y, 0, iconX, iconY, 16, 16, 256, 256);
 	}
 
 	@OnlyIn(Dist.CLIENT)

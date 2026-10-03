@@ -11,6 +11,7 @@ import com.simibubi.create.api.contraption.storage.fluid.WrapperMountedFluidStor
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
 import com.simibubi.create.content.fluids.tank.storage.FluidTankMountedStorage.Handler;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
@@ -90,8 +91,8 @@ public class FluidTankMountedStorage extends WrapperMountedFluidStorage<Handler>
 	}
 
 	public static FluidTankMountedStorage fromLegacy(HolderLookup.Provider registries, CompoundTag nbt) {
-		int capacity = nbt.getInt("Capacity");
-		FluidStack fluid = FluidStack.parseOptional(registries, nbt);
+		int capacity = nbt.getInt("Capacity").orElse(0);
+		FluidStack fluid = CreateNbt.readFluidStack(registries, nbt);
 		return new FluidTankMountedStorage(capacity, fluid);
 	}
 

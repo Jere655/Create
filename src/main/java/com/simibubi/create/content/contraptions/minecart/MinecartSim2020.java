@@ -27,10 +27,10 @@ import net.minecraft.world.phys.Vec3;
 public class MinecartSim2020 {
 	private static final Map<RailShape, Pair<Vec3i, Vec3i>> MATRIX =
 		Util.make(Maps.newEnumMap(RailShape.class), (map) -> {
-			Vec3i west = Direction.WEST.getNormal();
-			Vec3i east = Direction.EAST.getNormal();
-			Vec3i north = Direction.NORTH.getNormal();
-			Vec3i south = Direction.SOUTH.getNormal();
+			Vec3i west = Direction.WEST.getUnitVec3i();
+			Vec3i east = Direction.EAST.getUnitVec3i();
+			Vec3i north = Direction.NORTH.getUnitVec3i();
+			Vec3i south = Direction.SOUTH.getUnitVec3i();
 			map.put(RailShape.NORTH_SOUTH, Pair.of(north, south));
 			map.put(RailShape.EAST_WEST, Pair.of(west, east));
 			map.put(RailShape.ASCENDING_EAST, Pair.of(west.below(), east));
@@ -51,13 +51,36 @@ public class MinecartSim2020 {
 
 	public static boolean canAddMotion(AbstractMinecart c) {
 		if (c instanceof MinecartFurnace furnace)
-			return Mth.equal(furnace.xPush, 0)
-				&& Mth.equal(furnace.zPush, 0);
+			return Mth.equal((float) furnace.push.x, 0)
+				&& Mth.equal((float) furnace.push.z, 0);
 
 		MinecartController controller = c.getData(AllAttachmentTypes.MINECART_CONTROLLER);
 		if (controller.isPresent())
 			return !controller.isStalled();
 		return true;
+	}
+
+	public static BlockPos getCurrentRailPosition(AbstractMinecart cart) {
+		BlockPos pos = cart.blockPosition();
+		return cart.level().getBlockState(pos).getBlock() instanceof BaseRailBlock ? pos : pos.below();
+	}
+
+	public static float getMaxRailSpeed(AbstractMinecart cart) {
+		if (cart.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+			return (float) cart.getBehavior().getMaxSpeed(serverLevel);
+		return 0.4F;
+	}
+
+	public static Vec3 getRailPosition(AbstractMinecart cart, double x, double y, double z) {
+		return new Vec3(x, y, z);
+	}
+
+	public static Vec3 getRailPositionOffset(AbstractMinecart cart, double x, double y, double z, double offset) {
+		BlockPos pos = getCurrentRailPosition(cart);
+		BlockState state = cart.level().getBlockState(pos);
+		if (state.getBlock() instanceof BaseRailBlock rail)
+			return getRailPosition(cart, x, y, z).add(getRailVec(rail.getRailDirection(state, cart.level(), pos, cart)).scale(offset));
+		return getRailPosition(cart, x, y, z);
 	}
 
 	public static void moveCartAlongTrack(AbstractMinecart cart, Vec3 forcedMovement, BlockPos cartPos,
@@ -77,26 +100,26 @@ public class MinecartSim2020 {
 		double actualY = y;
 		double actualZ = z;
 
-		Vec3 actualVec = cart.getPos(actualX, actualY, actualZ);
+		Vec3 actualVec = getRailPosition(cart, actualX, actualY, actualZ);
 		actualY = cartPos.getY() + 1;
 
 		BaseRailBlock abstractrailblock = (BaseRailBlock) trackState.getBlock();
 		RailShape railshape = abstractrailblock.getRailDirection(trackState, cart.level(), cartPos, cart);
 		switch (railshape) {
 		case ASCENDING_EAST:
-			forcedMovement = forcedMovement.add(-1 * cart.getSlopeAdjustment(), 0.0D, 0.0D);
+			forcedMovement = forcedMovement.add(-0.0078125D, 0.0D, 0.0D);
 			actualY++;
 			break;
 		case ASCENDING_WEST:
-			forcedMovement = forcedMovement.add(cart.getSlopeAdjustment(), 0.0D, 0.0D);
+			forcedMovement = forcedMovement.add(0.0078125D, 0.0D, 0.0D);
 			actualY++;
 			break;
 		case ASCENDING_NORTH:
-			forcedMovement = forcedMovement.add(0.0D, 0.0D, cart.getSlopeAdjustment());
+			forcedMovement = forcedMovement.add(0.0D, 0.0D, 0.0078125D);
 			actualY++;
 			break;
 		case ASCENDING_SOUTH:
-			forcedMovement = forcedMovement.add(0.0D, 0.0D, -1 * cart.getSlopeAdjustment());
+			forcedMovement = forcedMovement.add(0.0D, 0.0D, -0.0078125D);
 			actualY++;
 		default:
 			break;
@@ -136,7 +159,7 @@ public class MinecartSim2020 {
 
 		cart.setPos(actualX, actualY, actualZ);
 		cart.setDeltaMovement(forcedMovement);
-		cart.moveMinecartOnRail(cartPos);
+		cart.move(net.minecraft.world.entity.MoverType.SELF, forcedMovement);
 
 		x = cart.getX();
 		y = cart.getY();
@@ -154,7 +177,7 @@ public class MinecartSim2020 {
 		y = cart.getY();
 		z = cart.getZ();
 
-		Vec3 Vector3d3 = cart.getPos(x, y, z);
+		Vec3 Vector3d3 = getRailPosition(cart, x, y, z);
 		if (Vector3d3 != null && actualVec != null) {
 			double d17 = (actualVec.y - Vector3d3.y) * 0.05D;
 			Vec3 Vector3d4 = cart.getDeltaMovement();

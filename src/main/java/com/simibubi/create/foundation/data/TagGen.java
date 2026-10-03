@@ -13,8 +13,7 @@ import com.tterrag.registrate.providers.RegistrateTagsProvider;
 import com.tterrag.registrate.util.nullness.NonNullFunction;
 
 import net.minecraft.core.Holder;
-import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.data.tags.TagsProvider.TagAppender;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagBuilder;
@@ -61,12 +60,12 @@ public class TagGen {
 		};
 	}
 
-	public static <T extends TagAppender<?>> T addOptional(T appender, Mods mod, String id) {
+	public static <T> CreateTagAppender<T> addOptional(CreateTagAppender<T> appender, Mods mod, String id) {
 		appender.addOptional(mod.asResource(id));
 		return appender;
 	}
 
-	public static <T extends TagAppender<?>> T addOptional(T appender, Mods mod, List<String> ids) {
+	public static <T> CreateTagAppender<T> addOptional(CreateTagAppender<T> appender, Mods mod, List<String> ids) {
 		for (String id : ids) {
 			appender.addOptional(mod.asResource(id));
 		}
@@ -88,29 +87,64 @@ public class TagGen {
 		}
 
 		public TagBuilder getOrCreateRawBuilder(TagKey<T> tag) {
-			return provider.addTag(tag).getInternalBuilder();
+		return provider.rawBuilder(tag);
 		}
 	}
 
-	public static class CreateTagAppender<T> extends TagsProvider.TagAppender<T> {
+	public static class CreateTagAppender<T> implements TagAppender<T, T> {
 
 		private final Function<T, ResourceKey<T>> keyExtractor;
 
 		public CreateTagAppender(TagBuilder pBuilder, Function<T, ResourceKey<T>> pKeyExtractor) {
-			super(pBuilder);
+			this.builder = pBuilder;
 			this.keyExtractor = pKeyExtractor;
 		}
 
+		private final TagBuilder builder;
+
 		public CreateTagAppender<T> add(T entry) {
-			this.add(this.keyExtractor.apply(entry));
+			builder.addElement(this.keyExtractor.apply(entry).location());
 			return this;
 		}
 
 		@SafeVarargs
 		public final CreateTagAppender<T> add(T... entries) {
-			Stream.<T>of(entries)
-				.map(this.keyExtractor)
-				.forEach(this::add);
+			Stream.<T>of(entries).forEach(this::add);
+			return this;
+		}
+
+		public CreateTagAppender<T> addOptional(ResourceLocation entry) {
+			builder.addOptionalElement(entry);
+			return this;
+		}
+
+		@Override
+		public CreateTagAppender<T> addOptional(T entry) {
+			builder.addOptionalElement(keyExtractor.apply(entry).location());
+			return this;
+		}
+
+		@Override
+		public CreateTagAppender<T> addTag(TagKey<T> tag) {
+			builder.addTag(tag.location());
+			return this;
+		}
+
+		@Override
+		public CreateTagAppender<T> addOptionalTag(TagKey<T> tag) {
+			builder.addOptionalTag(tag.location());
+			return this;
+		}
+
+		@Override
+		public CreateTagAppender<T> remove(T entry) {
+			builder.removeElement(keyExtractor.apply(entry).location());
+			return this;
+		}
+
+		@Override
+		public CreateTagAppender<T> remove(TagKey<T> tag) {
+			builder.removeTag(tag.location());
 			return this;
 		}
 

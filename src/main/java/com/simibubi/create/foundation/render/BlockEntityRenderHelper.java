@@ -66,7 +66,8 @@ public class BlockEntityRenderHelper {
 					light = realLevelLight;
 				}
 
-				renderer.render(blockEntity, pt, ms, buffer, light, OverlayTexture.NO_OVERLAY);
+				renderer.render(blockEntity, pt, ms, buffer, light, OverlayTexture.NO_OVERLAY,
+					Minecraft.getInstance().gameRenderer.getMainCamera().getPosition());
 
 			} catch (Exception e) {
 				// Prevent this BE from causing more issues in the future.

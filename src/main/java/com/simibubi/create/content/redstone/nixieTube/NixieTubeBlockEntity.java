@@ -220,7 +220,7 @@ public class NixieTubeBlockEntity extends SmartBlockEntity {
 
 			if (component.isValid()) {
 				customText = Optional.of(component);
-				nixieIndex = nbt.getInt("CustomTextIndex");
+				nixieIndex = nbt.getInt("CustomTextIndex").orElse(0);
 			} else {
 				customText = Optional.empty();
 				nixieIndex = 0;
@@ -231,7 +231,7 @@ public class NixieTubeBlockEntity extends SmartBlockEntity {
 		}
 
 		if (customText.isEmpty())
-			redstoneStrength = nbt.getInt("RedstoneStrength");
+			redstoneStrength = nbt.getInt("RedstoneStrength").orElse(0);
 		if (clientPacket || isVirtual()) {
 			if (nbt.contains("ComputerSignal")) {
 				byte[] encodedComputerSignal = nbt.getByteArray("ComputerSignal");

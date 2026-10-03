@@ -41,7 +41,7 @@ public class RollerRenderer extends SmartBlockEntityRenderer<RollerBlockEntity> 
 		ms.translate(0, -0.25, 0);
 		SuperByteBuffer superBuffer = CachedBuffers.partial(AllPartialModels.ROLLER_WHEEL, blockState);
 		Direction facing = blockState.getValue(RollerBlock.FACING);
-		superBuffer.translate(Vec3.atLowerCornerOf(facing.getNormal())
+		superBuffer.translate(facing.getUnitVec3()
 			.scale(17 / 16f));
 		HarvesterRenderer.transform(be.getLevel(), facing, superBuffer, be.getAnimatedSpeed(), Vec3.ZERO);
 		superBuffer.translate(0, -.5, .5)
@@ -69,7 +69,7 @@ public class RollerRenderer extends SmartBlockEntityRenderer<RollerBlockEntity> 
 			speed = 0;
 
 		superBuffer.transform(matrices.getModel())
-			.translate(Vec3.atLowerCornerOf(facing.getNormal())
+			.translate(facing.getUnitVec3()
 				.scale(17 / 16f));
 		HarvesterRenderer.transform(context.world, facing, superBuffer, speed, Vec3.ZERO);
 

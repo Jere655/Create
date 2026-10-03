@@ -114,7 +114,7 @@ public class DeployerVisual extends ShaftVisual<DeployerBlockEntity> implements 
         float handLength = currentHand == AllPartialModels.DEPLOYER_HAND_POINTING ? 0
                 : currentHand == AllPartialModels.DEPLOYER_HAND_HOLDING ? 4 / 16f : 3 / 16f;
         float distance = Math.min(Mth.clamp(progress, 0, 1) * (blockEntity.reach + handLength), 21 / 16f);
-        Vec3i facingVec = facing.getNormal();
+        Vec3i facingVec = facing.getUnitVec3i();
         BlockPos blockPos = getVisualPosition();
 
         float x = blockPos.getX() + ((float) facingVec.getX()) * distance;

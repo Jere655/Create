@@ -186,7 +186,7 @@ public class SpoutBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		processingTicks = compound.getInt("ProcessingTicks");
+		processingTicks = compound.getInt("ProcessingTicks").orElse(0);
 
 		createdChocolateBerries = compound.contains("ChocolateBerries");
 		createdHoneyApple = compound.contains("HoneyApple");

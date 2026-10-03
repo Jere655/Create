@@ -32,8 +32,8 @@ public class SchematicAndQuillItem extends Item {
 		String structureVoid = RegisteredObjectsHelper.getKeyOrThrow(Blocks.STRUCTURE_VOID)
 			.toString();
 
-		NBTHelper.iterateCompoundList(nbt.getList("palette", 10), c -> {
-			if (c.contains("Name") && c.getString("Name")
+		NBTHelper.iterateCompoundList(nbt.getListOrEmpty("palette"), c -> {
+			if (c.contains("Name") && c.getString("Name").orElse("")
 				.equals(structureVoid)) {
 				c.putString("Name", air);
 			}
@@ -41,15 +41,15 @@ public class SchematicAndQuillItem extends Item {
 	}
 
 	public static void clampGlueBoxes(Level level, AABB aabb, CompoundTag nbt) {
-		ListTag listtag = nbt.getList("entities", 10)
+		ListTag listtag = nbt.getListOrEmpty("entities")
 			.copy();
 
 		for (Iterator<Tag> iterator = listtag.iterator(); iterator.hasNext();) {
 			Tag tag = iterator.next();
 			if (!(tag instanceof CompoundTag compoundtag))
 				continue;
-			if (compoundtag.contains("nbt") && ResourceLocation.parse(compoundtag.getCompound("nbt")
-				.getString("id")).equals(AllEntityTypes.SUPER_GLUE.getId())) {
+			if (compoundtag.contains("nbt") && ResourceLocation.parse(compoundtag.getCompound("nbt").orElseGet(CompoundTag::new)
+				.getString("id").orElse("")).equals(AllEntityTypes.SUPER_GLUE.getId())) {
 				iterator.remove();
 			}
 		}

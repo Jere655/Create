@@ -22,6 +22,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -40,8 +43,8 @@ public abstract class ProcessingRecipe<I extends RecipeInput, P extends Processi
 	protected int processingDuration;
 	protected HeatCondition requiredHeat;
 
-	private RecipeType<?> type;
-	private RecipeSerializer<?> serializer;
+	private RecipeType<? extends Recipe<I>> type;
+	private RecipeSerializer<? extends Recipe<I>> serializer;
 	private IRecipeTypeInfo typeInfo;
 	private Supplier<ItemStack> forcedResult;
 
@@ -53,8 +56,8 @@ public abstract class ProcessingRecipe<I extends RecipeInput, P extends Processi
 		this.fluidResults = params.fluidResults;
 		this.processingDuration = params.processingDuration;
 		this.requiredHeat = params.requiredHeat;
-		this.type = typeInfo.getType();
-		this.serializer = typeInfo.getSerializer();
+		this.type = (RecipeType) typeInfo.getType();
+		this.serializer = (RecipeSerializer) typeInfo.getSerializer();
 		this.typeInfo = typeInfo;
 		this.forcedResult = null;
 	}
@@ -118,7 +121,6 @@ public abstract class ProcessingRecipe<I extends RecipeInput, P extends Processi
 		return params;
 	}
 
-	@Override
 	public NonNullList<Ingredient> getIngredients() {
 		return ingredients;
 	}
@@ -175,12 +177,6 @@ public abstract class ProcessingRecipe<I extends RecipeInput, P extends Processi
 		return getResultItem(provider);
 	}
 
-	@Override
-	public boolean canCraftInDimensions(int width, int height) {
-		return true;
-	}
-
-	@Override
 	public ItemStack getResultItem(HolderLookup.Provider provider) {
 		return getRollableResults().isEmpty() ? ItemStack.EMPTY
 				: getRollableResults().getFirst()
@@ -194,18 +190,28 @@ public abstract class ProcessingRecipe<I extends RecipeInput, P extends Processi
 
 	// Processing recipes do not show up in the recipe book
 	@Override
-	public String getGroup() {
+	public String group() {
 		return "processing";
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<? extends Recipe<I>> getSerializer() {
 		return serializer;
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<? extends Recipe<I>> getType() {
 		return type;
+	}
+
+	@Override
+	public PlacementInfo placementInfo() {
+		return PlacementInfo.NOT_PLACEABLE;
+	}
+
+	@Override
+	public RecipeBookCategory recipeBookCategory() {
+		return RecipeBookCategories.CRAFTING_MISC;
 	}
 
 	public IRecipeTypeInfo getTypeInfo() {

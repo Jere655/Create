@@ -272,13 +272,13 @@ public class SignalBoundary extends TrackEdgePoint {
 		for (int i = 1; i <= 2; i++)
 			if (nbt.contains("Tiles" + i)) {
 				boolean first = i == 1;
-				NBTHelper.iterateCompoundList(nbt.getList("Tiles" + i, Tag.TAG_COMPOUND), c -> blockEntities.get(first)
-					.put(NBTHelper.readBlockPos(c, "Pos"), c.getBoolean("Power")));
+				NBTHelper.iterateCompoundList(nbt.getListOrEmpty("Tiles" + i), c -> blockEntities.get(first)
+					.put(NBTHelper.readBlockPos(c, "Pos"), c.getBoolean("Power").orElse(false)));
 			}
 
 		for (int i = 1; i <= 2; i++)
 			if (nbt.contains("Group" + i))
-				groups.set(i == 1, nbt.getUUID("Group" + i));
+				groups.set(i == 1, com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(nbt, "Group" + i)));
 		for (int i = 1; i <= 2; i++)
 			sidesToUpdate.set(i == 1, nbt.contains("Update" + i));
 		for (int i = 1; i <= 2; i++)
@@ -305,13 +305,13 @@ public class SignalBoundary extends TrackEdgePoint {
 				nbt.put("Tiles" + i, NBTHelper.writeCompoundList(blockEntities.get(i == 1)
 					.entrySet(), e -> {
 						CompoundTag c = new CompoundTag();
-						c.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
+						c.put("Pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(e.getKey()));
 						c.putBoolean("Power", e.getValue());
 						return c;
 					}));
 		for (int i = 1; i <= 2; i++)
 			if (groups.get(i == 1) != null)
-				nbt.putUUID("Group" + i, groups.get(i == 1));
+				nbt.put("Group" + i, com.simibubi.create.foundation.utility.CreateNbt.writeUUID(groups.get(i == 1)));
 		for (int i = 1; i <= 2; i++)
 			if (sidesToUpdate.get(i == 1))
 				nbt.putBoolean("Update" + i, true);

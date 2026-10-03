@@ -45,6 +45,8 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
@@ -156,7 +158,7 @@ public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, 
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	protected boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		return false;
 	}
 
@@ -214,15 +216,19 @@ public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, 
 	}
 
 	@Override
-	public void addAdditionalSaveData(CompoundTag compound) {
+	public void addAdditionalSaveData(ValueOutput output) {
 		Vec3 position = position();
-		writeBoundingBox(compound, getBoundingBox().move(position.scale(-1)));
+		AABB box = getBoundingBox().move(position.scale(-1));
+		output.store("From", Vec3.CODEC, new Vec3(box.minX, box.minY, box.minZ));
+		output.store("To", Vec3.CODEC, new Vec3(box.maxX, box.maxY, box.maxZ));
 	}
 
 	@Override
-	public void readAdditionalSaveData(CompoundTag compound) {
+	public void readAdditionalSaveData(ValueInput input) {
 		Vec3 position = position();
-		setBoundingBox(readBoundingBox(compound).move(position));
+		Vec3 from = input.read("From", Vec3.CODEC).orElse(Vec3.ZERO);
+		Vec3 to = input.read("To", Vec3.CODEC).orElse(Vec3.ZERO);
+		setBoundingBox(new AABB(from, to).move(position));
 	}
 
 	public static void writeBoundingBox(CompoundTag compound, AABB bb) {
@@ -231,8 +237,8 @@ public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, 
 	}
 
 	public static AABB readBoundingBox(CompoundTag compound) {
-		Vec3 from = VecHelper.readNBT(compound.getList("From", Tag.TAG_DOUBLE));
-		Vec3 to = VecHelper.readNBT(compound.getList("To", Tag.TAG_DOUBLE));
+		Vec3 from = VecHelper.readNBT(compound.getListOrEmpty("From"));
+		Vec3 to = VecHelper.readNBT(compound.getListOrEmpty("To"));
 		return new AABB(from, to);
 	}
 
@@ -269,13 +275,13 @@ public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, 
 	@Override
 	public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
 		CompoundTag compound = new CompoundTag();
-		addAdditionalSaveData(compound);
+		writeBoundingBox(compound, getBoundingBox().move(position().scale(-1)));
 		buffer.writeNbt(compound);
 	}
 
 	@Override
 	public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
-		readAdditionalSaveData(additionalData.readNbt());
+		setBoundingBox(readBoundingBox(additionalData.readNbt()).move(position()));
 	}
 
 	@Override
@@ -308,20 +314,20 @@ public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, 
 		for (Axis axis : Iterate.axes) {
 			AxisDirection positive = AxisDirection.POSITIVE;
 			double max = axis.choose(extents.x, extents.y, extents.z);
-			Vec3 normal = Vec3.atLowerCornerOf(Direction.fromAxisAndDirection(axis, positive)
-				.getNormal());
+			Vec3 normal = Direction.fromAxisAndDirection(axis, positive)
+				.getUnitVec3();
 			for (Axis axis2 : Iterate.axes) {
 				if (axis2 == axis)
 					continue;
 				double max2 = axis2.choose(extents.x, extents.y, extents.z);
-				Vec3 normal2 = Vec3.atLowerCornerOf(Direction.fromAxisAndDirection(axis2, positive)
-					.getNormal());
+				Vec3 normal2 = Direction.fromAxisAndDirection(axis2, positive)
+					.getUnitVec3();
 				for (Axis axis3 : Iterate.axes) {
 					if (axis3 == axis2 || axis3 == axis)
 						continue;
 					double max3 = axis3.choose(extents.x, extents.y, extents.z);
-					Vec3 normal3 = Vec3.atLowerCornerOf(Direction.fromAxisAndDirection(axis3, positive)
-						.getNormal());
+					Vec3 normal3 = Direction.fromAxisAndDirection(axis3, positive)
+						.getUnitVec3();
 
 					for (int i = 0; i <= max * 2; i++) {
 						for (int o1 : Iterate.zeroAndOne) {

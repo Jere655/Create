@@ -61,17 +61,17 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean migration, DimensionPalette dimensions) {
 		super.read(nbt, registries, migration, dimensions);
-		name = nbt.getString("Name");
-		assembling = nbt.getBoolean("Assembling");
+		name = nbt.getString("Name").orElse("");
+		assembling = nbt.getBoolean("Assembling").orElse(false);
 		nearestTrain = new WeakReference<>(null);
 
 		connectedPorts.clear();
-		ListTag portList = nbt.getList("Ports", Tag.TAG_COMPOUND);
+		ListTag portList = nbt.getListOrEmpty("Ports");
 		NBTHelper.iterateCompoundList(portList, c -> {
 			GlobalPackagePort port = new GlobalPackagePort();
-			port.address = c.getString("Address");
-			port.offlineBuffer.deserializeNBT(registries, c.getCompound("OfflineBuffer"));
-			port.primed = c.getBoolean("Primed");
+			port.address = c.getString("Address").orElse("");
+			port.offlineBuffer.deserializeNBT(registries, c.getCompound("OfflineBuffer").orElseGet(CompoundTag::new));
+			port.primed = c.getBoolean("Primed").orElse(false);
 			connectedPorts.put(NBTHelper.readBlockPos(c, "Pos"), port);
 		});
 	}
@@ -96,7 +96,7 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 			c.putString("Address", e.getValue().address);
 			c.put("OfflineBuffer", e.getValue().offlineBuffer.serializeNBT(registries));
 			c.putBoolean("Primed", e.getValue().primed);
-			c.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
+			c.put("Pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(e.getKey()));
 			return c;
 		}));
 	}

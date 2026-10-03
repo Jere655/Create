@@ -24,7 +24,7 @@ public class ScreenResourceWrapper implements IDrawable {
 
 	@Override
 	public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
-		graphics.blit(resource.location, xOffset, yOffset, 0, resource.getStartX(), resource.getStartY(), resource.getWidth(),
+		graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, resource.location, xOffset, yOffset, 0, resource.getStartX(), resource.getStartY(), resource.getWidth(),
 			resource.getHeight(), 256, 256);
 	}
 

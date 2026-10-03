@@ -110,7 +110,7 @@ public class SlidingDoorMovementBehaviour implements MovementBehaviour {
 			context.data.putBoolean("Open", shouldOpen);
 			return true;
 		}
-		boolean wasOpen = context.data.getBoolean("Open");
+		boolean wasOpen = context.data.getBoolean("Open").orElse(false);
 		context.data.putBoolean("Open", shouldOpen);
 		return wasOpen != shouldOpen;
 	}
@@ -192,16 +192,16 @@ public class SlidingDoorMovementBehaviour implements MovementBehaviour {
 		Direction originalFacing = Direction.get(AxisDirection.POSITIVE, stateFacing.getAxis());
 		Vec3 centerOfContraption = context.contraption.bounds.getCenter();
 		Vec3 diff = Vec3.atCenterOf(context.localPos)
-			.add(Vec3.atLowerCornerOf(stateFacing.getNormal())
+			.add(stateFacing.getUnitVec3()
 				.scale(-.45f))
 			.subtract(centerOfContraption);
 		if (originalFacing.getAxis()
 			.choose(diff.x, diff.y, diff.z) < 0)
 			originalFacing = originalFacing.getOpposite();
 
-		Vec3 directionVec = Vec3.atLowerCornerOf(originalFacing.getNormal());
+		Vec3 directionVec = originalFacing.getUnitVec3();
 		directionVec = context.rotation.apply(directionVec);
-		return Direction.getNearest(directionVec.x, directionVec.y, directionVec.z);
+		return Direction.getApproximateNearest(new Vec3(directionVec.x, directionVec.y, directionVec.z));
 	}
 
 }

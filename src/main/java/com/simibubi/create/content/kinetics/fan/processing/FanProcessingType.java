@@ -33,7 +33,9 @@ public interface FanProcessingType {
 
 	@Nullable
 	static FanProcessingType parse(String str) {
-		return CreateBuiltInRegistries.FAN_PROCESSING_TYPE.get(ResourceLocation.tryParse(str));
+		return CreateBuiltInRegistries.FAN_PROCESSING_TYPE.get(ResourceLocation.tryParse(str))
+			.map(Holder.Reference::value)
+			.orElse(null);
 	}
 
 	@Nullable

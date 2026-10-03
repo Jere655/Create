@@ -27,7 +27,7 @@ public class ChainGearshiftBlockEntity extends KineticBlockEntity {
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		signal = compound.getInt("Signal");
+		signal = compound.getInt("Signal").orElse(0);
 		super.read(compound, registries, clientPacket);
 	}
 

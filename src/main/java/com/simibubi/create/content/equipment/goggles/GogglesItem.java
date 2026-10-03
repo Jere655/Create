@@ -7,17 +7,16 @@ import java.util.function.Predicate;
 import com.simibubi.create.AllItems;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 
-public class GogglesItem extends Item implements Equipable {
+public class GogglesItem extends Item {
 	private static final List<Predicate<Player>> IS_WEARING_PREDICATES = new ArrayList<>();
 
 	static {
@@ -26,16 +25,11 @@ public class GogglesItem extends Item implements Equipable {
 
 	public GogglesItem(Properties properties) {
 		super(properties);
-		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSE_ITEM_BEHAVIOR);
+		DispenserBlock.registerBehavior(this, net.minecraft.core.dispenser.EquipmentDispenseItemBehavior.INSTANCE);
 	}
 
-	@Override
-	public EquipmentSlot getEquipmentSlot() {
-		return EquipmentSlot.HEAD;
-	}
-
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-		return swapWithEquipmentSlot(this, worldIn, playerIn, handIn);
+	public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
+		return Equippable.builder(EquipmentSlot.HEAD).build().swapWithEquipmentSlot(playerIn.getItemInHand(handIn), playerIn);
 	}
 
 	public static boolean isWearingGoggles(Player player) {

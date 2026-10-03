@@ -37,7 +37,7 @@ public class PackagerVisual<T extends PackagerBlockEntity> extends AbstractBlock
 		Direction facing = blockState.getValue(PackagerBlock.FACING)
 			.getOpposite();
 
-		var lowerCorner = Vec3.atLowerCornerOf(facing.getNormal());
+		var lowerCorner = facing.getUnitVec3();
 		hatch.setIdentityTransform()
 			.translate(getVisualPosition())
 			.translate(lowerCorner
@@ -72,7 +72,7 @@ public class PackagerVisual<T extends PackagerBlockEntity> extends AbstractBlock
 			Direction facing = blockState.getValue(PackagerBlock.FACING)
 				.getOpposite();
 
-			var lowerCorner = Vec3.atLowerCornerOf(facing.getNormal());
+			var lowerCorner = facing.getUnitVec3();
 
 			tray.setIdentityTransform()
 				.translate(getVisualPosition())

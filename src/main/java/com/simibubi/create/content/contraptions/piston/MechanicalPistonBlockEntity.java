@@ -33,7 +33,7 @@ public class MechanicalPistonBlockEntity extends LinearActuatorBlockEntity {
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		extensionLength = compound.getInt("ExtensionLength");
+		extensionLength = compound.getIntOr("ExtensionLength", 0);
 		super.read(compound, registries, clientPacket);
 	}
 
@@ -148,14 +148,14 @@ public class MechanicalPistonBlockEntity extends LinearActuatorBlockEntity {
 	@Override
 	protected Vec3 toMotionVector(float speed) {
 		Direction pistonDirection = getBlockState().getValue(BlockStateProperties.FACING);
-		return Vec3.atLowerCornerOf(pistonDirection.getNormal())
+		return pistonDirection.getUnitVec3()
 			.scale(speed);
 	}
 
 	@Override
 	protected Vec3 toPosition(float offset) {
-		Vec3 position = Vec3.atLowerCornerOf(getBlockState().getValue(BlockStateProperties.FACING)
-				.getNormal())
+		Vec3 position = getBlockState().getValue(BlockStateProperties.FACING)
+			.getUnitVec3()
 			.scale(offset);
 		return position.add(Vec3.atLowerCornerOf(movedContraption.getContraption().anchor));
 	}

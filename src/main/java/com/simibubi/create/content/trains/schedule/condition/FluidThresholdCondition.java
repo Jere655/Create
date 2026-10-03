@@ -69,7 +69,7 @@ public class FluidThresholdCondition extends CargoThresholdCondition {
 	protected void readAdditional(HolderLookup.Provider registries, CompoundTag tag) {
 		super.readAdditional(registries, tag);
 		if (tag.contains("Bucket"))
-			compareStack = FilterItemStack.of(registries, tag.getCompound("Bucket"));
+			compareStack = FilterItemStack.of(registries, tag.getCompoundOrEmpty("Bucket"));
 	}
 
 	@Override

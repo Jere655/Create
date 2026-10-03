@@ -10,7 +10,7 @@ import net.createmod.catnip.theme.Color;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 
-public class RemainingAirOverlay implements LayeredDraw.Layer {
+public class RemainingAirOverlay implements GuiLayer {
 	public static final RemainingAirOverlay INSTANCE = new RemainingAirOverlay();
 
 	@Override
@@ -44,14 +44,14 @@ public class RemainingAirOverlay implements LayeredDraw.Layer {
 			return;
 
 		int timeLeft = player.getPersistentData()
-			.getInt("VisualBacktankAir");
+			.getInt("VisualBacktankAir").orElse(0);
 
 		PoseStack poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 
 		ItemStack backtank = getDisplayedBacktank(player);
 		poseStack.translate(guiGraphics.guiWidth() / 2 + 90, guiGraphics.guiHeight() - 53 + (backtank
-				.has(DataComponents.FIRE_RESISTANT) ? 9 : 0), 0);
+				.has(DataComponents.DAMAGE_RESISTANT) ? 9 : 0), 0);
 
 		Component text = Component.literal(StringUtil.formatTickDuration(Math.max(0, timeLeft - 1) * 20, mc.level.tickRateManager().tickrate()));
 		GuiGameElement.of(backtank)

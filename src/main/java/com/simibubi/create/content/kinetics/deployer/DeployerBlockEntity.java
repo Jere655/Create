@@ -25,6 +25,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.animation.LerpedFloat;
@@ -34,6 +35,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -366,32 +368,31 @@ public class DeployerBlockEntity extends KineticBlockEntity implements Clearable
 	protected Vec3 getMovementVector() {
 		if (!AllBlocks.DEPLOYER.has(getBlockState()))
 			return Vec3.ZERO;
-		return Vec3.atLowerCornerOf(getBlockState().getValue(FACING)
-			.getNormal());
+		return getBlockState().getValue(FACING)
+			.getUnitVec3();
 	}
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		state = NBTHelper.readEnum(compound, "State", State.class);
 		mode = NBTHelper.readEnum(compound, "Mode", Mode.class);
-		timer = compound.getInt("Timer");
-		redstoneLocked = compound.getBoolean("Powered");
-		if (compound.contains("Owner"))
-			owner = compound.getUUID("Owner");
+		timer = compound.getIntOr("Timer", 0);
+		redstoneLocked = compound.getBooleanOr("Powered", false);
+		owner = compound.read("Owner", UUIDUtil.CODEC).orElse(null);
 
-		deferredInventoryList = compound.getList("Inventory", Tag.TAG_COMPOUND);
-		overflowItems = NBTHelper.readItemList(compound.getList("Overflow", Tag.TAG_COMPOUND), registries);
+		deferredInventoryList = compound.getListOrEmpty("Inventory");
+		overflowItems = NBTHelper.readItemList(compound.getListOrEmpty("Overflow"), registries);
 		if (compound.contains("HeldItem")) {
-			heldItem = ItemStack.parseOptional(registries, compound.getCompound("HeldItem"));
+			heldItem = CreateNbt.readItemStack(registries, compound.getCompound("HeldItem").orElseGet(CompoundTag::new));
 		}
 		super.read(compound, registries, clientPacket);
 
 		if (!clientPacket)
 			return;
-		fistBump = compound.getBoolean("Fistbump");
-		reach = compound.getFloat("Reach");
+		fistBump = compound.getBooleanOr("Fistbump", false);
+		reach = compound.getFloatOr("Reach", 0);
 		if (compound.contains("Particle")) {
-			ItemStack particleStack = ItemStack.parseOptional(registries, compound.getCompound("Particle"));
+			ItemStack particleStack = CreateNbt.readItemStack(registries, compound.getCompound("Particle").orElseGet(CompoundTag::new));
 			SandPaperItem.spawnParticles(VecHelper.getCenterOf(worldPosition)
 				.add(getMovementVector().scale(reach + 1)), particleStack, this.level);
 		}
@@ -404,14 +405,14 @@ public class DeployerBlockEntity extends KineticBlockEntity implements Clearable
 		compound.putInt("Timer", timer);
 		compound.putBoolean("Powered", redstoneLocked);
 		if (owner != null)
-			compound.putUUID("Owner", owner);
+			compound.store("Owner", UUIDUtil.CODEC, owner);
 
 		if (player != null) {
 			ListTag invNBT = new ListTag();
 			player.getInventory()
 				.save(invNBT);
 			compound.put("Inventory", invNBT);
-			compound.put("HeldItem", player.getMainHandItem().saveOptional(registries));
+			compound.put("HeldItem", CreateNbt.writeItemStack(registries, player.getMainHandItem()));
 			compound.put("Overflow", NBTHelper.writeItemList(overflowItems, registries));
 		} else if (deferredInventoryList != null) {
 			compound.put("Inventory", deferredInventoryList);
@@ -425,9 +426,9 @@ public class DeployerBlockEntity extends KineticBlockEntity implements Clearable
 		compound.putFloat("Reach", reach);
 		if (player == null)
 			return;
-		compound.put("HeldItem", player.getMainHandItem().saveOptional(registries));
+		compound.put("HeldItem", CreateNbt.writeItemStack(registries, player.getMainHandItem()));
 		if (player.spawnedItemEffects != null) {
-			compound.put("Particle", player.spawnedItemEffects.saveOptional(registries));
+			compound.put("Particle", CreateNbt.writeItemStack(registries, player.spawnedItemEffects));
 			player.spawnedItemEffects = null;
 		}
 	}

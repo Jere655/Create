@@ -64,7 +64,7 @@ public class AirFlowParticle extends SimpleAnimatedParticle {
 				return;
 			}
 
-			Vec3 directionVec = Vec3.atLowerCornerOf(airCurrent.direction.getNormal());
+			Vec3 directionVec = airCurrent.direction.getUnitVec3();
 			Vec3 motion = directionVec.scale(1 / 8f);
 			if (!source.getAirCurrent().pushing)
 				motion = motion.scale(-1);

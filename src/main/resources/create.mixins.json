@@ -33,7 +33,6 @@
     "accessor.FluidInteractionRegistryAccessor",
     "accessor.GameTestHelperAccessor",
     "accessor.ItemFrameAccessor",
-    "accessor.ItemModelGeneratorsAccessor",
     "accessor.ItemStackHandlerAccessor",
     "accessor.LivingEntityAccessor",
     "accessor.MappedRegistryAccessor",

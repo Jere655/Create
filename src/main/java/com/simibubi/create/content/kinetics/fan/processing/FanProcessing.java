@@ -19,15 +19,15 @@ public class FanProcessing {
 		if (entity.getPersistentData()
 			.contains("CreateData")) {
 			CompoundTag compound = entity.getPersistentData()
-				.getCompound("CreateData");
+				.getCompound("CreateData").orElseGet(CompoundTag::new);
 			if (compound.contains("Processing")) {
-				CompoundTag processing = compound.getCompound("Processing");
+				CompoundTag processing = compound.getCompound("Processing").orElseGet(CompoundTag::new);
 
-				if (AllFanProcessingTypes.parseLegacy(processing.getString("Type")) != type)
+				if (AllFanProcessingTypes.parseLegacy(processing.getString("Type").orElse("")) != type)
 					return type.canProcess(entity.getItem(), entity.level());
-				else if (processing.getInt("Time") >= 0)
+				else if (processing.getInt("Time").orElse(0) >= 0)
 					return true;
-				else if (processing.getInt("Time") == -1)
+				else if (processing.getInt("Time").orElse(0) == -1)
 					return false;
 			}
 		}
@@ -88,13 +88,13 @@ public class FanProcessing {
 
 		if (!nbt.contains("CreateData"))
 			nbt.put("CreateData", new CompoundTag());
-		CompoundTag createData = nbt.getCompound("CreateData");
+		CompoundTag createData = nbt.getCompound("CreateData").orElseGet(CompoundTag::new);
 
 		if (!createData.contains("Processing"))
 			createData.put("Processing", new CompoundTag());
-		CompoundTag processing = createData.getCompound("Processing");
+		CompoundTag processing = createData.getCompound("Processing").orElseGet(CompoundTag::new);
 
-		if (!processing.contains("Type") || AllFanProcessingTypes.parseLegacy(processing.getString("Type")) != type) {
+		if (!processing.contains("Type") || AllFanProcessingTypes.parseLegacy(processing.getString("Type").orElse("")) != type) {
 			ResourceLocation key = CreateBuiltInRegistries.FAN_PROCESSING_TYPE.getKey(type);
 			if (key == null)
 				throw new IllegalArgumentException("Could not get id for FanProcessingType " + type + "!");
@@ -107,7 +107,7 @@ public class FanProcessing {
 			processing.putInt("Time", processingTime);
 		}
 
-		int value = processing.getInt("Time") - 1;
+		int value = processing.getInt("Time").orElse(0) - 1;
 		processing.putInt("Time", value);
 		return value;
 	}

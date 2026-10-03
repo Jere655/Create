@@ -49,6 +49,6 @@ public abstract class HeldItemGhostItemMenu extends GhostItemMenu<ItemStack> {
 
 	protected boolean isInSlot(int index) {
 		// Inventory has the hotbar as 0-8, but menus put the hotbar at 27-35
-		return index >= 27 && index - 27 == playerInventory.selected;
+		return index >= 27 && index - 27 == playerInventory.getSelectedSlot();
 	}
 }

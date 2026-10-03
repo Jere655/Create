@@ -42,7 +42,7 @@ public class PackagerRenderer extends SmartBlockEntityRenderer<PackagerBlockEnti
 			var hatchModel = getHatchModel(be);
 
 			SuperByteBuffer sbb = CachedBuffers.partial(hatchModel, blockState);
-			sbb.translate(Vec3.atLowerCornerOf(facing.getNormal())
+			sbb.translate(facing.getUnitVec3()
 					.scale(.49999f))
 				.rotateYCenteredDegrees(AngleHelper.horizontalAngle(facing))
 				.rotateXCenteredDegrees(AngleHelper.verticalAngle(facing))
@@ -50,7 +50,7 @@ public class PackagerRenderer extends SmartBlockEntityRenderer<PackagerBlockEnti
 				.renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
 			sbb = CachedBuffers.partial(getTrayModel(blockState), blockState);
-			sbb.translate(Vec3.atLowerCornerOf(facing.getNormal())
+			sbb.translate(facing.getUnitVec3()
 					.scale(trayOffset))
 				.rotateYCenteredDegrees(facing.toYRot())
 				.light(light)
@@ -60,7 +60,7 @@ public class PackagerRenderer extends SmartBlockEntityRenderer<PackagerBlockEnti
 		if (!renderedBox.isEmpty()) {
 			ms.pushPose();
 			var msr = TransformStack.of(ms);
-			msr.translate(Vec3.atLowerCornerOf(facing.getNormal())
+			msr.translate(facing.getUnitVec3()
 					.scale(trayOffset))
 				.translate(.5f, .5f, .5f)
 				.rotateYDegrees(facing.toYRot())

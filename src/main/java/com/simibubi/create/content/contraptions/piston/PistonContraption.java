@@ -231,9 +231,9 @@ public class PistonContraption extends TranslatingContraption {
 	@Override
 	public void readNBT(Level world, CompoundTag nbt, boolean spawnData) {
 		super.readNBT(world, nbt, spawnData);
-		initialExtensionProgress = nbt.getInt("InitialLength");
-		extensionLength = nbt.getInt("ExtensionLength");
-		orientation = Direction.from3DDataValue(nbt.getInt("Orientation"));
+		initialExtensionProgress = nbt.getInt("InitialLength").orElse(0);
+		extensionLength = nbt.getInt("ExtensionLength").orElse(0);
+		orientation = Direction.from3DDataValue(nbt.getInt("Orientation").orElse(0));
 	}
 
 	@Override

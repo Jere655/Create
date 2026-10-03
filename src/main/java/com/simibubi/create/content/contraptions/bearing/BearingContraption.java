@@ -83,8 +83,8 @@ public class BearingContraption extends Contraption {
 
 	@Override
 	public void readNBT(Level world, CompoundTag tag, boolean spawnData) {
-		sailBlocks = tag.getInt("Sails");
-		facing = Direction.from3DDataValue(tag.getInt("Facing"));
+		sailBlocks = tag.getInt("Sails").orElse(0);
+		facing = Direction.from3DDataValue(tag.getInt("Facing").orElse(0));
 		super.readNBT(world, tag, spawnData);
 	}
 

@@ -1,6 +1,5 @@
 package com.simibubi.create.content.logistics.packagePort.frogport;
 
-import net.minecraft.world.ItemInteractionResult;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -62,7 +61,7 @@ public class FrogportBlock extends Block implements IBE<FrogportBlockEntity>, IW
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		return onBlockEntityUseItemOn(level, pos, be -> be.use(player));
 	}
 

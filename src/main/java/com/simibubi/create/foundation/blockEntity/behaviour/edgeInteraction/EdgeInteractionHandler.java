@@ -93,7 +93,7 @@ public class EdgeInteractionHandler {
 
 	static AABB getBB(BlockPos pos, Direction direction) {
 		AABB bb = new AABB(pos);
-		Vec3i vec = direction.getNormal();
+		Vec3i vec = direction.getUnitVec3i();
 		int x = vec.getX();
 		int y = vec.getY();
 		int z = vec.getZ();

@@ -10,6 +10,7 @@ import com.simibubi.create.content.contraptions.glue.SuperGlueSelectionHandler;
 import com.simibubi.create.content.contraptions.render.ContraptionEntityRenderer;
 import com.simibubi.create.content.decoration.encasing.CasingConnectivity;
 import com.simibubi.create.content.equipment.bell.SoulPulseEffectHandler;
+import com.simibubi.create.content.equipment.clipboard.ClipboardOverrides;
 import com.simibubi.create.content.equipment.potatoCannon.PotatoCannonRenderHandler;
 import com.simibubi.create.content.equipment.zapper.ZapperRenderHandler;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
@@ -76,6 +77,7 @@ public class CreateClient {
 
 		modEventBus.addListener(CreateClient::clientInit);
 		modEventBus.addListener(AllParticleTypes::registerFactories);
+		modEventBus.addListener(ClipboardOverrides::registerModelProperties);
 
 		AllInstanceTypes.init();
 
@@ -121,7 +123,7 @@ public class CreateClient {
 			//RenderSystem.setShaderTexture(0, CreateMainMenuScreen.PANORAMA_OVERLAY_TEXTURES);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			graphics.blit(CreateMainMenuScreen.PANORAMA_OVERLAY_TEXTURES, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
+			graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, CreateMainMenuScreen.PANORAMA_OVERLAY_TEXTURES, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 			graphics.fill(0, 0, screen.width, screen.height, 0x90_282c34);
 		});

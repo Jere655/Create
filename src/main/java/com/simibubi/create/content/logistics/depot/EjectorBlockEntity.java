@@ -19,6 +19,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
@@ -47,7 +48,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.ClipContext.Block;
@@ -184,8 +184,8 @@ public class EjectorBlockEntity extends KineticBlockEntity {
 				+ launcher.getVerticalDistance() * launcher.getVerticalDistance() >= 25 * 25)
 				CatnipServices.NETWORK.sendToServer(new EjectorAwardPacket(worldPosition));
 
-			if (!(playerEntity.getItemBySlot(EquipmentSlot.CHEST)
-				.getItem() instanceof ElytraItem))
+			if (playerEntity.getItemBySlot(EquipmentSlot.CHEST)
+				.getItem() != Items.ELYTRA)
 				continue;
 
 			playerEntity.setXRot(-35);
@@ -392,7 +392,7 @@ public class EjectorBlockEntity extends KineticBlockEntity {
 
 		Vec3 vec = rayTraceBlocks.getLocation();
 		earlyTarget = Pair.of(vec.add(Vec3.atLowerCornerOf(rayTraceBlocks.getDirection()
-			.getNormal())
+			.getUnitVec3())
 			.scale(.25f)), rayTraceBlocks.getBlockPos());
 		earlyTargetTime = (float) (time + (source.distanceTo(vec) / source.distanceTo(target)));
 		sendData();
@@ -526,11 +526,11 @@ public class EjectorBlockEntity extends KineticBlockEntity {
 		NBTHelper.writeEnum(compound, "State", state);
 		compound.put("Lid", lidProgress.writeNBT());
 		compound.put("LaunchedItems",
-			NBTHelper.writeCompoundList(launchedItems, ia -> ia.serializeNBT(s -> (CompoundTag) s.saveOptional(registries))));
+			NBTHelper.writeCompoundList(launchedItems, ia -> ia.serializeNBT(s -> CreateNbt.writeItemStack(registries, s))));
 
 		if (earlyTarget != null) {
 			compound.put("EarlyTarget", VecHelper.writeNBT(earlyTarget.getFirst()));
-			compound.put("EarlyTargetPos", NbtUtils.writeBlockPos(earlyTarget.getSecond()));
+			compound.put("EarlyTargetPos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(earlyTarget.getSecond()));
 			compound.putFloat("EarlyTargetTime", earlyTargetTime);
 		}
 	}
@@ -545,8 +545,8 @@ public class EjectorBlockEntity extends KineticBlockEntity {
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		int horizontalDistance = compound.getInt("HorizontalDistance");
-		int verticalDistance = compound.getInt("VerticalDistance");
+		int horizontalDistance = compound.getInt("HorizontalDistance").orElse(0);
+		int verticalDistance = compound.getInt("VerticalDistance").orElse(0);
 
 		if (launcher.getHorizontalDistance() != horizontalDistance
 			|| launcher.getVerticalDistance() != verticalDistance) {
@@ -554,22 +554,22 @@ public class EjectorBlockEntity extends KineticBlockEntity {
 			launcher.clamp(AllConfigs.server().kinetics.maxEjectorDistance.get());
 		}
 
-		powered = compound.getBoolean("Powered");
+		powered = compound.getBoolean("Powered").orElse(false);
 		state = NBTHelper.readEnum(compound, "State", State.class);
-		lidProgress.readNBT(compound.getCompound("Lid"), false);
-		launchedItems = NBTHelper.readCompoundList(compound.getList("LaunchedItems", Tag.TAG_COMPOUND),
-			nbt -> IntAttached.read(nbt, t -> ItemStack.parseOptional(registries, t)));
+		lidProgress.readNBT(compound.getCompound("Lid").orElseGet(CompoundTag::new), false);
+		launchedItems = NBTHelper.readCompoundList(compound.getListOrEmpty("LaunchedItems"),
+			nbt -> IntAttached.read(nbt, t -> CreateNbt.readItemStack(registries, t)));
 
 		earlyTarget = null;
 		earlyTargetTime = 0;
 		if (compound.contains("EarlyTarget")) {
-			earlyTarget = Pair.of(VecHelper.readNBT(compound.getList("EarlyTarget", Tag.TAG_DOUBLE)),
+			earlyTarget = Pair.of(VecHelper.readNBT(compound.getListOrEmpty("EarlyTarget")),
 					NBTHelper.readBlockPos(compound, "EarlyTargetPos"));
-			earlyTargetTime = compound.getFloat("EarlyTargetTime");
+			earlyTargetTime = compound.getFloat("EarlyTargetTime").orElse(0.0F);
 		}
 
 		if (compound.contains("ForceAngle"))
-			lidProgress.startWithValue(compound.getFloat("ForceAngle"));
+			lidProgress.startWithValue(compound.getFloat("ForceAngle").orElse(0.0F));
 	}
 
 	public void updateSignal() {

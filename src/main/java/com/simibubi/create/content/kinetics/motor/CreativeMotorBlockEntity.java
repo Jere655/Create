@@ -86,7 +86,7 @@ public class CreativeMotorBlockEntity extends GeneratingKineticBlockEntity {
 		@Override
 		public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
 			Direction facing = state.getValue(CreativeMotorBlock.FACING);
-			return super.getLocalOffset(level, pos, state).add(Vec3.atLowerCornerOf(facing.getNormal())
+			return super.getLocalOffset(level, pos, state).add(facing.getUnitVec3()
 				.scale(-1 / 16f));
 		}
 

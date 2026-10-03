@@ -52,7 +52,7 @@ import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.items.IItemHandler;
 
 public class BeltBlockEntity extends KineticBlockEntity implements Clearable {
@@ -206,7 +206,7 @@ public class BeltBlockEntity extends KineticBlockEntity implements Clearable {
 	@Override
 	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		if (controller != null)
-			compound.put("Controller", NbtUtils.writeBlockPos(controller));
+			compound.put("Controller", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(controller));
 		compound.putBoolean("IsController", isController());
 		compound.putInt("Length", beltLength);
 		compound.putInt("Index", index);
@@ -224,7 +224,7 @@ public class BeltBlockEntity extends KineticBlockEntity implements Clearable {
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
 
-		if (compound.getBoolean("IsController"))
+		if (compound.getBoolean("IsController").orElse(false))
 			controller = worldPosition;
 
 		color = compound.contains("Dye") ? Optional.of(NBTHelper.readEnum(compound, "Dye", DyeColor.class))
@@ -234,17 +234,17 @@ public class BeltBlockEntity extends KineticBlockEntity implements Clearable {
 			if (!isController())
 				controller = NBTHelper.readBlockPos(compound, "Controller");
 			trackerUpdateTag = compound;
-			index = compound.getInt("Index");
-			beltLength = compound.getInt("Length");
+			index = compound.getInt("Index").orElse(0);
+			beltLength = compound.getInt("Length").orElse(0);
 		}
 
 		if (isController())
-			getInventory().read(compound.getCompound("Inventory"), registries);
+			getInventory().read(compound.getCompound("Inventory").orElseGet(CompoundTag::new), registries);
 
 		CasingType casingBefore = casing;
 		boolean coverBefore = covered;
 		casing = NBTHelper.readEnum(compound, "Casing", CasingType.class);
-		covered = compound.getBoolean("Covered");
+		covered = compound.getBoolean("Covered").orElse(false);
 
 		if (!clientPacket)
 			return;
@@ -368,7 +368,7 @@ public class BeltBlockEntity extends KineticBlockEntity implements Clearable {
 		boolean notHorizontal = blockState.getValue(BeltBlock.SLOPE) != HORIZONTAL;
 		if (getSpeed() < 0)
 			movementFacing = movementFacing.getOpposite();
-		Vec3i movement = movementFacing.getNormal();
+		Vec3i movement = movementFacing.getUnitVec3i();
 
 		boolean slopeBeforeHalf = (part == BeltPart.END) == (beltFacing.getAxisDirection() == POSITIVE);
 		boolean onSlope = notHorizontal && (part == MIDDLE || slopeBeforeHalf == firstHalf || ignoreHalves);

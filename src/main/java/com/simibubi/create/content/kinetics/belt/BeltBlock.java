@@ -47,7 +47,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -243,9 +242,9 @@ public class BeltBlock extends HorizontalKineticBlock
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (player.isShiftKeyDown() || !player.mayBuild())
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		boolean isWrench = AllItems.WRENCH.isIn(stack);
 		boolean isConnector = AllItems.BELT_CONNECTOR.isIn(stack);
 		boolean isShaft = AllBlocks.SHAFT.isIn(stack);
@@ -258,7 +257,7 @@ public class BeltBlock extends HorizontalKineticBlock
 
 		if (isDye || hasWater)
 			return onBlockEntityUseItemOn(level, pos,
-				be -> be.applyColor(DyeColor.getColor(stack)) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+				be -> be.applyColor(DyeColor.getColor(stack)) ? InteractionResult.SUCCESS : InteractionResult.TRY_WITH_EMPTY_HAND);
 
 		if (isConnector)
 			return BeltSlicer.useConnector(state, level, pos, player, hand, hitResult, new Feedback());
@@ -267,26 +266,26 @@ public class BeltBlock extends HorizontalKineticBlock
 
 		BeltBlockEntity belt = BeltHelper.getSegmentBE(level, pos);
 		if (belt == null)
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 		if (PackageItem.isPackage(stack)) {
 			ItemStack toInsert = stack.copy();
 			IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, belt.getBlockPos(), null);
 			if (handler == null)
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			ItemStack remainder = handler.insertItem(0, toInsert, false);
 			if (remainder.isEmpty()) {
 				stack.shrink(1);
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			}
 		}
 
 		if (isHand) {
 			BeltBlockEntity controllerBelt = belt.getControllerBE();
 			if (controllerBelt == null)
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			if (level.isClientSide)
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			MutableBoolean success = new MutableBoolean(false);
 			controllerBelt.getInventory()
 				.applyToEachWithin(belt.index + .5f, .55f, (transportedItemStack) -> {
@@ -302,13 +301,13 @@ public class BeltBlock extends HorizontalKineticBlock
 
 		if (isShaft) {
 			if (state.getValue(PART) != BeltPart.MIDDLE)
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			if (level.isClientSide)
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			if (!player.isCreative())
 				stack.shrink(1);
 			KineticBlockEntity.switchToBlockState(level, pos, state.setValue(PART, BeltPart.PULLEY));
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 
 		if (AllBlocks.BRASS_CASING.isIn(stack)) {
@@ -320,7 +319,7 @@ public class BeltBlock extends HorizontalKineticBlock
 			level.playSound(null, pos, soundType.getPlaceSound(), SoundSource.BLOCKS,
 				(soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
 
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 
 		if (AllBlocks.ANDESITE_CASING.isIn(stack)) {
@@ -332,10 +331,10 @@ public class BeltBlock extends HorizontalKineticBlock
 			level.playSound(null, pos, soundType.getPlaceSound(), SoundSource.BLOCKS,
 				(soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
 
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
 	@Override

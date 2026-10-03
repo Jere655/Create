@@ -24,6 +24,7 @@ import com.simibubi.create.content.schematics.SchematicInstances;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.content.trains.track.ITrackBlock;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.item.ItemHelper;
@@ -61,8 +62,8 @@ public class DeployerMovementBehaviour implements MovementBehaviour {
 
 	@Override
 	public Vec3 getActiveAreaOffset(MovementContext context) {
-		return Vec3.atLowerCornerOf(context.state.getValue(DeployerBlock.FACING)
-			.getNormal())
+		return context.state.getValue(DeployerBlock.FACING)
+			.getUnitVec3()
 			.scale(2);
 	}
 
@@ -94,8 +95,8 @@ public class DeployerMovementBehaviour implements MovementBehaviour {
 			return;
 		}
 
-		Vec3 facingVec = Vec3.atLowerCornerOf(context.state.getValue(DeployerBlock.FACING)
-			.getNormal());
+		Vec3 facingVec = context.state.getValue(DeployerBlock.FACING)
+			.getUnitVec3();
 		facingVec = context.rotation.apply(facingVec);
 		Vec3 vec = context.position.subtract(facingVec.scale(2));
 
@@ -118,7 +119,7 @@ public class DeployerMovementBehaviour implements MovementBehaviour {
 	protected void checkForTrackPlacementAdvancement(MovementContext context, DeployerFakePlayer player) {
 		if ((context.contraption instanceof MountedContraption || context.contraption instanceof CarriageContraption)
 			&& player.placedTracks && context.blockEntityData != null && context.blockEntityData.contains("Owner"))
-			AllAdvancements.SELF_DEPLOYING.awardTo(context.world.getPlayerByUUID(context.blockEntityData.getUUID("Owner")));
+			AllAdvancements.SELF_DEPLOYING.awardTo(context.world.getPlayerByUUID(CreateNbt.readUUID(NBTHelper.getINBT(context.blockEntityData, "Owner"))));
 	}
 
 	protected void activateAsSchematicPrinter(MovementContext context, BlockPos pos, DeployerFakePlayer player,
@@ -183,7 +184,7 @@ public class DeployerMovementBehaviour implements MovementBehaviour {
 
 		Pair<BlockPos, Float> blockBreakingProgress = player.blockBreakingProgress;
 		if (blockBreakingProgress != null) {
-			int timer = context.data.getInt("Timer");
+			int timer = context.data.getInt("Timer").orElse(0);
 			if (timer < 20) {
 				timer++;
 				context.data.putInt("Timer", timer);
@@ -250,18 +251,16 @@ public class DeployerMovementBehaviour implements MovementBehaviour {
 		Inventory inv = player.getInventory();
 		FilterItemStack filter = context.getFilterFromBE();
 
-		for (List<ItemStack> list : Arrays.asList(inv.armor, inv.offhand, inv.items)) {
-			for (int i = 0; i < list.size(); ++i) {
-				ItemStack itemstack = list.get(i);
-				if (itemstack.isEmpty())
-					continue;
+		for (int i = 0; i < inv.getContainerSize(); ++i) {
+			ItemStack itemstack = inv.getItem(i);
+			if (itemstack.isEmpty())
+				continue;
 
-				if (list == inv.items && i == inv.selected && filter.test(context.world, itemstack))
-					continue;
+			if (i == inv.getSelectedSlot() && filter.test(context.world, itemstack))
+				continue;
 
-				collectOrDropItem(context, itemstack);
-				list.set(i, ItemStack.EMPTY);
-			}
+			collectOrDropItem(context, itemstack);
+			inv.setItem(i, ItemStack.EMPTY);
 		}
 	}
 
@@ -270,19 +269,19 @@ public class DeployerMovementBehaviour implements MovementBehaviour {
 		DeployerFakePlayer player = getPlayer(context);
 		if (player == null)
 			return;
-		context.data.put("HeldItem", player.getMainHandItem().saveOptional(context.world.registryAccess()));
+		context.data.put("HeldItem", CreateNbt.writeItemStack(context.world.registryAccess(), player.getMainHandItem()));
 	}
 
 	private DeployerFakePlayer getPlayer(MovementContext context) {
 		if (!(context.temporaryData instanceof DeployerFakePlayer) && context.world instanceof ServerLevel) {
-			UUID owner = context.blockEntityData.contains("Owner") ? context.blockEntityData.getUUID("Owner") : null;
+			UUID owner = context.blockEntityData.contains("Owner") ? CreateNbt.readUUID(NBTHelper.getINBT(context.blockEntityData, "Owner")) : null;
 			DeployerFakePlayer deployerFakePlayer = new DeployerFakePlayer((ServerLevel) context.world, owner);
 			deployerFakePlayer.onMinecartContraption = context.contraption instanceof MountedContraption;
 			deployerFakePlayer.getInventory()
-				.load(context.blockEntityData.getList("Inventory", Tag.TAG_COMPOUND));
+				.load(context.blockEntityData.getListOrEmpty("Inventory"));
 			if (context.data.contains("HeldItem"))
 				deployerFakePlayer.setItemInHand(InteractionHand.MAIN_HAND,
-					ItemStack.parseOptional(context.world.registryAccess(), context.data.getCompound("HeldItem")));
+					CreateNbt.readItemStack(context.world.registryAccess(), context.data.getCompound("HeldItem").orElseGet(CompoundTag::new)));
 			context.blockEntityData.remove("Inventory");
 			context.temporaryData = deployerFakePlayer;
 		}

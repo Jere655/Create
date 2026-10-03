@@ -91,7 +91,7 @@ public class SignalBlockEntity extends SmartBlockEntity implements Transformable
 		super.read(tag, registries, clientPacket);
 		state = NBTHelper.readEnum(tag, "State", SignalState.class);
 		overlay = NBTHelper.readEnum(tag, "Overlay", OverlayState.class);
-		lastReportedPower = tag.getBoolean("Power");
+		lastReportedPower = tag.getBoolean("Power").orElse(false);
 		invalidateRenderBoundingBox();
 	}
 

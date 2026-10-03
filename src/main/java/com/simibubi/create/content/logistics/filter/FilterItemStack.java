@@ -7,6 +7,7 @@ import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.fluids.transfer.GenericItemEmptying;
 import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.HolderLookup;
@@ -33,7 +34,7 @@ public class FilterItemStack {
 	}
 
 	public static FilterItemStack of(HolderLookup.Provider registries, CompoundTag tag) {
-		return of(ItemStack.parseOptional(registries, tag));
+		return of(CreateNbt.readItemStack(registries, tag));
 	}
 
 	public static FilterItemStack empty() {
@@ -50,7 +51,7 @@ public class FilterItemStack {
 	}
 
 	public CompoundTag serializeNBT(HolderLookup.Provider registries) {
-		return (CompoundTag) filterItemStack.saveOptional(registries);
+		return CreateNbt.writeItemStack(registries, filterItemStack);
 	}
 
 	public ItemStack item() {

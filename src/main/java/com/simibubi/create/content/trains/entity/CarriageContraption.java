@@ -196,7 +196,7 @@ public class CarriageContraption extends Contraption {
 		tag.putBoolean("BackBlazeConductor", blockConductors.getSecond());
 		ListTag list = NBTHelper.writeCompoundList(conductorSeats.entrySet(), e -> {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
+			compoundTag.put("Pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(e.getKey()));
 			compoundTag.putBoolean("Forward", e.getValue()
 				.getFirst());
 			compoundTag.putBoolean("Backward", e.getValue()
@@ -211,14 +211,14 @@ public class CarriageContraption extends Contraption {
 	@Override
 	public void readNBT(Level world, CompoundTag nbt, boolean spawnData) {
 		assemblyDirection = NBTHelper.readEnum(nbt, "AssemblyDirection", Direction.class);
-		forwardControls = nbt.getBoolean("FrontControls");
-		backwardControls = nbt.getBoolean("BackControls");
+		forwardControls = nbt.getBoolean("FrontControls").orElse(false);
+		backwardControls = nbt.getBoolean("BackControls").orElse(false);
 		blockConductors =
-			Couple.create(nbt.getBoolean("FrontBlazeConductor"), nbt.getBoolean("BackBlazeConductor"));
+			Couple.create(nbt.getBoolean("FrontBlazeConductor").orElse(false), nbt.getBoolean("BackBlazeConductor").orElse(false));
 		conductorSeats.clear();
-		NBTHelper.iterateCompoundList(nbt.getList("ConductorSeats", Tag.TAG_COMPOUND),
+		NBTHelper.iterateCompoundList(nbt.getListOrEmpty("ConductorSeats"),
 			c -> conductorSeats.put(NBTHelper.readBlockPos(c, "Pos"),
-				Couple.create(c.getBoolean("Forward"), c.getBoolean("Backward"))));
+				Couple.create(c.getBoolean("Forward").orElse(false), c.getBoolean("Backward").orElse(false))));
 		soundQueue.deserialize(nbt);
 		super.readNBT(world, nbt, spawnData);
 	}

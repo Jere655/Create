@@ -40,7 +40,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -166,26 +166,26 @@ public abstract class AbstractBogeyBlock<T extends AbstractBogeyBlockEntity> ext
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (level.isClientSide)
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
-		if (!player.isShiftKeyDown() && stack.is(AllItems.WRENCH.get()) && !player.getCooldowns().isOnCooldown(stack.getItem())
+		if (!player.isShiftKeyDown() && stack.is(AllItems.WRENCH.get()) && !player.getCooldowns().isOnCooldown(stack)
 				&& AllBogeyStyles.BOGEY_STYLES.size() > 1) {
 
 			BlockEntity be = level.getBlockEntity(pos);
 
 			if (!(be instanceof AbstractBogeyBlockEntity sbbe))
-				return ItemInteractionResult.FAIL;
+				return InteractionResult.FAIL;
 
-			player.getCooldowns().addCooldown(stack.getItem(), 20);
+			player.getCooldowns().addCooldown(stack, 20);
 			BogeyStyle currentStyle = sbbe.getStyle();
 
 			BogeySizes.BogeySize size = getSize();
 
 			BogeyStyle style = this.getNextStyle(currentStyle);
 			if (style == currentStyle)
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 			Set<BogeySizes.BogeySize> validSizes = style.validSizes();
 
@@ -204,7 +204,7 @@ public abstract class AbstractBogeyBlock<T extends AbstractBogeyBlockEntity> ext
 					CompoundTag oldData = sbbe.getBogeyData();
 					level.setBlock(pos, copyProperties(state, getStateOfSize(sbbe, size)), Block.UPDATE_ALL);
 					if (!(level.getBlockEntity(pos) instanceof AbstractBogeyBlockEntity bogeyBlockEntity))
-						return ItemInteractionResult.FAIL;
+						return InteractionResult.FAIL;
 					bogeyBlockEntity.setBogeyData(oldData);
 				}
 				player.displayClientMessage(CreateLang.translateDirect("bogey.style.updated_style")
@@ -213,22 +213,22 @@ public abstract class AbstractBogeyBlock<T extends AbstractBogeyBlockEntity> ext
 				CompoundTag oldData = sbbe.getBogeyData();
 				level.setBlock(pos, this.getStateOfSize(sbbe, size), Block.UPDATE_ALL);
 				if (!(level.getBlockEntity(pos) instanceof AbstractBogeyBlockEntity bogeyBlockEntity))
-					return ItemInteractionResult.FAIL;
+					return InteractionResult.FAIL;
 				bogeyBlockEntity.setBogeyData(oldData);
 				player.displayClientMessage(CreateLang.translateDirect("bogey.style.updated_style_and_size")
 						.append(": ").append(style.displayName), true);
 			}
 
-			return ItemInteractionResult.CONSUME;
+			return InteractionResult.CONSUME;
 		}
 
 		return onInteractWithBogey(state, level, pos, player, hand, hitResult);
 	}
 
 	// Allows for custom interactions with bogey block to be added simply
-	protected ItemInteractionResult onInteractWithBogey(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+	protected InteractionResult onInteractWithBogey(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
 													BlockHitResult hit) {
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
 	/**

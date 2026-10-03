@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 public class CopycatStepModel extends CopycatModel {
 
@@ -45,7 +45,7 @@ public class CopycatStepModel extends CopycatModel {
 
 		List<BakedQuad> quads = new ArrayList<>();
 
-		Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
+		Vec3 normal = facing.getUnitVec3();
 		Vec3 normalScaled2 = normal.scale(.5);
 		Vec3 normalScaledN3 = normal.scale(-.75);
 		AABB bb = CUBE_AABB.contract(-normal.x * .75, .75, -normal.z * .75);

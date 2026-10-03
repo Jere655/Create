@@ -21,7 +21,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -38,10 +38,10 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber
-public class CardboardSwordItem extends SwordItem {
+public class CardboardSwordItem extends Item {
 
 	public CardboardSwordItem(Properties pProperties) {
-		super(AllToolMaterials.CARDBOARD, pProperties);
+		super(AllToolMaterials.CARDBOARD.applySwordProperties(pProperties, 3, 1));
 	}
 
 	@Override

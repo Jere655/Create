@@ -151,11 +151,11 @@ public class ElevatorPulleyBlockEntity extends PulleyBlockEntity {
 		if (!clientPacket)
 			return;
 
-		clientOffsetTarget = compound.getInt("ClientTarget");
+		clientOffsetTarget = compound.getInt("ClientTarget").orElse(0);
 		if (initialOffsetReceived)
 			return;
 
-		offset = compound.getFloat("Offset");
+		offset = compound.getFloat("Offset").orElse(0.0F);
 		initialOffsetReceived = true;
 		resetContraptionToOffset();
 	}

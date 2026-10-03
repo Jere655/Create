@@ -33,6 +33,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -166,7 +167,7 @@ public class CreateGameTestHelper extends GameTestHelper {
 	 * Get the block entity of the expected type. If the type does not match, this fails the test.
 	 */
 	public <T extends BlockEntity> T getBlockEntity(BlockEntityType<T> type, BlockPos pos) {
-		BlockEntity be = getBlockEntity(pos);
+		BlockEntity be = getBlockEntity(pos, BlockEntity.class);
 		BlockEntityType<?> actualType = be == null ? null : be.getType();
 		if (actualType != type) {
 			String actualId = actualType == null ? "null" : RegisteredObjectsHelper.getKeyOrThrow(actualType).toString();
@@ -247,7 +248,7 @@ public class CreateGameTestHelper extends GameTestHelper {
 	// transfer - fluids
 
 	public IFluidHandler fluidStorageAt(BlockPos pos) {
-		BlockEntity be = getBlockEntity(pos);
+		BlockEntity be = getBlockEntity(pos, BlockEntity.class);
 		if (be == null)
 			fail("BlockEntity not present");
 		IFluidHandler handler = be.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, be.getBlockPos(), null);
@@ -315,7 +316,7 @@ public class CreateGameTestHelper extends GameTestHelper {
 	// transfer - items
 
 	public IItemHandler itemStorageAt(BlockPos pos) {
-		BlockEntity be = getBlockEntity(pos);
+		BlockEntity be = getBlockEntity(pos, BlockEntity.class);
 		if (be == null)
 			fail("BlockEntity not present");
 		IItemHandler handler = be.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, be.getBlockPos(), null);
@@ -478,8 +479,7 @@ public class CreateGameTestHelper extends GameTestHelper {
 	// misc
 
 	@Contract("_->fail") // make IDEA happier
-	@Override
 	public void fail(@NotNull String exceptionMessage) {
-		super.fail(exceptionMessage);
+		super.fail(Component.literal(exceptionMessage));
 	}
 }

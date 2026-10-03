@@ -63,7 +63,7 @@ public class AirCurrent {
 		if (world != null && world.isClientSide) {
 			float offset = pushing ? 0.5f : maxDistance + .5f;
 			Vec3 pos = VecHelper.getCenterOf(source.getAirCurrentPos())
-				.add(Vec3.atLowerCornerOf(direction.getNormal())
+				.add(direction.getUnitVec3()
 					.scale(offset));
 			if (world.random.nextFloat() < AllConfigs.client().fanParticleDensity.get())
 				world.addParticle(new AirFlowParticleData(source.getAirCurrentPos()), pos.x, pos.y, pos.z, 0, 0, 0);
@@ -82,7 +82,7 @@ public class AirCurrent {
 				continue;
 			}
 
-			Vec3i flow = (pushing ? direction : direction.getOpposite()).getNormal();
+			Vec3i flow = (pushing ? direction : direction.getOpposite()).getUnitVec3i();
 			float speed = Math.abs(source.getSpeed());
 			float sneakModifier = entity.isShiftKeyDown() ? 4096f : 512f;
 			double entityDistance = VecHelper.alignedDistanceToFace(entity.position(), source.getAirCurrentPos(), direction);
@@ -172,7 +172,7 @@ public class AirCurrent {
 		BlockPos start = source.getAirCurrentPos();
 		float max = this.maxDistance;
 		Direction facing = direction;
-		Vec3 directionVec = Vec3.atLowerCornerOf(facing.getNormal());
+		Vec3 directionVec = facing.getUnitVec3();
 		maxDistance = getFlowLimit(world, start, max, facing);
 
 		// Determine segments with transported fluids/gases

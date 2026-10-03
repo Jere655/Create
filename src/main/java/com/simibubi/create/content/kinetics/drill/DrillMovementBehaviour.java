@@ -33,8 +33,8 @@ public class DrillMovementBehaviour extends BlockBreakingMovementBehaviour {
 
 	@Override
 	public Vec3 getActiveAreaOffset(MovementContext context) {
-		return Vec3.atLowerCornerOf(context.state.getValue(DrillBlock.FACING)
-			.getNormal()).scale(.65f);
+		return context.state.getValue(DrillBlock.FACING)
+			.getUnitVec3().scale(.65f);
 	}
 
 	@Override

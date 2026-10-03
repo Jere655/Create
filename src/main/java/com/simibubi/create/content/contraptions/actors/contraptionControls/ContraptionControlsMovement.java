@@ -6,6 +6,7 @@ import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import net.createmod.catnip.animation.LerpedFloat;
@@ -51,11 +52,11 @@ public class ContraptionControlsMovement implements MovementBehaviour {
 		CompoundTag blockEntityData = ctx.blockEntityData;
 		if (blockEntityData == null)
 			return null;
-		return ItemStack.parseOptional(ctx.world.registryAccess(), blockEntityData.getCompound("Filter"));
+		return CreateNbt.readItemStack(ctx.world.registryAccess(), blockEntityData.getCompound("Filter").orElseGet(CompoundTag::new));
 	}
 
 	public static boolean isDisabledInitially(MovementContext ctx) {
-		return ctx.blockEntityData != null && ctx.blockEntityData.getBoolean("Disabled");
+		return ctx.blockEntityData != null && ctx.blockEntityData.getBoolean("Disabled").orElse(false);
 	}
 
 	@Override

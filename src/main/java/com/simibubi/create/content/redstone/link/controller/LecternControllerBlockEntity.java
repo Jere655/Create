@@ -51,7 +51,7 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 		super.write(compound, registries, clientPacket);
 		compound.put("ControllerData", CatnipCodecUtils.encode(ItemContainerContents.CODEC, registries, controllerData).orElseThrow());
 		if (user != null)
-			compound.putUUID("User", user);
+			compound.put("User", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(user));
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 
 		controllerData = CatnipCodecUtils.decode(ItemContainerContents.CODEC, registries, compound.get("ControllerData"))
 			.orElse(ItemContainerContents.EMPTY);
-		user = compound.hasUUID("User") ? compound.getUUID("User") : null;
+		user = compound.contains("User") ? com.simibubi.create.foundation.utility.CreateNbt.readUUID(net.createmod.catnip.nbt.NBTHelper.getINBT(compound, "User")) : null;
 	}
 
 	public ItemStack getController() {

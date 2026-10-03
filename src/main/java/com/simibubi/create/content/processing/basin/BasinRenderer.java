@@ -108,7 +108,7 @@ public class BasinRenderer extends SmartBlockEntityRenderer<BasinBlockEntity> {
 		Direction direction = blockState.getValue(BasinBlock.FACING);
 		if (direction == Direction.DOWN)
 			return;
-		Vec3 directionVec = Vec3.atLowerCornerOf(direction.getNormal());
+		Vec3 directionVec = direction.getUnitVec3();
 		Vec3 outVec = VecHelper.getCenterOf(BlockPos.ZERO)
 			.add(directionVec.scale(.55)
 				.subtract(0, 1 / 2f, 0));

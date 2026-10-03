@@ -22,7 +22,7 @@ public class DeployerFilterSlot extends ValueBoxTransform.Sided {
 
 		vec = VecHelper.rotateCentered(vec, AngleHelper.horizontalAngle(getSide()), Axis.Y);
 		vec = VecHelper.rotateCentered(vec, AngleHelper.verticalAngle(getSide()), Axis.X);
-		vec = vec.subtract(Vec3.atLowerCornerOf(facing.getNormal())
+		vec = vec.subtract(facing.getUnitVec3()
 			.scale(2 / 16f));
 
 		return vec;

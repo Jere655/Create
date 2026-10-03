@@ -89,9 +89,9 @@ public class ModularGuiLine {
 			AbstractWidget w = pair.getFirst();
 			String key = pair.getSecond();
 			if (w instanceof EditBox eb)
-				eb.setValue(data.getString(key));
+				eb.setValue(data.getStringOr(key, ""));
 			if (w instanceof ScrollInput si)
-				si.setState(data.getInt(key));
+				si.setState(data.getIntOr(key, 0));
 
 			if (w instanceof TooltipArea)
 				addRenderableOnly.accept((T) w);

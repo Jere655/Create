@@ -63,7 +63,7 @@ public class ItemDrainRenderer extends SmartBlockEntityRenderer<ItemDrainBlockEn
 		float sideOffset = Mth.lerp(partialTicks, transported.prevSideOffset, transported.sideOffset);
 
 		Vec3 offsetVec = Vec3.atLowerCornerOf(insertedFrom.getOpposite()
-			.getNormal())
+			.getUnitVec3())
 			.scale(.5f - offset);
 		ms.translate(offsetVec.x, offsetVec.y, offsetVec.z);
 		boolean alongX = insertedFrom.getClockWise()

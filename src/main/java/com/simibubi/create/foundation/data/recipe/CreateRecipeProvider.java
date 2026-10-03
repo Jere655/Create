@@ -14,12 +14,9 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 
 import net.neoforged.neoforge.common.Tags;
@@ -31,18 +28,13 @@ import net.neoforged.neoforge.fluids.FluidType;
  *
  * @see com.simibubi.create.infrastructure.data.CreateDatagen
  */
-public final class CreateRecipeProvider extends RecipeProvider {
+public final class CreateRecipeProvider {
 
 	static final List<ProcessingRecipeGen<?, ?, ?>> GENERATORS = new ArrayList<>();
 	static final int BUCKET = FluidType.BUCKET_VOLUME;
 	static final int BOTTLE = 250;
 
-	public CreateRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-		super(output, registries);
-	}
-
-	@Override
-	protected void buildRecipes(RecipeOutput recipeOutput) {
+	private CreateRecipeProvider() {
 	}
 
 	public static void registerAllProcessing(DataGenerator gen, PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
@@ -224,10 +216,6 @@ public final class CreateRecipeProvider extends RecipeProvider {
 
 		static ItemLike shadowSteel() {
 			return AllItems.SHADOW_STEEL.get();
-		}
-
-		static Ingredient netherite() {
-			return Ingredient.of(Tags.Items.INGOTS_NETHERITE);
 		}
 
 	}

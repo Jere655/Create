@@ -52,7 +52,7 @@ public abstract class CargoThresholdCondition extends LazyTickedScheduleConditio
 
 	@Override
 	public boolean lazyTickCompletion(Level level, Train train, CompoundTag context) {
-		int lastChecked = context.contains("LastChecked") ? context.getInt("LastChecked") : -1;
+		int lastChecked = context.getIntOr("LastChecked", -1);
 		int status = 0;
 		for (Carriage carriage : train.carriages)
 			status += carriage.storage.getVersion();
@@ -70,7 +70,7 @@ public abstract class CargoThresholdCondition extends LazyTickedScheduleConditio
 	protected int getLastDisplaySnapshot(CompoundTag context) {
 		if (!context.contains("CurrentDisplay"))
 			return -1;
-		return context.getInt("CurrentDisplay");
+		return context.getIntOr("CurrentDisplay", -1);
 	}
 
 	protected abstract boolean test(Level level, Train train, CompoundTag context);

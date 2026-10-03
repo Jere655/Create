@@ -27,7 +27,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -63,9 +62,9 @@ public class SymmetryWandItem extends Item {
 		BlockPos pos = context.getClickedPos();
 		if (player == null)
 			return InteractionResult.PASS;
-		player.getCooldowns()
-			.addCooldown(this, 5);
 		ItemStack wand = player.getItemInHand(context.getHand());
+		player.getCooldowns()
+			.addCooldown(wand, 5);
 		checkComponents(wand);
 
 		// Shift -> open GUI
@@ -75,7 +74,7 @@ public class SymmetryWandItem extends Item {
 					openWandGUI(wand, context.getHand());
 				});
 				player.getCooldowns()
-					.addCooldown(this, 5);
+					.addCooldown(wand, 5);
 			}
 			return InteractionResult.SUCCESS;
 		}
@@ -126,7 +125,7 @@ public class SymmetryWandItem extends Item {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+	public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
 		ItemStack wand = playerIn.getItemInHand(handIn);
 		checkComponents(wand);
 
@@ -137,14 +136,14 @@ public class SymmetryWandItem extends Item {
 					openWandGUI(playerIn.getItemInHand(handIn), handIn);
 				});
 				playerIn.getCooldowns()
-					.addCooldown(this, 5);
+					.addCooldown(wand, 5);
 			}
-			return new InteractionResultHolder<>(InteractionResult.SUCCESS, wand);
+			return InteractionResult.SUCCESS;
 		}
 
 		// No Shift -> Clear Mirror
 		wand.set(AllDataComponents.SYMMETRY_WAND_ENABLE, false);
-		return new InteractionResultHolder<>(InteractionResult.SUCCESS, wand);
+		return InteractionResult.SUCCESS;
 	}
 
 	@OnlyIn(Dist.CLIENT)

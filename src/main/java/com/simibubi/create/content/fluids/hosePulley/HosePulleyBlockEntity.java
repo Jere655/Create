@@ -167,12 +167,12 @@ public class HosePulleyBlockEntity extends KineticBlockEntity {
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		offset.readNBT(compound.getCompound("Offset"), clientPacket);
+		offset.readNBT(compound.getCompound("Offset").orElseGet(CompoundTag::new), clientPacket);
 
-		internalTank.readFromNBT(registries, compound.getCompound("Tank"));
+		internalTank.readFromNBT(registries, compound.getCompound("Tank").orElseGet(CompoundTag::new));
 		super.read(compound, registries, clientPacket);
 		if (clientPacket)
-			infinite = compound.getBoolean("Infinite");
+			infinite = compound.getBoolean("Infinite").orElse(false);
 	}
 
 	@Override

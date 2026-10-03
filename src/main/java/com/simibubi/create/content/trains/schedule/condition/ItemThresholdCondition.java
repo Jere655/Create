@@ -73,7 +73,7 @@ public class ItemThresholdCondition extends CargoThresholdCondition {
 	protected void readAdditional(HolderLookup.Provider registries, CompoundTag tag) {
 		super.readAdditional(registries, tag);
 		if (tag.contains("Item"))
-			stack = FilterItemStack.of(registries, tag.getCompound("Item"));
+			stack = FilterItemStack.of(registries, tag.getCompoundOrEmpty("Item"));
 	}
 
 	@Override

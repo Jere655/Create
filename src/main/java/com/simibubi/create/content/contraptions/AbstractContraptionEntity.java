@@ -52,6 +52,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -66,6 +67,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.material.PushReaction;
@@ -190,14 +193,14 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		if (!data.contains("ContraptionDismountLocation"))
 			return position;
 
-		position = VecHelper.readNBT(data.getList("ContraptionDismountLocation", Tag.TAG_DOUBLE));
+		position = VecHelper.readNBT(data.getListOrEmpty("ContraptionDismountLocation"));
 		data.remove("ContraptionDismountLocation");
 		entityLiving.setOnGround(false);
 
 		if (!data.contains("ContraptionMountLocation"))
 			return position;
 
-		Vec3 prevPosition = VecHelper.readNBT(data.getList("ContraptionMountLocation", Tag.TAG_DOUBLE));
+		Vec3 prevPosition = VecHelper.readNBT(data.getListOrEmpty("ContraptionMountLocation"));
 		data.remove("ContraptionMountLocation");
 		if (entityLiving instanceof Player player && !prevPosition.closerThan(position, 5000))
 			AllAdvancements.LONG_TRAVEL.awardTo(player);
@@ -609,8 +612,15 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	@Override
-	protected final void addAdditionalSaveData(CompoundTag compound) {
-		writeAdditional(compound, registryAccess(), false);
+	protected final void addAdditionalSaveData(ValueOutput output) {
+		writePersistentData(output);
+	}
+
+	protected void writePersistentData(ValueOutput output) {
+		if (contraption != null)
+			output.store("Contraption", CompoundTag.CODEC, contraption.writeNBT(registryAccess(), false));
+		output.putBoolean("Stalled", isStalled());
+		output.putBoolean("Initialized", initialized);
 	}
 
 	protected void writeAdditional(CompoundTag compound, HolderLookup.Provider registries, boolean spawnPacket) {
@@ -629,8 +639,15 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	@Override
-	protected final void readAdditionalSaveData(CompoundTag compound) {
-		readAdditional(compound, false);
+	protected final void readAdditionalSaveData(ValueInput input) {
+		readPersistentData(input);
+	}
+
+	protected void readPersistentData(ValueInput input) {
+		initialized = input.getBooleanOr("Initialized", false);
+		contraption = Contraption.fromNBT(level(), input.read("Contraption", CompoundTag.CODEC).orElseGet(CompoundTag::new), false);
+		contraption.entity = this;
+		entityData.set(STALLED, input.getBooleanOr("Stalled", false));
 	}
 
 	@Nullable
@@ -647,10 +664,10 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		if (compound.isEmpty())
 			return;
 
-		initialized = compound.getBoolean("Initialized");
-		contraption = Contraption.fromNBT(level(), compound.getCompound("Contraption"), spawnData);
+		initialized = compound.getBoolean("Initialized").orElse(false);
+		contraption = Contraption.fromNBT(level(), compound.getCompound("Contraption").orElseGet(CompoundTag::new), spawnData);
 		contraption.entity = this;
-		entityData.set(STALLED, compound.getBoolean("Stalled"));
+		entityData.set(STALLED, compound.getBoolean("Stalled").orElse(false));
 	}
 
 	public void disassemble() {
@@ -708,9 +725,9 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	protected abstract StructureTransform makeStructureTransform();
 
 	@Override
-	public void kill() {
+	public void kill(ServerLevel level) {
 		ejectPassengers();
-		super.kill();
+		super.kill(level);
 	}
 
 	@Override
@@ -770,7 +787,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	@Override
-	public CompoundTag saveWithoutId(CompoundTag nbt) {
+	public void saveWithoutId(ValueOutput output) {
 		Vec3 vec = position();
 		List<Entity> passengers = getPassengers();
 
@@ -787,8 +804,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 			entity.removalReason = null;
 		}
 
-		CompoundTag tag = super.saveWithoutId(nbt);
-		return tag;
+		super.saveWithoutId(output);
 	}
 
 	@Override
@@ -811,7 +827,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	protected boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		return false;
 	}
 

@@ -82,7 +82,7 @@ public class PoweredShaftBlockEntity extends GeneratingKineticBlockEntity {
 		if (initialTicks > 0)
 			compound.putInt("Warmup", initialTicks);
 		if (enginePos != null && capacityKey != null) {
-			compound.put("EnginePos", NbtUtils.writeBlockPos(enginePos));
+			compound.put("EnginePos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(enginePos));
 			compound.putFloat("EnginePower", engineEfficiency);
 			compound.putString("EngineType", RegisteredObjectsHelper.getKeyOrThrow(capacityKey)
 				.toString());
@@ -93,15 +93,15 @@ public class PoweredShaftBlockEntity extends GeneratingKineticBlockEntity {
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		movementDirection = compound.getInt("Direction");
-		initialTicks = compound.getInt("Warmup");
+		movementDirection = compound.getInt("Direction").orElse(0);
+		initialTicks = compound.getInt("Warmup").orElse(0);
 		enginePos = null;
 		engineEfficiency = 0;
 
 		if (compound.contains("EnginePos")) {
 			enginePos = NBTHelper.readBlockPos(compound, "EnginePos");
-			engineEfficiency = compound.getFloat("EnginePower");
-			capacityKey = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(compound.getString("EngineType")));
+			engineEfficiency = compound.getFloat("EnginePower").orElse(0.0F);
+			capacityKey = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(compound.getString("EngineType").orElse("")));
 		}
 	}
 

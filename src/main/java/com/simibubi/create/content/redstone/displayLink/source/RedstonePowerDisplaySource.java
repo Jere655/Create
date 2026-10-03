@@ -42,7 +42,7 @@ public class RedstonePowerDisplaySource extends PercentOrProgressBarDisplaySourc
 	@Override
 	protected boolean progressBarActive(DisplayLinkContext context) {
 		return context.sourceConfig()
-			.getInt("Mode") != 0;
+			.getInt("Mode").orElse(0) != 0;
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import com.simibubi.create.foundation.data.recipe.CreateRecipeProvider.I;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.Tags.Items;
@@ -26,8 +25,8 @@ public final class CreateMechanicalCraftingRecipeGen extends MechanicalCraftingR
 	GeneratedRecipe
 
 	CRUSHING_WHEEL = create(AllBlocks.CRUSHING_WHEEL::get).returns(2)
-		.recipe(b -> b.key('P', Ingredient.of(ItemTags.PLANKS))
-			.key('S', Ingredient.of(I.stone()))
+		.recipe(b -> b.key('P', ItemTags.PLANKS)
+			.key('S', I.stone())
 			.key('A', I.andesiteAlloy())
 			.patternLine(" AAA ")
 			.patternLine("AAPAA")
@@ -37,11 +36,11 @@ public final class CreateMechanicalCraftingRecipeGen extends MechanicalCraftingR
 			.disallowMirrored()),
 
 	WAND_OF_SYMMETRY =
-		create(AllItems.WAND_OF_SYMMETRY::get).recipe(b -> b.key('E', Ingredient.of(Tags.Items.ENDER_PEARLS))
-			.key('G', Ingredient.of(Items.GLASS_BLOCKS))
+		create(AllItems.WAND_OF_SYMMETRY::get).recipe(b -> b.key('E', Tags.Items.ENDER_PEARLS)
+			.key('G', Items.GLASS_BLOCKS)
 			.key('P', I.precisionMechanism())
-			.key('O', Ingredient.of(Items.OBSIDIANS))
-			.key('B', Ingredient.of(I.brass()))
+			.key('O', Items.OBSIDIANS)
+			.key('B', I.brass())
 			.patternLine(" G ")
 			.patternLine("GEG")
 			.patternLine(" P ")
@@ -49,10 +48,10 @@ public final class CreateMechanicalCraftingRecipeGen extends MechanicalCraftingR
 			.patternLine(" O ")),
 
 	EXTENDO_GRIP = create(AllItems.EXTENDO_GRIP::get).returns(1)
-		.recipe(b -> b.key('L', Ingredient.of(I.brass()))
+		.recipe(b -> b.key('L', I.brass())
 			.key('R', I.precisionMechanism())
 			.key('H', AllItems.BRASS_HAND.get())
-			.key('S', Ingredient.of(Tags.Items.RODS_WOODEN))
+			.key('S', Tags.Items.RODS_WOODEN)
 			.patternLine(" L ")
 			.patternLine(" R ")
 			.patternLine("SSS")
@@ -64,7 +63,7 @@ public final class CreateMechanicalCraftingRecipeGen extends MechanicalCraftingR
 		.recipe(b -> b.key('L', I.andesiteAlloy())
 			.key('R', I.precisionMechanism())
 			.key('S', AllBlocks.FLUID_PIPE.get())
-			.key('C', Ingredient.of(I.copper()))
+			.key('C', I.copper())
 			.patternLine("LRSSS")
 			.patternLine("CC   "))
 

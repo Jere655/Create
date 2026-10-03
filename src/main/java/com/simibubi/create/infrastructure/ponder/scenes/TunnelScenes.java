@@ -338,7 +338,7 @@ public class TunnelScenes {
 
 	protected static Vec3 getTunnelFilterVec(BlockPos pos, Direction d) {
 		return VecHelper.getCenterOf(pos)
-			.add(Vec3.atLowerCornerOf(d.getNormal())
+			.add(d.getUnitVec3()
 				.scale(.5))
 			.add(0, 0.3, 0);
 	}

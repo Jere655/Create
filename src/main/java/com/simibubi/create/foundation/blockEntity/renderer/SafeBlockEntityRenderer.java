@@ -22,7 +22,7 @@ import net.minecraft.world.phys.Vec3;
 public abstract class SafeBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
 	@Override
 	public final void render(T be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light,
-		int overlay) {
+		int overlay, Vec3 cameraPos) {
 		if (isInvalid(be))
 			return;
 		renderSafe(be, partialTicks, ms, bufferSource, light, overlay);

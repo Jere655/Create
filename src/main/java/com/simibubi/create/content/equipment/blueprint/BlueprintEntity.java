@@ -29,6 +29,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -52,6 +53,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DiodeBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -102,25 +105,25 @@ public class BlueprintEntity extends HangingEntity
 	protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
 	@Override
-	public void addAdditionalSaveData(CompoundTag p_213281_1_) {
-		p_213281_1_.putByte("Facing", (byte) this.direction.get3DDataValue());
-		p_213281_1_.putByte("Orientation", (byte) this.verticalOrientation.get3DDataValue());
-		p_213281_1_.putInt("Size", size);
-		super.addAdditionalSaveData(p_213281_1_);
+	public void addAdditionalSaveData(ValueOutput output) {
+		output.putByte("Facing", (byte) this.direction.get3DDataValue());
+		output.putByte("Orientation", (byte) this.verticalOrientation.get3DDataValue());
+		output.putInt("Size", size);
+		super.addAdditionalSaveData(output);
 	}
 
 	@Override
-	public void readAdditionalSaveData(CompoundTag p_70037_1_) {
-		if (p_70037_1_.contains("Facing", Tag.TAG_ANY_NUMERIC)) {
-			this.direction = Direction.from3DDataValue(p_70037_1_.getByte("Facing"));
-			this.verticalOrientation = Direction.from3DDataValue(p_70037_1_.getByte("Orientation"));
-			this.size = p_70037_1_.getInt("Size");
+	public void readAdditionalSaveData(ValueInput input) {
+		if (input.getByteOr("Facing", (byte) -1) != -1) {
+			this.direction = Direction.from3DDataValue(input.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
+			this.verticalOrientation = Direction.from3DDataValue(input.getByteOr("Orientation", (byte) Direction.DOWN.get3DDataValue()));
+			this.size = input.getIntOr("Size", 1);
 		} else {
 			this.direction = Direction.SOUTH;
 			this.verticalOrientation = Direction.DOWN;
 			this.size = 1;
 		}
-		super.readAdditionalSaveData(p_70037_1_);
+		super.readAdditionalSaveData(input);
 		this.updateFacingWithBoundingBox(this.direction, this.verticalOrientation);
 	}
 
@@ -153,7 +156,7 @@ public class BlueprintEntity extends HangingEntity
 	protected AABB calculateBoundingBox(BlockPos blockPos, Direction direction) {
 		Vec3 pos = Vec3.atLowerCornerOf(getPos())
 				.add(.5, .5, .5)
-				.subtract(Vec3.atLowerCornerOf(direction.getNormal())
+				.subtract(direction.getUnitVec3()
 						.scale(0.46875));
 		double d1 = pos.x;
 		double d2 = pos.y;
@@ -162,16 +165,14 @@ public class BlueprintEntity extends HangingEntity
 
 		Axis axis = direction.getAxis();
 		if (size == 2)
-			pos = pos.add(Vec3.atLowerCornerOf(axis.isHorizontal() ? direction.getCounterClockWise()
-									.getNormal()
-									: verticalOrientation.getClockWise()
-									.getNormal())
+			pos = pos.add((axis.isHorizontal() ? direction.getCounterClockWise()
+									: verticalOrientation.getClockWise())
+									.getUnitVec3()
 							.scale(0.5))
-					.add(Vec3
-							.atLowerCornerOf(axis.isHorizontal() ? Direction.UP.getNormal()
-									: direction == Direction.UP ? verticalOrientation.getNormal()
-									: verticalOrientation.getOpposite()
-									.getNormal())
+					.add((axis.isHorizontal() ? Direction.UP
+									: direction == Direction.UP ? verticalOrientation
+									: verticalOrientation.getOpposite())
+									.getUnitVec3()
 							.scale(0.5));
 
 		d1 = pos.x;
@@ -295,7 +296,8 @@ public class BlueprintEntity extends HangingEntity
 				return;
 		}
 
-		spawnAtLocation(AllItems.CRAFTING_BLUEPRINT.asStack());
+		if (level() instanceof ServerLevel serverLevel)
+			spawnAtLocation(serverLevel, AllItems.CRAFTING_BLUEPRINT.asStack());
 	}
 
 	@Override
@@ -329,14 +331,20 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	public void writeSpawnData(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
 		CompoundTag compound = new CompoundTag();
-		addAdditionalSaveData(compound);
+		compound.putByte("Facing", (byte) this.direction.get3DDataValue());
+		compound.putByte("Orientation", (byte) this.verticalOrientation.get3DDataValue());
+		compound.putInt("Size", size);
 		registryFriendlyByteBuf.writeNbt(compound);
 		registryFriendlyByteBuf.writeNbt(getPersistentData());
 	}
 
 	@Override
 	public void readSpawnData(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
-		readAdditionalSaveData(registryFriendlyByteBuf.readNbt());
+		CompoundTag compound = registryFriendlyByteBuf.readNbt();
+		this.direction = Direction.from3DDataValue(compound.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
+		this.verticalOrientation = Direction.from3DDataValue(compound.getByteOr("Orientation", (byte) Direction.DOWN.get3DDataValue()));
+		this.size = compound.getIntOr("Size", 1);
+		this.updateFacingWithBoundingBox(this.direction, this.verticalOrientation);
 		getPersistentData().merge(registryFriendlyByteBuf.readNbt());
 	}
 
@@ -404,7 +412,7 @@ public class BlueprintEntity extends HangingEntity
 						success = false;
 					} else {
 						amountCrafted += result.getCount();
-						result.onCraftedBy(player.level(), player, 1);
+						result.onCraftedBy(player, 1);
 						EventHooks.firePlayerCraftingEvent(player, result, craftingInventory);
 						NonNullList<ItemStack> nonnulllist = level().getRecipeManager()
 							.getRemainingItemsFor(RecipeType.CRAFTING, craftingInventory.asCraftInput(), level());
@@ -489,7 +497,7 @@ public class BlueprintEntity extends HangingEntity
 		CompoundTag persistentData = getPersistentData();
 		if (!persistentData.contains("Recipes"))
 			persistentData.put("Recipes", new CompoundTag());
-		return persistentData.getCompound("Recipes");
+		return persistentData.getCompound("Recipes").orElseGet(CompoundTag::new);
 	}
 
 	private Map<Integer, BlueprintSection> sectionCache = new HashMap<>();
@@ -518,7 +526,7 @@ public class BlueprintEntity extends HangingEntity
 			ItemStackHandler newInv = new ItemStackHandler(11);
 			CompoundTag list = getOrCreateRecipeCompound();
 			CompoundTag invNBT = list.getCompound(index + "");
-			inferredIcon = list.getBoolean("InferredIcon");
+			inferredIcon = list.getBoolean("InferredIcon").orElse(false);
 			if (!invNBT.isEmpty())
 				newInv.deserializeNBT(registryAccess(), invNBT);
 			return newInv;

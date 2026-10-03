@@ -683,14 +683,14 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements Tran
 	protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.write(compound, registries, clientPacket);
 		if (clientPacket && chainDestroyedEffectToSend != null) {
-			compound.put("DestroyEffect", NbtUtils.writeBlockPos(chainDestroyedEffectToSend));
+			compound.put("DestroyEffect", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(chainDestroyedEffectToSend));
 			chainDestroyedEffectToSend = null;
 		}
 
 		compound.put("Connections", CatnipCodecUtils.encode(CatnipCodecs.set(BlockPos.CODEC), registries, connections).orElseThrow());
 		compound.put("TravellingPackages", NBTHelper.writeCompoundList(travellingPackages.entrySet(), entry -> {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.put("Target", NbtUtils.writeBlockPos(entry.getKey()));
+			compoundTag.put("Target", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(entry.getKey()));
 			compoundTag.put("Packages", NBTHelper.writeCompoundList(entry.getValue(),
 				p -> clientPacket ? p.writeToClient(registries) : p.write(registries)));
 			return compoundTag;
@@ -709,10 +709,10 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements Tran
 		connections.clear();
 		CatnipCodecUtils.decode(CatnipCodecs.set(BlockPos.CODEC), registries, compound.get("Connections")).ifPresent(connections::addAll);
 		travellingPackages.clear();
-		NBTHelper.iterateCompoundList(compound.getList("TravellingPackages", Tag.TAG_COMPOUND),
+		NBTHelper.iterateCompoundList(compound.getListOrEmpty("TravellingPackages"),
 			c -> travellingPackages.put(NBTHelper.readBlockPos(c, "Target"),
-				NBTHelper.readCompoundList(c.getList("Packages", Tag.TAG_COMPOUND), t -> ChainConveyorPackage.read(t, registries))));
-		loopingPackages = NBTHelper.readCompoundList(compound.getList("LoopingPackages", Tag.TAG_COMPOUND),
+				NBTHelper.readCompoundList(c.getListOrEmpty("Packages"), t -> ChainConveyorPackage.read(t, registries))));
+		loopingPackages = NBTHelper.readCompoundList(compound.getListOrEmpty("LoopingPackages"),
 			t -> ChainConveyorPackage.read(t, registries));
 		connectionStats = null;
 		updateBoxWorldPositions();
@@ -738,18 +738,18 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements Tran
 		int found = 0;
 
 		Inventory inv = player.getInventory();
-		int size = inv.items.size();
+		int size = inv.getNonEquipmentItems().size();
 		for (int j = 0; j <= size + 1; j++) {
 			int i = j;
 			boolean offhand = j == size + 1;
 			if (j == size)
-				i = inv.selected;
+				i = inv.getSelectedSlot();
 			else if (offhand)
 				i = 0;
-			else if (j == inv.selected)
+			else if (j == inv.getSelectedSlot())
 				continue;
 
-			ItemStack stackInSlot = (offhand ? inv.offhand : inv.items).get(i);
+			ItemStack stackInSlot = offhand ? player.getItemInHand(InteractionHand.OFF_HAND) : inv.getItem(i);
 			if (!stackInSlot.is(chain.getItem()))
 				continue;
 			if (found >= cost)

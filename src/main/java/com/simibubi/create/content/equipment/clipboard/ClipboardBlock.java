@@ -119,7 +119,7 @@ public class ClipboardBlock extends FaceAttachedHorizontalDirectionalBlock
 	@OnlyIn(Dist.CLIENT)
 	private void openScreen(Player player, DataComponentMap components, BlockPos pos) {
 		if (Minecraft.getInstance().player == player)
-			ScreenOpener.open(new ClipboardScreen(player.getInventory().selected, components, pos));
+			ScreenOpener.open(new ClipboardScreen(player.getInventory().getSelectedSlot(), components, pos));
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class ClipboardBlock extends FaceAttachedHorizontalDirectionalBlock
 			Inventory inv = pPlayer.getInventory();
 			ItemStack selected = inv.getSelected();
 			if (selected.isEmpty()) {
-				inv.setItem(inv.selected, cloneItemStack);
+				inv.setItem(inv.getSelectedSlot(), cloneItemStack);
 			} else {
 				inv.placeItemBackInInventory(cloneItemStack);
 			}

@@ -60,7 +60,7 @@ public class FluidFX {
 
 	public static void spawnRimParticles(Level world, BlockPos pos, Direction side, int amount, ParticleOptions particle,
 		float rimRadius) {
-		Vec3 directionVec = Vec3.atLowerCornerOf(side.getNormal());
+		Vec3 directionVec = side.getUnitVec3();
 		for (int i = 0; i < amount; i++) {
 			Vec3 vec = VecHelper.offsetRandomly(Vec3.ZERO, r, 1)
 				.normalize();

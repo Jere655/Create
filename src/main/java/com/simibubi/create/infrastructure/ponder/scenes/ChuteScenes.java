@@ -134,7 +134,7 @@ public class ChuteScenes {
 		for (int i = 0; i < 3; i++) {
 			remove = scene.world().createItemEntity(util.vector().centerOf(util.grid().at(2, 6, 3)
 				.relative(offset)), util.vector().of(0, 0.1, 0)
-					.add(Vec3.atLowerCornerOf(offset.getNormal())
+					.add(offset.getUnitVec3()
 						.scale(-.1)),
 													stack);
 			scene.idle(12);

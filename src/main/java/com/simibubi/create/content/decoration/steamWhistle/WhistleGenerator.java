@@ -2,14 +2,14 @@ package com.simibubi.create.content.decoration.steamWhistle;
 
 import com.simibubi.create.Create;
 import com.simibubi.create.foundation.data.AssetLookup;
+import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.SpecialBlockStateGen;
 import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
+import com.tterrag.registrate.providers.generators.RegistrateBlockModelGenerator;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 
 public class WhistleGenerator extends SpecialBlockStateGen {
 
@@ -24,19 +24,17 @@ public class WhistleGenerator extends SpecialBlockStateGen {
 	}
 
 	@Override
-	public <T extends Block> ModelFile getModel(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov,
+	public <T extends Block> ResourceLocation getModel(DataGenContext<Block, T> ctx, RegistrateBlockModelGenerator prov,
 		BlockState state) {
 		String wall = state.getValue(WhistleBlock.WALL) ? "wall" : "floor";
 		String size = state.getValue(WhistleBlock.SIZE)
 			.getSerializedName();
 		boolean powered = state.getValue(WhistleBlock.POWERED);
-		ModelFile model = AssetLookup.partialBaseModel(ctx, prov, size, wall);
+		ResourceLocation model = AssetLookup.partialBaseModel(ctx, prov, size, wall);
 		if (!powered)
 			return model;
-		ResourceLocation parentLocation = model.getLocation();
-		return prov.models()
-			.withExistingParent(parentLocation.getPath() + "_powered", parentLocation)
-			.texture("2", Create.asResource("block/copper_redstone_plate_powered"));
+		return BlockStateGen.inherit(prov, model.getPath() + "_powered", model,
+			b -> b.texture(AssetLookup.slot("2"), Create.asResource("block/copper_redstone_plate_powered")));
 	}
 
 }

@@ -178,7 +178,7 @@ public class SmartObserverBlockEntity extends SmartBlockEntity implements Cleara
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		turnOffTicks = compound.getInt("TurnOff");
+		turnOffTicks = compound.getInt("TurnOff").orElse(0);
 	}
 
 	@Override

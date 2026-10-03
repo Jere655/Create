@@ -12,6 +12,7 @@ import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUseType;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
@@ -28,7 +29,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 
 public class CopycatBlockEntity extends SmartBlockEntity
@@ -152,7 +153,7 @@ public class CopycatBlockEntity extends SmartBlockEntity
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
 
-		consumedItem = ItemStack.parseOptional(registries, tag.getCompound("Item"));
+		consumedItem = CreateNbt.readItemStack(registries, tag.getCompound("Item").orElseGet(CompoundTag::new));
 
 		BlockState prevMaterial = material;
 		if (!tag.contains("Material")) {
@@ -160,7 +161,7 @@ public class CopycatBlockEntity extends SmartBlockEntity
 			return;
 		}
 
-		material = NbtUtils.readBlockState(blockHolderGetter(), tag.getCompound("Material"));
+		material = NbtUtils.readBlockState(blockHolderGetter(), tag.getCompound("Material").orElseGet(CompoundTag::new));
 
 		// Validate Material
 		if (material != null && !clientPacket) {
@@ -196,7 +197,7 @@ public class CopycatBlockEntity extends SmartBlockEntity
 	}
 
 	protected void write(CompoundTag tag, HolderLookup.Provider registries, ItemStack stack, BlockState material) {
-		tag.put("Item", stack.saveOptional(registries));
+		tag.put("Item", CreateNbt.writeItemStack(registries, stack));
 		tag.put("Material", NbtUtils.writeBlockState(material));
 	}
 

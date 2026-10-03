@@ -40,7 +40,6 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
@@ -216,7 +215,7 @@ public class KineticBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 			compound.putBoolean("NeedsSpeedUpdate", true);
 
 		if (hasSource())
-			compound.put("Source", NbtUtils.writeBlockPos(source));
+			compound.putLong("Source", source.asLong());
 
 		if (hasNetwork()) {
 			CompoundTag networkTag = new CompoundTag();
@@ -251,21 +250,23 @@ public class KineticBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 			return;
 		}
 
-		speed = compound.getFloat("Speed");
-		sequenceContext = SequenceContext.fromNBT(compound.getCompound("Sequence"));
+		speed = compound.getFloatOr("Speed", 0);
+		sequenceContext = SequenceContext.fromNBT(compound.getCompoundOrEmpty("Sequence"));
 
 		source = null;
 		if (compound.contains("Source"))
-			source = NBTHelper.readBlockPos(compound, "Source");
+			source = compound.getLong("Source").orElse(0L)
+				.map(BlockPos::of)
+				.orElseGet(() -> NBTHelper.readBlockPos(compound, "Source"));
 
 		if (compound.contains("Network")) {
-			CompoundTag networkTag = compound.getCompound("Network");
-			network = networkTag.getLong("Id");
-			stress = networkTag.getFloat("Stress");
-			capacity = networkTag.getFloat("Capacity");
-			networkSize = networkTag.getInt("Size");
-			lastStressApplied = networkTag.getFloat("AddedStress");
-			lastCapacityProvided = networkTag.getFloat("AddedCapacity");
+			CompoundTag networkTag = compound.getCompoundOrEmpty("Network");
+			network = networkTag.getLong("Id").orElse(null);
+			stress = networkTag.getFloatOr("Stress", 0);
+			capacity = networkTag.getFloatOr("Capacity", 0);
+			networkSize = networkTag.getIntOr("Size", 0);
+			lastStressApplied = networkTag.getFloatOr("AddedStress", 0);
+			lastCapacityProvided = networkTag.getFloatOr("AddedCapacity", 0);
 			overStressed = capacity < stress && StressImpact.isEnabled();
 		}
 

@@ -12,6 +12,7 @@ import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileRen
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.damageTypes.CreateDamageSources;
 import com.simibubi.create.foundation.particle.AirParticleData;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
@@ -38,6 +39,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -90,21 +93,21 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 	}
 
 	@Override
-	public void readAdditionalSaveData(CompoundTag nbt) {
-		setItem(ItemStack.parseOptional(this.registryAccess(), nbt.getCompound("Item")));
-		additionalDamageMult = nbt.getFloat("AdditionalDamage");
-		additionalKnockback = nbt.getFloat("AdditionalKnockback");
-		recoveryChance = nbt.getFloat("Recovery");
-		super.readAdditionalSaveData(nbt);
+	public void readAdditionalSaveData(ValueInput input) {
+		setItem(input.read("Item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY));
+		additionalDamageMult = input.getFloatOr("AdditionalDamage", 0.0F);
+		additionalKnockback = input.getFloatOr("AdditionalKnockback", 0.0F);
+		recoveryChance = input.getFloatOr("Recovery", 0.0F);
+		super.readAdditionalSaveData(input);
 	}
 
 	@Override
-	public void addAdditionalSaveData(CompoundTag nbt) {
-		nbt.put("Item", stack.saveOptional(this.registryAccess()));
-		nbt.putFloat("AdditionalDamage", additionalDamageMult);
-		nbt.putFloat("AdditionalKnockback", additionalKnockback);
-		nbt.putFloat("Recovery", recoveryChance);
-		super.addAdditionalSaveData(nbt);
+	public void addAdditionalSaveData(ValueOutput output) {
+		output.store("Item", ItemStack.OPTIONAL_CODEC, stack);
+		output.putFloat("AdditionalDamage", additionalDamageMult);
+		output.putFloat("AdditionalKnockback", additionalKnockback);
+		output.putFloat("Recovery", recoveryChance);
+		super.addAdditionalSaveData(output);
 	}
 
 	@Nullable
@@ -137,7 +140,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		if (stuckEntity != null) {
 			if (getY() < stuckEntity.getY() - 0.1) {
 				pop(position());
-				kill();
+				discard();
 			} else {
 				stuckFallSpeed += 0.007 * type.gravityMultiplier();
 				stuckOffset = stuckOffset.add(0, -stuckFallSpeed, 0);
@@ -213,7 +216,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		DamageSource damageSource = causePotatoDamage();
 		if (onServer && !target.hurt(damageSource, damage)) {
 			target.setRemainingFireTicks(k);
-			kill();
+			kill((ServerLevel) level());
 			return;
 		}
 
@@ -224,13 +227,13 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 			if (random.nextDouble() <= recoveryChance) {
 				recoverItem();
 			} else {
-				spawnAtLocation(type.dropStack());
+				spawnAtLocation((ServerLevel) level(), type.dropStack());
 			}
 		}
 
 		if (!(target instanceof LivingEntity livingentity)) {
 			playHitSound(level(), position());
-			kill();
+			kill((ServerLevel) level());
 			return;
 		}
 
@@ -264,14 +267,14 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		if (type.sticky() && target.isAlive()) {
 			setStuckEntity(target);
 		} else {
-			kill();
+			kill((ServerLevel) level());
 		}
 
 	}
 
 	private void recoverItem() {
 		if (!stack.isEmpty())
-			spawnAtLocation(stack.copyWithCount(1));
+			spawnAtLocation((ServerLevel) level(), stack.copyWithCount(1));
 	}
 
 	public static void playHitSound(Level world, Vec3 location) {
@@ -290,12 +293,12 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 			if (random.nextDouble() <= recoveryChance) {
 				recoverItem();
 			} else {
-				spawnAtLocation(getProjectileType().dropStack());
+				spawnAtLocation((ServerLevel) level(), getProjectileType().dropStack());
 			}
 		}
 
 		super.onHitBlock(ray);
-		kill();
+		kill((ServerLevel) level());
 	}
 
 	@Override
@@ -305,7 +308,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		if (this.isInvulnerableTo(source))
 			return false;
 		pop(position());
-		kill();
+		kill((ServerLevel) level());
 		return true;
 	}
 
@@ -334,13 +337,20 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 	@Override
 	public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
 		CompoundTag compound = new CompoundTag();
-		addAdditionalSaveData(compound);
+		compound.put("Item", CreateNbt.writeItemStack(this.registryAccess(), stack));
+		compound.putFloat("AdditionalDamage", additionalDamageMult);
+		compound.putFloat("AdditionalKnockback", additionalKnockback);
+		compound.putFloat("Recovery", recoveryChance);
 		buffer.writeNbt(compound);
 	}
 
 	@Override
 	public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
-		readAdditionalSaveData(additionalData.readNbt());
+		CompoundTag compound = additionalData.readNbt();
+		setItem(CreateNbt.readItemStack(this.registryAccess(), compound.getCompound("Item").orElseGet(CompoundTag::new)));
+		additionalDamageMult = compound.getFloat("AdditionalDamage").orElse(0.0F);
+		additionalKnockback = compound.getFloat("AdditionalKnockback").orElse(0.0F);
+		recoveryChance = compound.getFloat("Recovery").orElse(0.0F);
 	}
 
 }

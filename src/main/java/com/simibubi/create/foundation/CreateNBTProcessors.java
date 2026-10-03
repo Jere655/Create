@@ -23,13 +23,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 public class CreateNBTProcessors {
 	public static void register() {
 		NBTProcessors.addProcessor(BlockEntityType.LECTERN, data -> {
-			if (!data.contains("Book", Tag.TAG_COMPOUND))
+			CompoundTag book = data.getCompound("Book").orElse(null);
+			if (book == null)
 				return data;
-			CompoundTag book = data.getCompound("Book");
 
 			// Writable books can't have click events, so they're safe to keep
 			ResourceLocation writableBookResource = BuiltInRegistries.ITEM.getKey(Items.WRITABLE_BOOK);
-			if (writableBookResource != BuiltInRegistries.ITEM.getDefaultKey() && book.getString("id").equals(writableBookResource.toString()))
+			if (writableBookResource != BuiltInRegistries.ITEM.getDefaultKey() && book.getStringOr("id", "").equals(writableBookResource.toString()))
 				return data;
 
 			WrittenBookContent bookContent = CatnipCodecUtils.decodeOrNull(WrittenBookContent.CODEC, book);
@@ -50,7 +50,7 @@ public class CreateNBTProcessors {
 	}
 
 	public static CompoundTag clipboardProcessor(CompoundTag data) {
-		DataComponentMap components = CatnipCodecUtils.decodeOrNull(DataComponentMap.CODEC, data.getCompound("components"));
+		DataComponentMap components = CatnipCodecUtils.decodeOrNull(DataComponentMap.CODEC, data.getCompoundOrEmpty("components"));
 		if (components == null)
 			return data;
 

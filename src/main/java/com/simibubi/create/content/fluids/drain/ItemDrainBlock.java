@@ -16,7 +16,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -43,14 +42,14 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 								 if (stack.getItem() instanceof BlockItem && stack.getCapability(Capabilities.FluidHandler.ITEM) == null)
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 		return onBlockEntityUseItemOn(level, pos, be -> {
 			if (!stack.isEmpty()) {
 				be.internalTank.allowInsertion();
-				ItemInteractionResult tryExchange = tryExchange(level, player, hand, stack, be);
+				InteractionResult tryExchange = tryExchange(level, player, hand, stack, be);
 				be.internalTank.forbidInsertion();
 				if (tryExchange.consumesAction())
 					return tryExchange;
@@ -63,7 +62,7 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 				be.heldItem = null;
 				be.notifyUpdate();
 			}
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		});
 	}
 
@@ -84,20 +83,20 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 		Vec3 deltaMovement = entityIn.getDeltaMovement()
 			.multiply(1, 0, 1)
 			.normalize();
-		Direction nearest = Direction.getNearest(deltaMovement.x, deltaMovement.y, deltaMovement.z);
+		Direction nearest = Direction.getApproximateNearest(new Vec3(deltaMovement.x, deltaMovement.y, deltaMovement.z));
 		ItemStack remainder = inputBehaviour.handleInsertion(itemEntity.getItem(), nearest, false);
 		itemEntity.setItem(remainder);
 		if (remainder.isEmpty())
 			itemEntity.discard();
 	}
 
-	protected ItemInteractionResult tryExchange(Level worldIn, Player player, InteractionHand handIn, ItemStack heldItem,
+	protected InteractionResult tryExchange(Level worldIn, Player player, InteractionHand handIn, ItemStack heldItem,
 											ItemDrainBlockEntity be) {
 		if (FluidHelper.tryEmptyItemIntoBE(worldIn, player, handIn, heldItem, be))
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		if (GenericItemEmptying.canItemBeEmptied(worldIn, heldItem))
-			return ItemInteractionResult.SUCCESS;
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.SUCCESS;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
 	@Override

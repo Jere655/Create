@@ -20,6 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.entity.vehicle.MinecartFurnace;
@@ -71,7 +72,7 @@ public class CartAssemblerScenes {
 			.placeNearTarget();
 		scene.idle(80);
 
-		ElementLink<MinecartElement> cart = scene.special().createCart(util.vector().topOf(2, 0, 4), 90, Minecart::new);
+		ElementLink<MinecartElement> cart = scene.special().createCart(util.vector().topOf(2, 0, 4), 90, (level, x, y, z) -> new Minecart(EntityType.MINECART, level));
 		scene.world().showSection(util.select().position(assemblerPos.above()), Direction.DOWN);
 		scene.idle(10);
 		scene.special().moveCart(cart, util.vector().of(0, 0, -2), 20);
@@ -209,7 +210,7 @@ public class CartAssemblerScenes {
 		scene.idle(10);
 
 		ElementLink<MinecartElement> cart =
-			scene.special().createCart(util.vector().topOf(util.grid().at(4, 0, 3)), 0, Minecart::new);
+			scene.special().createCart(util.vector().topOf(util.grid().at(4, 0, 3)), 0, (level, x, y, z) -> new Minecart(EntityType.MINECART, level));
 		scene.idle(20);
 		scene.special().moveCart(cart, util.vector().of(-1, 0, 0), 10);
 		scene.idle(10);
@@ -268,7 +269,7 @@ public class CartAssemblerScenes {
 		scene.idle(70);
 
 		contraption = scene.world().showIndependentSection(util.select().fromTo(3, 2, 3, 2, 2, 3), Direction.DOWN);
-		cart = scene.special().createCart(util.vector().topOf(util.grid().at(4, 0, 3)), 0, Minecart::new);
+		cart = scene.special().createCart(util.vector().topOf(util.grid().at(4, 0, 3)), 0, (level, x, y, z) -> new Minecart(EntityType.MINECART, level));
 		scene.idle(10);
 		scene.special().moveCart(cart, util.vector().of(-1, 0, 0), 10);
 		scene.idle(10);
@@ -326,9 +327,9 @@ public class CartAssemblerScenes {
 		scene.world().showSection(util.select().fromTo(2, 1, 3, 2, 1, 2), Direction.SOUTH);
 		scene.idle(5);
 		ElementLink<MinecartElement> cart =
-			scene.special().createCart(util.vector().topOf(assembler1.below()), 0, Minecart::new);
+			scene.special().createCart(util.vector().topOf(assembler1.below()), 0, (level, x, y, z) -> new Minecart(EntityType.MINECART, level));
 		ElementLink<MinecartElement> cart2 =
-			scene.special().createCart(util.vector().topOf(assembler2.below()), 0, MinecartChest::new);
+			scene.special().createCart(util.vector().topOf(assembler2.below()), 0, (level, x, y, z) -> new MinecartChest(EntityType.CHEST_MINECART, level));
 		scene.idle(15);
 		scene.world().setBlock(assembler1, AllBlocks.CART_ASSEMBLER.getDefaultState()
 			.setValue(CartAssemblerBlock.RAIL_SHAPE, RailShape.EAST_WEST)
@@ -444,7 +445,7 @@ public class CartAssemblerScenes {
 		scene.idle(70);
 
 		ElementLink<MinecartElement> cart = scene.special().createCart(util.vector().topOf(assembler.east(2)
-			.below()), 0, Minecart::new);
+			.below()), 0, (level, x, y, z) -> new Minecart(EntityType.MINECART, level));
 		ElementLink<WorldSectionElement> anchor =
 			scene.world().showIndependentSection(util.select().position(assembler.south()), Direction.DOWN);
 		ElementLink<WorldSectionElement> contraption =
@@ -477,7 +478,7 @@ public class CartAssemblerScenes {
 
 		scene.world().hideIndependentSection(anchor, Direction.DOWN);
 		cart = scene.special().createCart(util.vector().topOf(assembler.east(2)
-			.below()), 0, Minecart::new);
+			.below()), 0, (level, x, y, z) -> new Minecart(EntityType.MINECART, level));
 		anchor = scene.world().showIndependentSection(util.select().position(assembler.south()), Direction.DOWN);
 		contraption = scene.world().showIndependentSection(util.select().position(assembler.south()
 			.above()), Direction.DOWN);
@@ -505,7 +506,7 @@ public class CartAssemblerScenes {
 		scene.idle(20);
 
 		cart = scene.special().createCart(util.vector().topOf(assembler.east(2)
-			.below()), 0, MinecartFurnace::new);
+			.below()), 0, (level, x, y, z) -> new MinecartFurnace(EntityType.FURNACE_MINECART, level));
 		scene.idle(10);
 		scene.overlay().showText(50)
 			.attachKeyFrame()

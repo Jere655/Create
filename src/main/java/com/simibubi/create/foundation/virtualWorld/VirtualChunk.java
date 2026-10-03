@@ -2,6 +2,7 @@ package com.simibubi.create.foundation.virtualWorld;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -63,7 +65,7 @@ public class VirtualChunk extends LevelChunk {
 
 	@Override
 	@Nullable
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean isMoving) {
+	public BlockState setBlockState(BlockPos pos, BlockState state, int flags) {
 		return null;
 	}
 
@@ -142,10 +144,6 @@ public class VirtualChunk extends LevelChunk {
 	}
 
 	@Override
-	public void setUnsaved(boolean unsaved) {
-	}
-
-	@Override
 	public boolean isUnsaved() {
 		return false;
 	}
@@ -198,8 +196,8 @@ public class VirtualChunk extends LevelChunk {
 	}
 
 	@Override
-	public TicksToSave getTicksForSerialization() {
-		throw new UnsupportedOperationException();
+	public ChunkAccess.PackedTicks getTicksForSerialization(long gameTime) {
+		return new ChunkAccess.PackedTicks(List.of(), List.of());
 	}
 
 	@Override

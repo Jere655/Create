@@ -132,9 +132,9 @@ public class GaugeBlock extends DirectionalAxisKineticBlock implements IBE<Gauge
 				continue;
 
 			Vector3f rgb = new Color(color).asVectorF();
-			Vec3 faceVec = Vec3.atLowerCornerOf(face.getNormal());
+			Vec3 faceVec = face.getUnitVec3();
 			Direction positiveFacing = Direction.get(AxisDirection.POSITIVE, face.getAxis());
-			Vec3 positiveFaceVec = Vec3.atLowerCornerOf(positiveFacing.getNormal());
+			Vec3 positiveFaceVec = positiveFacing.getUnitVec3();
 			int particleCount = gaugeBE.dialTarget > 1 ? 4 : 1;
 
 			if (particleCount == 1 && rand.nextFloat() > 1 / 4f)

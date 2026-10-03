@@ -7,11 +7,10 @@ pluginManagement {
 }
 
 if (file("Ponder").exists()) {
-    includeBuild(".")
     includeBuild("Ponder") {
         dependencySubstitution {
-            substitute(module("net.createmod.ponder:ponder-neoforge")).using(project(":neoforge"))
-            substitute(module("net.createmod.ponder:ponder-common")).using(project(":common"))
+            substitute(module("net.createmod.ponder:ponder-neoforge")).using(project(":ponder-neoforge"))
+            substitute(module("net.createmod.ponder:ponder-common")).using(project(":ponder-common"))
         }
     }
 }

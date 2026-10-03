@@ -198,9 +198,9 @@ public class BlazeBurnerBlockEntity extends SmartBlockEntity {
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		activeFuel = FuelType.values()[compound.getInt("fuelLevel")];
-		remainingBurnTime = compound.getInt("burnTimeRemaining");
-		isCreative = compound.getBoolean("isCreative");
+		activeFuel = FuelType.values()[compound.getInt("fuelLevel").orElse(0)];
+		remainingBurnTime = compound.getInt("burnTimeRemaining").orElse(0);
+		isCreative = compound.getBoolean("isCreative").orElse(false);
 		goggles = compound.contains("Goggles");
 		hat = compound.contains("TrainHat");
 		super.read(compound, registries, clientPacket);

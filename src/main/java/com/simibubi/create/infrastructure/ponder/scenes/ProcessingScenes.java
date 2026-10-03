@@ -15,6 +15,7 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
 import com.simibubi.create.content.processing.burner.LitBlazeBurnerBlock;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import com.simibubi.create.foundation.ponder.element.BeltItemElement;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.data.Iterate;
@@ -423,7 +424,7 @@ public class ProcessingScenes {
 		scene.idle(80);
 		scene.world().modifyBlockEntityNBT(util.select().position(basin), BasinBlockEntity.class, nbt -> {
 			nbt.put("VisualizedItems",
-				NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, purple)), ia -> (CompoundTag) ia.getValue().saveOptional(scene.world().getHolderLookupProvider())));
+				NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, purple)), ia -> CreateNbt.writeItemStack(scene.world().getHolderLookupProvider(), ia.getValue())));
 		});
 		scene.idle(4);
 		scene.world().createItemOnBelt(util.grid().at(1, 1, 1), Direction.UP, purple);
@@ -504,7 +505,7 @@ public class ProcessingScenes {
 			.makeCompactingParticleEffect(util.vector().centerOf(basin), copper));
 		scene.world().modifyBlockEntityNBT(util.select().position(basin), BasinBlockEntity.class, nbt -> {
 			nbt.put("VisualizedItems",
-				NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, copperBlock)), ia -> (CompoundTag) ia.getValue().saveOptional(scene.world().getHolderLookupProvider())));
+				NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, copperBlock)), ia -> CreateNbt.writeItemStack(scene.world().getHolderLookupProvider(), ia.getValue())));
 		});
 		scene.idle(4);
 		scene.world().createItemOnBelt(util.grid().at(1, 1, 1), Direction.UP, copperBlock);
@@ -529,7 +530,7 @@ public class ProcessingScenes {
 			.makeCompactingParticleEffect(util.vector().centerOf(basin), log));
 		scene.world().modifyBlockEntityNBT(util.select().position(basin), BasinBlockEntity.class, nbt -> {
 			nbt.put("VisualizedItems",
-				NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, bark)), ia -> (CompoundTag) ia.getValue().saveOptional(scene.world().getHolderLookupProvider())));
+				NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, bark)), ia -> CreateNbt.writeItemStack(scene.world().getHolderLookupProvider(), ia.getValue())));
 		});
 		scene.idle(4);
 		scene.world().createItemOnBelt(util.grid().at(1, 1, 1), Direction.UP, bark);
@@ -701,7 +702,7 @@ public class ProcessingScenes {
 
 		Class<DeployerBlockEntity> teType = DeployerBlockEntity.class;
 		scene.world().modifyBlockEntityNBT(util.select().position(4, 1, 2), teType,
-			nbt -> nbt.put("HeldItem", AllItems.BLAZE_CAKE.asStack().saveOptional(scene.world().getHolderLookupProvider())));
+			nbt -> nbt.put("HeldItem", CreateNbt.writeItemStack(scene.world().getHolderLookupProvider(), AllItems.BLAZE_CAKE.asStack())));
 
 		scene.world().showSection(util.select().fromTo(3, 0, 5, 2, 0, 5), Direction.UP);
 		scene.idle(5);
@@ -823,7 +824,7 @@ public class ProcessingScenes {
 		scene.world().modifyBlockEntityNBT(util.select().position(basinPos), BasinBlockEntity.class, nbt -> {
 			nbt.put("VisualizedItems",
 				NBTHelper.writeCompoundList(ImmutableList.of(IntAttached.with(1, new ItemStack(Blocks.BRICKS))),
-					ia -> (CompoundTag) ia.getValue().saveOptional(scene.world().getHolderLookupProvider())));
+					ia -> CreateNbt.writeItemStack(scene.world().getHolderLookupProvider(), ia.getValue())));
 		});
 		scene.idle(4);
 		scene.overlay().showControls(util.vector().topOf(basinPos.below().north()), Pointing.RIGHT, 30).withItem(new ItemStack(Items.BRICKS));

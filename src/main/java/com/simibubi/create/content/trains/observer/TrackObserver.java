@@ -85,10 +85,10 @@ public class TrackObserver extends SingleBlockEntityEdgePoint {
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean migration, DimensionPalette dimensions) {
 		super.read(nbt, registries, migration, dimensions);
-		activated = nbt.getInt("Activated");
-		filter = FilterItemStack.of(registries, nbt.getCompound("Filter"));
+		activated = nbt.getInt("Activated").orElse(0);
+		filter = FilterItemStack.of(registries, nbt.getCompound("Filter").orElseGet(CompoundTag::new));
 		if (nbt.contains("TrainId"))
-			currentTrain = nbt.getUUID("TrainId");
+			currentTrain = com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(nbt, "TrainId"));
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class TrackObserver extends SingleBlockEntityEdgePoint {
 		nbt.putInt("Activated", activated);
 		nbt.put("Filter", filter.serializeNBT(registries));
 		if (currentTrain != null)
-			nbt.putUUID("TrainId", currentTrain);
+			nbt.put("TrainId", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(currentTrain));
 	}
 
 	@Override

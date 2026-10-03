@@ -72,7 +72,7 @@ public class BeltHelper {
 	public static BlockPos getPositionForOffset(BeltBlockEntity controller, int offset) {
 		BlockPos pos = controller.getBlockPos();
 		Vec3i vec = controller.getBeltFacing()
-			.getNormal();
+			.getUnitVec3i();
 		BeltSlope slope = controller.getBlockState()
 			.getValue(BeltBlock.SLOPE);
 		int verticality = slope == BeltSlope.DOWNWARD ? -1 : slope == BeltSlope.UPWARD ? 1 : 0;
@@ -90,8 +90,8 @@ public class BeltHelper {
 			verticalMovement = 0;
 		verticalMovement = verticalMovement * (Math.min(offset, controller.beltLength - .5f) - .5f);
 		Vec3 vec = VecHelper.getCenterOf(controller.getBlockPos());
-		Vec3 horizontalMovement = Vec3.atLowerCornerOf(controller.getBeltFacing()
-			.getNormal())
+		Vec3 horizontalMovement = controller.getBeltFacing()
+			.getUnitVec3()
 			.scale(offset - .5f);
 
 		if (slope == BeltSlope.VERTICAL)
@@ -105,8 +105,8 @@ public class BeltHelper {
 	public static Vec3 getBeltVector(BlockState state) {
 		BeltSlope slope = state.getValue(BeltBlock.SLOPE);
 		int verticality = slope == BeltSlope.DOWNWARD ? -1 : slope == BeltSlope.UPWARD ? 1 : 0;
-		Vec3 horizontalMovement = Vec3.atLowerCornerOf(state.getValue(BeltBlock.HORIZONTAL_FACING)
-			.getNormal());
+		Vec3 horizontalMovement = state.getValue(BeltBlock.HORIZONTAL_FACING)
+			.getUnitVec3();
 		if (slope == BeltSlope.VERTICAL)
 			return new Vec3(0, state.getValue(BeltBlock.HORIZONTAL_FACING)
 				.getAxisDirection()

@@ -69,7 +69,7 @@ public class ContraptionHandler {
 		if (!data.contains("ContraptionDismountLocation"))
 			return;
 
-		Vec3 position = VecHelper.readNBT(data.getList("ContraptionDismountLocation", Tag.TAG_DOUBLE));
+		Vec3 position = VecHelper.readNBT(data.getListOrEmpty("ContraptionDismountLocation"));
 		if (entityLiving.getVehicle() == null)
 			entityLiving.absMoveTo(position.x, position.y, position.z, entityLiving.getYRot(), entityLiving.getXRot());
 		data.remove("ContraptionDismountLocation");

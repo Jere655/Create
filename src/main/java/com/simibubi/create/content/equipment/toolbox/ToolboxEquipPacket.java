@@ -7,7 +7,6 @@ import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
@@ -70,12 +69,12 @@ public record ToolboxEquipPacket(BlockPos toolboxPos, int slot, int hotbarSlot) 
 		}
 
 		CompoundTag compound = player.getPersistentData()
-				.getCompound("CreateToolboxData");
+				.getCompoundOrEmpty("CreateToolboxData");
 		String key = String.valueOf(hotbarSlot);
 
 		CompoundTag data = new CompoundTag();
 		data.putInt("Slot", slot);
-		data.put("Pos", NbtUtils.writeBlockPos(toolboxPos));
+		data.store("Pos", BlockPos.CODEC, toolboxPos);
 		compound.put(key, data);
 
 		player.getPersistentData()

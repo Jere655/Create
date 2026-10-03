@@ -74,7 +74,7 @@ public class FluidValveBlockEntity extends KineticBlockEntity {
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		pointer.readNBT(compound.getCompound("Pointer"), clientPacket);
+		pointer.readNBT(compound.getCompound("Pointer").orElseGet(CompoundTag::new), clientPacket);
 	}
 
 	@Override

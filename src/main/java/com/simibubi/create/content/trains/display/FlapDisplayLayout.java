@@ -43,8 +43,8 @@ public class FlapDisplayLayout {
 
 	public void read(CompoundTag tag, HolderLookup.Provider registries) {
 		String prevKey = layoutKey;
-		layoutKey = tag.getString("Key");
-		ListTag sectionsTag = tag.getList("Sections", Tag.TAG_COMPOUND);
+		layoutKey = tag.getStringOr("Key", "");
+		ListTag sectionsTag = tag.getListOrEmpty("Sections");
 
 		if (!prevKey.equals(layoutKey)) {
 			sections = NBTHelper.readCompoundList(sectionsTag, i -> FlapDisplaySection.load(i, registries));

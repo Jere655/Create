@@ -69,7 +69,7 @@ public class PlayerPassengerCondition extends ScheduleWaitCondition {
 
 	@Override
 	public boolean tickCompletion(Level level, Train train, CompoundTag context) {
-		int prev = context.getInt("PrevPlayerCount");
+		int prev = context.getIntOr("PrevPlayerCount", 0);
 		int present = train.countPlayerPassengers();
 		int target = getTarget();
 		context.putInt("PrevPlayerCount", present);

@@ -107,6 +107,7 @@ public class Create {
 	}
 
 	public static void onCtor(IEventBus modEventBus, ModContainer modContainer) {
+		com.simibubi.create.infrastructure.gametest.CreateGameTests.bootstrap();
 		LOGGER.info("{} {} initializing! Commit hash: {}", NAME, CreateBuildInfo.VERSION, CreateBuildInfo.GIT_COMMIT);
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 

@@ -431,12 +431,12 @@ public class BoilerData {
 	}
 
 	public void read(CompoundTag nbt, int boilerSize) {
-		waterSupply = nbt.getFloat("Supply");
-		activeHeat = nbt.getInt("ActiveHeat");
-		passiveHeat = nbt.getBoolean("PassiveHeat");
-		attachedEngines = nbt.getInt("Engines");
-		attachedWhistles = nbt.getInt("Whistles");
-		needsHeatLevelUpdate = nbt.getBoolean("Update");
+		waterSupply = nbt.getFloat("Supply").orElse(0.0F);
+		activeHeat = nbt.getInt("ActiveHeat").orElse(0);
+		passiveHeat = nbt.getBoolean("PassiveHeat").orElse(false);
+		attachedEngines = nbt.getInt("Engines").orElse(0);
+		attachedWhistles = nbt.getInt("Whistles").orElse(0);
+		needsHeatLevelUpdate = nbt.getBoolean("Update").orElse(false);
 		Arrays.fill(supplyOverTime, (int) waterSupply);
 
 		int forBoilerSize = getMaxHeatLevelForBoilerSize(boilerSize);

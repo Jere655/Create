@@ -431,16 +431,16 @@ public class TravellingPoint {
 			return new TravellingPoint(null, null, null, 0, false);
 
 		Couple<TrackNode> locs = tag.contains("Nodes")
-			? Couple.deserializeEach(tag.getList("Nodes", Tag.TAG_COMPOUND), c -> TrackNodeLocation.read(c, dimensions))
+			? Couple.deserializeEach(tag.getListOrEmpty("Nodes"), c -> TrackNodeLocation.read(c, dimensions))
 				.map(graph::locateNode)
 			: Couple.create(null, null);
 
 		if (locs.either(Objects::isNull))
 			return new TravellingPoint(null, null, null, 0, false);
 
-		double position = tag.getDouble("Position");
+		double position = tag.getDouble("Position").orElse(0.0D);
 		return new TravellingPoint(locs.getFirst(), locs.getSecond(), graph.getConnectionsFrom(locs.getFirst())
-			.get(locs.getSecond()), position, tag.getBoolean("UpsideDown"));
+			.get(locs.getSecond()), position, tag.getBoolean("UpsideDown").orElse(false));
 	}
 
 }

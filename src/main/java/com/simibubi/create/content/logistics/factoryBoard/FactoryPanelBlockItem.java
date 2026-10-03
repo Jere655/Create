@@ -57,12 +57,12 @@ public class FactoryPanelBlockItem extends LogisticallyLinkedBlockItem {
 
 			for (PanelSlot slot : PanelSlot.values()) {
 				CompoundTag panelTag = bet.getCompound(CreateLang.asId(slot.name()));
-				if (panelTag.hasUUID("Freq"))
-					frequency = panelTag.getUUID("Freq");
+				if (panelTag.contains("Freq"))
+					frequency = com.simibubi.create.foundation.utility.CreateNbt.readUUID(net.createmod.catnip.nbt.NBTHelper.getINBT(panelTag, "Freq"));
 			}
 
 			bet = new CompoundTag();
-			bet.putUUID("Freq", frequency);
+			bet.put("Freq", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(frequency));
 
 			BlockEntity.addEntityType(bet, ((IBE<?>) ((BlockItem) stack.getItem()).getBlock()).getBlockEntityType());
 			stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(bet));

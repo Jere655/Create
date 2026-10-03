@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.world.ItemInteractionResult;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -89,7 +88,7 @@ public class FluidPipeBlock extends PipeBlock implements SimpleWaterloggedBlock,
 			for (Direction direction : Iterate.directions) {
 				if (clickedFace.getAxis() == direction.getAxis())
 					continue;
-				Vec3 centerOf = Vec3.atCenterOf(direction.getNormal());
+				Vec3 centerOf = Vec3.atCenterOf(direction.getUnitVec3i());
 				double distance = centerOf.distanceToSqr(clickLocation);
 				if (distance < closest) {
 					closest = distance;
@@ -124,12 +123,12 @@ public class FluidPipeBlock extends PipeBlock implements SimpleWaterloggedBlock,
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		ItemInteractionResult result = tryEncase(state, level, pos, stack, player, hand, hitResult);
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		InteractionResult result = tryEncase(state, level, pos, stack, player, hand, hitResult);
 		if (result.consumesAction())
 			return result;
 
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
 	public BlockState getAxisState(Axis axis) {

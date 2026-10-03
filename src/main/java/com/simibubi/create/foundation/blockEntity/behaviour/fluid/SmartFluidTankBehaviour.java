@@ -181,7 +181,7 @@ public class SmartFluidTankBehaviour extends BlockEntityBehaviour {
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(nbt, registries, clientPacket);
 		MutableInt index = new MutableInt(0);
-		NBTHelper.iterateCompoundList(nbt.getList(getType().getName() + "Tanks", Tag.TAG_COMPOUND), c -> {
+		NBTHelper.iterateCompoundList(nbt.getListOrEmpty(getType().getName() + "Tanks"), c -> {
 			if (index.intValue() >= tanks.length)
 				return;
 			tanks[index.intValue()].readNBT(c, registries, clientPacket);
@@ -269,8 +269,8 @@ public class SmartFluidTankBehaviour extends BlockEntityBehaviour {
 		}
 
 		public void readNBT(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-			tank.readFromNBT(registries, compound.getCompound("TankContent"));
-			fluidLevel.readNBT(compound.getCompound("Level"), clientPacket);
+			tank.readFromNBT(registries, compound.getCompound("TankContent").orElseGet(CompoundTag::new));
+			fluidLevel.readNBT(compound.getCompound("Level").orElseGet(CompoundTag::new), clientPacket);
 			if (!tank.getFluid()
 				.isEmpty())
 				renderedFluid = tank.getFluid();

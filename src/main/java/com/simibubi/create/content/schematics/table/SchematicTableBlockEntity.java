@@ -51,14 +51,14 @@ public class SchematicTableBlockEntity extends SmartBlockEntity implements MenuP
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
+		inventory.deserializeNBT(registries, compound.getCompound("Inventory").orElseGet(CompoundTag::new));
 		super.read(compound, registries, clientPacket);
 		if (!clientPacket)
 			return;
 		if (compound.contains("Uploading")) {
 			isUploading = true;
-			uploadingSchematic = compound.getString("Schematic");
-			uploadingProgress = compound.getFloat("Progress");
+			uploadingSchematic = compound.getString("Schematic").orElse("");
+			uploadingProgress = compound.getFloat("Progress").orElse(0.0F);
 		} else {
 			isUploading = false;
 			uploadingSchematic = null;

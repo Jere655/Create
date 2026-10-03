@@ -55,7 +55,7 @@ public class HauntedBellBlockEntity extends AbstractBellBlockEntity {
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		effectTicks = compound.getInt("EffectTicks");
+		effectTicks = compound.getInt("EffectTicks").orElse(0);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import com.google.common.base.Predicates;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.infrastructure.config.AllConfigs;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.Pointing;
@@ -199,7 +200,7 @@ public class RecipeGridHandler {
 				CompoundTag entry = new CompoundTag();
 				entry.putInt("x", pair.getKey());
 				entry.putInt("y", pair.getValue());
-				entry.put("item", stack.saveOptional(registries));
+				entry.put("item", CreateNbt.writeItemStack(registries, stack));
 				gridNBT.add(entry);
 			});
 			nbt.put("Grid", gridNBT);
@@ -207,12 +208,12 @@ public class RecipeGridHandler {
 
 		public static GroupedItems read(CompoundTag nbt, HolderLookup.Provider registries) {
 			GroupedItems items = new GroupedItems();
-			ListTag gridNBT = nbt.getList("Grid", Tag.TAG_COMPOUND);
+			ListTag gridNBT = nbt.getListOrEmpty("Grid");
 			gridNBT.forEach(inbt -> {
 				CompoundTag entry = (CompoundTag) inbt;
-				int x = entry.getInt("x");
-				int y = entry.getInt("y");
-				ItemStack stack = ItemStack.parseOptional(registries, entry.getCompound("item"));
+				int x = entry.getInt("x").orElse(0);
+				int y = entry.getInt("y").orElse(0);
+				ItemStack stack = CreateNbt.readItemStack(registries, entry.getCompound("item").orElseGet(CompoundTag::new));
 				items.grid.put(Pair.of(x, y), stack);
 			});
 			return items;

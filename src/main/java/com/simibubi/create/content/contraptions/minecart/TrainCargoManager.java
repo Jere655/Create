@@ -45,7 +45,7 @@ public class TrainCargoManager extends MountedStorageManager {
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket, @Nullable Contraption contraption) {
 		super.read(nbt, registries, clientPacket, contraption);
-		ticksSinceLastExchange = nbt.getInt("TicksSinceLastExchange");
+		ticksSinceLastExchange = nbt.getInt("TicksSinceLastExchange").orElse(0);
 	}
 
 	public void resetIdleCargoTracker() {

@@ -136,12 +136,12 @@ public class TrackTargetingBlockItem extends BlockItem {
 				stack.get(AllDataComponents.TRACK_TARGETING_ITEM_BEZIER);
 			CompoundTag bezierNbt = new CompoundTag();
 			bezierNbt.putInt("Segment", bezierTrackPointLocation.segment());
-			bezierNbt.put("Key", NbtUtils.writeBlockPos(bezierTrackPointLocation.curveTarget()
+			bezierNbt.put("Key", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(bezierTrackPointLocation.curveTarget()
 				.subtract(placedPos)));
 			blockEntityData.put("Bezier", bezierNbt);
 		}
 
-		blockEntityData.put("TargetTrack", NbtUtils.writeBlockPos(selectedPos.subtract(placedPos)));
+		blockEntityData.put("TargetTrack", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(selectedPos.subtract(placedPos)));
 		blockEntityData.putString("id", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
 		BlockEntity.addEntityType(blockEntityData, ((IBE<?>) this.getBlock()).getBlockEntityType());
 
@@ -185,7 +185,7 @@ public class TrackTargetingBlockItem extends BlockItem {
 			.dot(selection.direction()) < 0;
 
 		CatnipServices.NETWORK.sendToServer(new CurvedTrackSelectionPacket(be.getBlockPos(), loc.curveTarget(),
-			front, loc.segment(), player.getInventory().selected));
+			front, loc.segment(), player.getInventory().getSelectedSlot()));
 		return true;
 	}
 

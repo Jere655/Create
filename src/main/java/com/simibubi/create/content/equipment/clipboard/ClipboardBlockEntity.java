@@ -11,6 +11,7 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
 import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -76,7 +77,7 @@ public class ClipboardBlockEntity extends SmartBlockEntity {
 				.ifPresent(encoded -> tag.put("components", encoded));
 
 			if (lastEdit != null)
-				tag.putUUID("LastEdit", lastEdit);
+				tag.put("LastEdit", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(lastEdit));
 		}
 	}
 
@@ -86,7 +87,7 @@ public class ClipboardBlockEntity extends SmartBlockEntity {
 
 		if (clientPacket) {
 			if (tag.contains("components"))
-				DataComponentMap.CODEC.decode(registries.createSerializationContext(NbtOps.INSTANCE), tag.getCompound("components"))
+				DataComponentMap.CODEC.decode(registries.createSerializationContext(NbtOps.INSTANCE), tag.getCompoundOrEmpty("components"))
 					.result()
 					.map(Pair::getFirst)
 					.ifPresent(this::setComponents);
@@ -100,7 +101,7 @@ public class ClipboardBlockEntity extends SmartBlockEntity {
 		Minecraft mc = Minecraft.getInstance();
 		if (!(mc.screen instanceof ClipboardScreen cs))
 			return;
-		if (tag.contains("LastEdit") && tag.getUUID("LastEdit")
+		if (tag.contains("LastEdit") && com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(tag, "LastEdit"))
 			.equals(mc.player.getUUID()))
 			return;
 		if (!worldPosition.equals(cs.targetedBlock))

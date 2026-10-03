@@ -50,6 +50,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -77,6 +78,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.ItemLike;
@@ -214,7 +216,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 
 	ROSE_QUARTZ = create(AllItems.ROSE_QUARTZ).unlockedBy(() -> Items.REDSTONE)
 		.viaShapeless(b -> b.requires(Tags.Items.GEMS_QUARTZ)
-			.requires(Ingredient.of(I.redstone()), 8)),
+			.requires(Ingredient.of(items().getOrThrow(I.redstone())), 8)),
 
 	SAND_PAPER = create(AllItems.SAND_PAPER).unlockedBy(() -> Items.PAPER)
 		.viaShapeless(b -> b.requires(Items.PAPER)
@@ -253,10 +255,10 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 			.pattern("I")
 			.pattern("P")),
 
-	CAKE = create(() -> Items.CAKE).unlockedByTag(() -> Tags.Items.FOODS_DOUGH)
+	CAKE = create(() -> Items.CAKE).unlockedByTag(() -> AllItemTags.FOODS_DOUGH.tag)
 		.viaShaped(b -> b.define('E', Tags.Items.EGGS)
 			.define('S', Items.SUGAR)
-			.define('P', Tags.Items.FOODS_DOUGH)
+			.define('P', AllItemTags.FOODS_DOUGH.tag)
 			.define('M', () -> Items.MILK_BUCKET)
 			.pattern(" M ")
 			.pattern("SES")
@@ -307,7 +309,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 			.pattern(" B ")),
 
 	SUPER_GLUE = create(AllItems.SUPER_GLUE).unlockedByTag(I::ironSheet)
-		.viaShaped(b -> b.define('A', Tags.Items.SLIMEBALLS)
+		.viaShaped(b -> b.define('A', Tags.Items.SLIME_BALLS)
 			.define('S', I.ironSheet())
 			.define('N', Tags.Items.NUGGETS_IRON)
 			.pattern("AS")
@@ -376,7 +378,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 			.pattern("I")),
 
 	STICKY_MECHANICAL_PISTON = create(AllBlocks.STICKY_MECHANICAL_PISTON).unlockedBy(I::andesiteAlloy)
-		.viaShaped(b -> b.define('S', Tags.Items.SLIMEBALLS)
+		.viaShaped(b -> b.define('S', Tags.Items.SLIME_BALLS)
 			.define('P', AllBlocks.MECHANICAL_PISTON.get())
 			.pattern("S")
 			.pattern("P")),
@@ -853,7 +855,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 		.viaShaped(b -> b.define('I', I.andesiteAlloy())
 			.define('C', Tags.Items.COBBLESTONES)
 			.define('R', I.redstone())
-			.define('S', Tags.Items.SLIMEBALLS)
+			.define('S', Tags.Items.SLIME_BALLS)
 			.pattern("ISI")
 			.pattern("CRC")),
 
@@ -1105,7 +1107,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 
 	PACKAGE_FROGPORT = create(AllBlocks.PACKAGE_FROGPORT).unlockedBy(I::cardboard)
 		.viaShaped(b -> b.define('C', I.andesiteAlloy())
-			.define('B', Tags.Items.SLIMEBALLS)
+			.define('B', Tags.Items.SLIME_BALLS)
 			.define('A', I.vault())
 			.pattern("B")
 			.pattern("A")
@@ -1307,7 +1309,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 
 	TREE_FERTILIZER = create(AllItems.TREE_FERTILIZER).returns(2)
 		.unlockedBy(() -> Items.BONE_MEAL)
-		.viaShapeless(b -> b.requires(Ingredient.of(ItemTags.SMALL_FLOWERS), 2)
+		.viaShapeless(b -> b.requires(Ingredient.of(items().getOrThrow(ItemTags.SMALL_FLOWERS)), 2)
 			.requires(Ingredient.of(Items.HORN_CORAL, Items.BRAIN_CORAL, Items.TUBE_CORAL, Items.BUBBLE_CORAL,
 				Items.FIRE_CORAL))
 			.requires(Items.BONE_MEAL)),
@@ -1375,7 +1377,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 	UA_TREE_FERTILIZER = create(AllItems.TREE_FERTILIZER::get).returns(2)
 		.unlockedBy(() -> Items.BONE_MEAL)
 		.whenModLoaded(Mods.UA.getId())
-		.viaShapeless(b -> b.requires(Ingredient.of(ItemTags.SMALL_FLOWERS), 2)
+		.viaShapeless(b -> b.requires(Ingredient.of(items().getOrThrow(ItemTags.SMALL_FLOWERS)), 2)
 			.requires(AllItemTags.UA_CORAL.tag)
 			.requires(Items.BONE_MEAL));
 
@@ -1493,15 +1495,13 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 			.viaShapeless(b -> b.requires(item.get()));
 	}
 
-	@Override
-	public void buildRecipes(RecipeOutput output) {
-		all.forEach(c -> c.register(output));
-		Create.LOGGER.info("{} registered {} recipe{}", getName(), all.size(), all.size() == 1 ? "" : "s");
-	}
-
 	protected GeneratedRecipe register(GeneratedRecipe recipe) {
 		all.add(recipe);
 		return recipe;
+	}
+
+	static ResourceKey<Recipe<?>> recipeKey(ResourceLocation id) {
+		return ResourceKey.create(Registries.RECIPE, id);
 	}
 
 	class GeneratedRecipeBuilder {
@@ -1539,14 +1539,14 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 
 		GeneratedRecipeBuilder unlockedBy(Supplier<? extends ItemLike> item) {
 			this.unlockedBy = () -> ItemPredicate.Builder.item()
-				.of(item.get())
+				.of(items(), item.get())
 				.build();
 			return this;
 		}
 
 		GeneratedRecipeBuilder unlockedByTag(Supplier<TagKey<Item>> tag) {
 			this.unlockedBy = () -> ItemPredicate.Builder.item()
-				.of(tag.get())
+				.of(items(), tag.get())
 				.build();
 			return this;
 		}
@@ -1573,23 +1573,23 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 		GeneratedRecipe viaShaped(UnaryOperator<ShapedRecipeBuilder> builder) {
 			return register(consumer -> {
 				ShapedRecipeBuilder b =
-					builder.apply(ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result.get(), amount));
+					builder.apply(ShapedRecipeBuilder.shaped(items(), RecipeCategory.MISC, result.get(), amount));
 				if (unlockedBy != null)
 					b.unlockedBy("has_item", inventoryTrigger(unlockedBy.get()));
-				b.save(consumer, createLocation("crafting"));
+				b.save(consumer, recipeKey(createLocation("crafting")));
 			});
 		}
 
 		GeneratedRecipe viaShapeless(UnaryOperator<ShapelessRecipeBuilder> builder) {
 			return register(recipeOutput -> {
 				ShapelessRecipeBuilder b =
-					builder.apply(ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result.get(), amount));
+					builder.apply(ShapelessRecipeBuilder.shapeless(items(), RecipeCategory.MISC, result.get(), amount));
 				if (unlockedBy != null)
 					b.unlockedBy("has_item", inventoryTrigger(unlockedBy.get()));
 
 				RecipeOutput conditionalOutput = recipeOutput.withConditions(recipeConditions.toArray(new ICondition[0]));
 
-				b.save(conditionalOutput, createLocation("crafting"));
+				b.save(conditionalOutput, recipeKey(createLocation("crafting")));
 			});
 		}
 
@@ -1600,9 +1600,9 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 						Ingredient.of(base.get()), upgradeMaterial.get(), RecipeCategory.COMBAT, result.get()
 							.asItem());
 				b.unlocks("has_item", inventoryTrigger(ItemPredicate.Builder.item()
-					.of(base.get())
+					.of(items(), base.get())
 					.build()));
-				b.save(consumer, createLocation("crafting"));
+				b.save(consumer, recipeKey(createLocation("crafting")));
 			});
 		}
 
@@ -1624,7 +1624,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 		}
 
 		GeneratedCookingRecipeBuilder viaCookingTag(Supplier<TagKey<Item>> tag) {
-			return unlockedByTag(tag).viaCookingIngredient(() -> Ingredient.of(tag.get()));
+			return unlockedByTag(tag).viaCookingIngredient(() -> Ingredient.of(items().getOrThrow(tag.get())));
 		}
 
 		GeneratedCookingRecipeBuilder viaCookingIngredient(Supplier<Ingredient> ingredient) {
@@ -1695,7 +1695,7 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 
 					b.save(
 						isOtherMod ? new ModdedCookingRecipeOutput(conditionalOutput, compatDatagenOutput) : conditionalOutput,
-						createSimpleLocation(RegisteredObjectsHelper.getKeyOrThrow(serializer).getPath())
+						recipeKey(createSimpleLocation(RegisteredObjectsHelper.getKeyOrThrow(serializer).getPath()))
 					);
 				});
 			}
@@ -1736,26 +1736,23 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 		}
 
 		@Override
-		public boolean canCraftInDimensions(int pWidth, int pHeight) {
+		public RecipeBookCategory recipeBookCategory() {
 			throw new AssertionError("Only for datagen output");
 		}
 
 		@Override
-		public ItemStack getResultItem(HolderLookup.Provider registries) {
-			throw new AssertionError("Only for datagen output");
-		}
-
-		@Override
-		public RecipeSerializer<?> getSerializer() {
-			return serializers.computeIfAbsent(
+		@SuppressWarnings("unchecked")
+		public RecipeSerializer<? extends Recipe<RecipeInput>> getSerializer() {
+			return (RecipeSerializer<? extends Recipe<RecipeInput>>) serializers.computeIfAbsent(
 				getType(),
 				t -> Serializer.create(wrapped)
 			);
 		}
 
 		@Override
-		public RecipeType<?> getType() {
-			return wrapped.getType();
+		@SuppressWarnings("unchecked")
+		public RecipeType<? extends Recipe<RecipeInput>> getType() {
+			return (RecipeType<? extends Recipe<RecipeInput>>) wrapped.getType();
 		}
 
 		private record Serializer(
@@ -1823,8 +1820,13 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 		}
 
 		@Override
-		public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+		public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
 			wrapped.accept(id, new ModdedCookingRecipeOutputShim(recipe, outputOverride), advancement, conditions);
+		}
+
+		@Override
+		public void includeRootAdvancement() {
+			wrapped.includeRootAdvancement();
 		}
 	}
 }

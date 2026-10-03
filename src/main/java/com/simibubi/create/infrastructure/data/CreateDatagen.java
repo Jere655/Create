@@ -26,47 +26,52 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 public class CreateDatagen {
+	private static boolean extraRegistrateDataAdded;
+
 	public static void gatherDataHighPriority(GatherDataEvent event) {
-		if (event.getMods().contains(Create.ID))
-			addExtraRegistrateData();
+		if (!Create.ID.equals(event.getModContainer().getModId()) || extraRegistrateDataAdded)
+			return;
+		extraRegistrateDataAdded = true;
+		addExtraRegistrateData();
 	}
 
 	public static void gatherData(GatherDataEvent event) {
-		if (!event.getMods().contains(Create.ID))
+		if (!Create.ID.equals(event.getModContainer().getModId()))
 			return;
 
 		DataGenerator generator = event.getGenerator();
 		PackOutput output = generator.getPackOutput();
-		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
-		ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
-		generator.addProvider(event.includeClient(), AllSoundEvents.provider(generator));
+		if (event instanceof GatherDataEvent.Client) {
+			event.addProvider(new CreateWikiBlockInfoProvider(output));
+			return;
+		}
+
+		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+
+		event.addProvider(AllSoundEvents.provider(generator));
 
 		GeneratedEntriesProvider generatedEntriesProvider = new GeneratedEntriesProvider(output, lookupProvider);
 		lookupProvider = generatedEntriesProvider.getRegistryProvider();
-		generator.addProvider(event.includeServer(), generatedEntriesProvider);
+		event.addProvider(generatedEntriesProvider);
 
-		generator.addProvider(event.includeServer(), new CreateRecipeSerializerTagsProvider(output, lookupProvider, existingFileHelper));
-		generator.addProvider(event.includeServer(), new CreateContraptionTypeTagsProvider(output, lookupProvider, existingFileHelper));
-		generator.addProvider(event.includeServer(), new CreateMountedItemStorageTypeTagsProvider(output, lookupProvider, existingFileHelper));
-		generator.addProvider(event.includeServer(), new DamageTypeTagGen(output, lookupProvider, existingFileHelper));
-		generator.addProvider(event.includeServer(), new AllAdvancements(output, lookupProvider));
-		generator.addProvider(event.includeServer(), new CreateStandardRecipeGen(output, lookupProvider));
-		generator.addProvider(event.includeServer(), new CreateMechanicalCraftingRecipeGen(output, lookupProvider));
-		generator.addProvider(event.includeServer(), new CreateSequencedAssemblyRecipeGen(output, lookupProvider));
-		generator.addProvider(event.includeServer(), new CreateDatamapProvider(output, lookupProvider));
-		generator.addProvider(event.includeServer(), new VanillaHatOffsetGenerator(output, lookupProvider));
-		generator.addProvider(event.includeServer(), new CuriosDataGenerator(output, lookupProvider, existingFileHelper));
-		generator.addProvider(event.includeServer(), new CreateEnchantmentTagsProvider(output, lookupProvider, existingFileHelper));
-		generator.addProvider(event.includeClient(), new CreateWikiBlockInfoProvider(output));
+		event.addProvider(new CreateRecipeSerializerTagsProvider(output, lookupProvider));
+		event.addProvider(new CreateContraptionTypeTagsProvider(output, lookupProvider));
+		event.addProvider(new CreateMountedItemStorageTypeTagsProvider(output, lookupProvider));
+		event.addProvider(new DamageTypeTagGen(output, lookupProvider));
+		event.addProvider(new AllAdvancements(output, lookupProvider));
+		event.addProvider(new CreateStandardRecipeGen(output, lookupProvider));
+		event.addProvider(new CreateMechanicalCraftingRecipeGen(output, lookupProvider));
+		event.addProvider(new CreateSequencedAssemblyRecipeGen(output, lookupProvider));
+		event.addProvider(new CreateDatamapProvider(output, lookupProvider));
+		event.addProvider(new VanillaHatOffsetGenerator(output, lookupProvider));
+		event.addProvider(new CuriosDataGenerator(output, lookupProvider));
+		event.addProvider(new CreateEnchantmentTagsProvider(output, lookupProvider));
 
-		if (event.includeServer()) {
-			CreateRecipeProvider.registerAllProcessing(generator, output, lookupProvider);
-		}
+		CreateRecipeProvider.registerAllProcessing(generator, output, lookupProvider);
 	}
 
 	private static void addExtraRegistrateData() {

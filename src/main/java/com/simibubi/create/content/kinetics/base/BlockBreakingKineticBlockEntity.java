@@ -10,10 +10,10 @@ import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -61,17 +61,19 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 		compound.putInt("Progress", destroyProgress);
 		compound.putInt("NextTick", ticksUntilNextProgress);
 		if (breakingPos != null)
-			compound.put("Breaking", NbtUtils.writeBlockPos(breakingPos));
+			compound.putLong("Breaking", breakingPos.asLong());
 		super.write(compound, registries, clientPacket);
 	}
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		destroyProgress = compound.getInt("Progress");
-		ticksUntilNextProgress = compound.getInt("NextTick");
+		destroyProgress = compound.getIntOr("Progress", 0);
+		ticksUntilNextProgress = compound.getIntOr("NextTick", 0);
 		breakingPos = null;
 		if (compound.contains("Breaking"))
-			breakingPos = NBTHelper.readBlockPos(compound, "Breaking");
+			breakingPos = compound.getLong("Breaking").orElse(0L)
+				.map(BlockPos::of)
+				.orElseGet(() -> NBTHelper.readBlockPos(compound, "Breaking"));
 		super.read(compound, registries, clientPacket);
 	}
 
@@ -141,7 +143,7 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 		BlockHelper.destroyBlock(level, breakingPos, 1f, (stack) -> {
 			if (stack.isEmpty())
 				return;
-			if (!level.getGameRules()
+			if (level instanceof ServerLevel serverLevel && !serverLevel.getGameRules()
 				.getBoolean(GameRules.RULE_DOBLOCKDROPS))
 				return;
 			if (level.restoringBlockSnapshots)

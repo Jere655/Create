@@ -44,6 +44,7 @@ import com.simibubi.create.content.trains.station.GlobalStation;
 import com.simibubi.create.content.trains.station.StationBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.codecs.stream.CatnipLargerStreamCodecs;
@@ -82,6 +83,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class Train {
 	public static final StreamCodec<RegistryFriendlyByteBuf, Train> STREAM_CODEC = CatnipLargerStreamCodecs.composite(
@@ -1126,13 +1128,13 @@ public class Train {
 
 			for (int slot = 0; slot < fuelItems.getSlots(); slot++) {
 				ItemStack stack = fuelItems.extractItem(slot, 1, true);
-				int burnTime = stack.getBurnTime(null);
+				int burnTime = stack.getBurnTime(null, ServerLifecycleHooks.getCurrentServer().fuelValues());
 				if (burnTime <= 0)
 					continue;
 
 				stack = fuelItems.extractItem(slot, 1, false);
 				fuelTicks += burnTime * stack.getCount();
-				ItemStack containerItem = stack.getCraftingRemainingItem();
+				ItemStack containerItem = stack.getItem().getCraftingRemainder();
 				if (!containerItem.isEmpty())
 					ItemHandlerHelper.insertItemStacked(fuelItems, containerItem, false);
 				return;
@@ -1157,13 +1159,13 @@ public class Train {
 
 	public CompoundTag write(DimensionPalette dimensions, HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();
-		tag.putUUID("Id", id);
+		tag.store("Id", UUIDUtil.CODEC, id);
 		if (owner != null)
-			tag.putUUID("Owner", owner);
+			tag.store("Owner", UUIDUtil.CODEC, owner);
 		if (graph != null)
-			tag.putUUID("Graph", graph.id);
+			tag.store("Graph", UUIDUtil.CODEC, graph.id);
 		tag.put("Carriages", NBTHelper.writeCompoundList(carriages, c -> c.write(dimensions, registries)));
-		tag.putIntArray("CarriageSpacing", carriageSpacing);
+		tag.putIntArray("CarriageSpacing", carriageSpacing.stream().mapToInt(Integer::intValue).toArray());
 		tag.putBoolean("DoubleEnded", doubleEnded);
 		tag.putDouble("Speed", speed);
 		tag.putDouble("Throttle", throttle);
@@ -1173,27 +1175,27 @@ public class Train {
 		tag.putDouble("TargetSpeed", targetSpeed);
 		tag.putString("IconType", icon.id.toString());
 		tag.putInt("MapColorIndex", mapColorIndex);
-		tag.putString("Name", Component.Serializer.toJson(name, registries));
+		tag.putString("Name", CreateNbt.writeComponent(registries, name));
 		if (currentStation != null)
-			tag.putUUID("Station", currentStation);
+			tag.store("Station", UUIDUtil.CODEC, currentStation);
 		tag.putBoolean("Backwards", currentlyBackwards);
 		tag.putBoolean("Derailed", derailed);
 		tag.putBoolean("UpdateSignals", updateSignalBlocks);
 		tag.put("SignalBlocks", NBTHelper.writeCompoundList(occupiedSignalBlocks.entrySet(), e -> {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putUUID("Id", e.getKey());
+			compoundTag.store("Id", UUIDUtil.CODEC, e.getKey());
 			if (e.getValue() != null)
-				compoundTag.putUUID("Boundary", e.getValue());
+				compoundTag.store("Boundary", UUIDUtil.CODEC, e.getValue());
 			return compoundTag;
 		}));
 		tag.put("ReservedSignalBlocks", NBTHelper.writeCompoundList(reservedSignalBlocks, uid -> {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putUUID("Id", uid);
+			compoundTag.store("Id", UUIDUtil.CODEC, uid);
 			return compoundTag;
 		}));
 		tag.put("OccupiedObservers", NBTHelper.writeCompoundList(occupiedObservers, uid -> {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putUUID("Id", uid);
+			compoundTag.store("Id", UUIDUtil.CODEC, uid);
 			return compoundTag;
 		}));
 		tag.put("MigratingPoints", NBTHelper.writeCompoundList(migratingPoints, tm -> tm.write(dimensions)));
@@ -1205,45 +1207,44 @@ public class Train {
 	}
 
 	public static Train read(CompoundTag tag, HolderLookup.Provider registries, Map<UUID, TrackGraph> trackNetworks, DimensionPalette dimensions) {
-		UUID id = tag.getUUID("Id");
-		UUID owner = tag.contains("Owner") ? tag.getUUID("Owner") : null;
-		UUID graphId = tag.contains("Graph") ? tag.getUUID("Graph") : null;
+		UUID id = tag.read("Id", UUIDUtil.CODEC).orElseThrow();
+		UUID owner = tag.read("Owner", UUIDUtil.CODEC).orElse(null);
+		UUID graphId = tag.read("Graph", UUIDUtil.CODEC).orElse(null);
 		TrackGraph graph = graphId == null ? null : trackNetworks.get(graphId);
 		List<Carriage> carriages = new ArrayList<>();
-		NBTHelper.iterateCompoundList(tag.getList("Carriages", Tag.TAG_COMPOUND),
+		NBTHelper.iterateCompoundList(tag.getListOrEmpty("Carriages"),
 			c -> carriages.add(Carriage.read(c, registries, graph, dimensions)));
 		List<Integer> carriageSpacing = new ArrayList<>();
-		for (int i : tag.getIntArray("CarriageSpacing"))
+		for (int i : tag.getIntArrayOrEmpty("CarriageSpacing"))
 			carriageSpacing.add(i);
-		boolean doubleEnded = tag.getBoolean("DoubleEnded");
-		int mapColorIndex = tag.getInt("MapColorIndex");
+		boolean doubleEnded = tag.getBooleanOr("DoubleEnded", false);
+		int mapColorIndex = tag.getIntOr("MapColorIndex", 0);
 
 		Train train = new Train(id, owner, graph, carriages, carriageSpacing, doubleEnded, mapColorIndex);
 
-		train.speed = tag.getDouble("Speed");
-		train.throttle = tag.getDouble("Throttle");
-		if (tag.contains("SpeedBeforeStall"))
-			train.speedBeforeStall = tag.getDouble("SpeedBeforeStall");
-		train.targetSpeed = tag.getDouble("TargetSpeed");
-		train.icon = TrainIconType.byId(ResourceLocation.parse(tag.getString("IconType")));
-		train.name = Component.Serializer.fromJson(tag.getString("Name"), registries);
-		train.currentStation = tag.contains("Station") ? tag.getUUID("Station") : null;
-		train.currentlyBackwards = tag.getBoolean("Backwards");
-		train.derailed = tag.getBoolean("Derailed");
-		train.updateSignalBlocks = tag.getBoolean("UpdateSignals");
-		train.fuelTicks = tag.getInt("Fuel");
+		train.speed = tag.getDoubleOr("Speed", 0);
+		train.throttle = tag.getDoubleOr("Throttle", 0);
+		train.speedBeforeStall = tag.getDouble("SpeedBeforeStall").orElse(null);
+		train.targetSpeed = tag.getDoubleOr("TargetSpeed", 0);
+		train.icon = TrainIconType.byId(ResourceLocation.parse(tag.getStringOr("IconType", "create:traditional")));
+		train.name = CreateNbt.readComponent(registries, tag.getStringOr("Name", "")).orElse(Component.empty());
+		train.currentStation = tag.read("Station", UUIDUtil.CODEC).orElse(null);
+		train.currentlyBackwards = tag.getBooleanOr("Backwards", false);
+		train.derailed = tag.getBooleanOr("Derailed", false);
+		train.updateSignalBlocks = tag.getBooleanOr("UpdateSignals", false);
+		train.fuelTicks = tag.getIntOr("Fuel", 0);
 
-		NBTHelper.iterateCompoundList(tag.getList("SignalBlocks", Tag.TAG_COMPOUND), c -> train.occupiedSignalBlocks
-			.put(c.getUUID("Id"), c.contains("Boundary") ? c.getUUID("Boundary") : null));
-		NBTHelper.iterateCompoundList(tag.getList("ReservedSignalBlocks", Tag.TAG_COMPOUND),
-			c -> train.reservedSignalBlocks.add(c.getUUID("Id")));
-		NBTHelper.iterateCompoundList(tag.getList("OccupiedObservers", Tag.TAG_COMPOUND),
-			c -> train.occupiedObservers.add(c.getUUID("Id")));
-		NBTHelper.iterateCompoundList(tag.getList("MigratingPoints", Tag.TAG_COMPOUND),
+		NBTHelper.iterateCompoundList(tag.getListOrEmpty("SignalBlocks"), c -> train.occupiedSignalBlocks
+			.put(c.read("Id", UUIDUtil.CODEC).orElseThrow(), c.read("Boundary", UUIDUtil.CODEC).orElse(null)));
+		NBTHelper.iterateCompoundList(tag.getListOrEmpty("ReservedSignalBlocks"),
+			c -> train.reservedSignalBlocks.add(c.read("Id", UUIDUtil.CODEC).orElseThrow()));
+		NBTHelper.iterateCompoundList(tag.getListOrEmpty("OccupiedObservers"),
+			c -> train.occupiedObservers.add(c.read("Id", UUIDUtil.CODEC).orElseThrow()));
+		NBTHelper.iterateCompoundList(tag.getListOrEmpty("MigratingPoints"),
 			c -> train.migratingPoints.add(TrainMigration.read(c, dimensions)));
 
-		train.runtime.read(registries, tag.getCompound("Runtime"));
-		train.navigation.read(tag.getCompound("Navigation"), graph, dimensions);
+		train.runtime.read(registries, tag.getCompoundOrEmpty("Runtime"));
+		train.navigation.read(tag.getCompoundOrEmpty("Navigation"), graph, dimensions);
 
 		if (train.getCurrentStation() != null)
 			train.getCurrentStation()

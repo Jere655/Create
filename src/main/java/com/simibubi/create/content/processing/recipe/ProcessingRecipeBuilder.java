@@ -13,6 +13,8 @@ import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -48,7 +50,9 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	public abstract S self();
 
 	public S withItemIngredients(Ingredient... ingredients) {
-		return withItemIngredients(NonNullList.of(Ingredient.EMPTY, ingredients));
+		NonNullList<Ingredient> values = NonNullList.create();
+		java.util.Collections.addAll(values, ingredients);
+		return withItemIngredients(values);
 	}
 
 	public S withItemIngredients(NonNullList<Ingredient> ingredients) {
@@ -61,7 +65,9 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	}
 
 	public S withItemOutputs(ProcessingOutput... outputs) {
-		return withItemOutputs(NonNullList.of(ProcessingOutput.EMPTY, outputs));
+		NonNullList<ProcessingOutput> values = NonNullList.create();
+		java.util.Collections.addAll(values, outputs);
+		return withItemOutputs(values);
 	}
 
 	public S withItemOutputs(NonNullList<ProcessingOutput> outputs) {
@@ -70,7 +76,9 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	}
 
 	public S withFluidIngredients(SizedFluidIngredient... ingredients) {
-		return withFluidIngredients(NonNullList.of(new SizedFluidIngredient(FluidIngredient.empty(), 1000), ingredients));
+		NonNullList<SizedFluidIngredient> values = NonNullList.create();
+		java.util.Collections.addAll(values, ingredients);
+		return withFluidIngredients(values);
 	}
 
 	public S withFluidIngredients(NonNullList<SizedFluidIngredient> ingredients) {
@@ -79,7 +87,9 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	}
 
 	public S withFluidOutputs(FluidStack... outputs) {
-		return withFluidOutputs(NonNullList.of(FluidStack.EMPTY, outputs));
+		NonNullList<FluidStack> values = NonNullList.create();
+		java.util.Collections.addAll(values, outputs);
+		return withFluidOutputs(values);
 	}
 
 	public S withFluidOutputs(NonNullList<FluidStack> outputs) {
@@ -115,7 +125,7 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 			errors.add(recipe.getClass().getSimpleName() + "with id " + id + " failed validation:");
 			Create.LOGGER.warn(Joiner.on('\n').join(errors));
 		}
-		consumer.accept(id, recipe, null, recipeConditions.toArray(new ICondition[0]));
+		consumer.accept(ResourceKey.create(Registries.RECIPE, id), recipe, null, recipeConditions.toArray(new ICondition[0]));
 	}
 
 	// Datagen shortcuts

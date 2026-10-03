@@ -60,7 +60,7 @@ public class TrainIconType {
 	public int render(int lengthOrEngine, GuiGraphics graphics, int x, int y) {
 		int offset = getIconOffset(lengthOrEngine);
 		int width = getIconWidth(lengthOrEngine);
-		graphics.blit(sheet, x, y, 0, this.x + offset, this.y, width, 10, 256, 256);
+		graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, sheet, x, y, 0, this.x + offset, this.y, width, 10, 256, 256);
 		return width;
 	}
 

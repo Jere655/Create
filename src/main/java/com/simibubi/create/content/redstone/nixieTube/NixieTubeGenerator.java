@@ -1,13 +1,14 @@
 package com.simibubi.create.content.redstone.nixieTube;
 
 import com.simibubi.create.content.redstone.nixieTube.DoubleFaceAttachedBlock.DoubleAttachFace;
+import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.SpecialBlockStateGen;
 import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
+import com.tterrag.registrate.providers.generators.RegistrateBlockModelGenerator;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 
 public class NixieTubeGenerator extends SpecialBlockStateGen {
 
@@ -25,10 +26,9 @@ public class NixieTubeGenerator extends SpecialBlockStateGen {
 	}
 
 	@Override
-	public <T extends Block> ModelFile getModel(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov,
+	public <T extends Block> ResourceLocation getModel(DataGenContext<Block, T> ctx, RegistrateBlockModelGenerator prov,
 		BlockState state) {
-		return prov.models()
-			.withExistingParent(ctx.getName(), prov.modLoc("block/nixie_tube/block"));
+		return BlockStateGen.inherit(prov, ctx.getName(), prov.modLoc("block/nixie_tube/block"));
 	}
 
 }

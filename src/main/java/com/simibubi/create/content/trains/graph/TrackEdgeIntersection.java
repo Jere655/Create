@@ -29,9 +29,9 @@ public class TrackEdgeIntersection {
 
 	public CompoundTag write(DimensionPalette dimensions) {
 		CompoundTag nbt = new CompoundTag();
-		nbt.putUUID("Id", id);
+		nbt.put("Id", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(id));
 		if (groupId != null)
-			nbt.putUUID("GroupId", groupId);
+			nbt.put("GroupId", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(groupId));
 		nbt.putDouble("Location", location);
 		nbt.putDouble("TargetLocation", targetLocation);
 		nbt.put("TargetEdge", target.serializeEach(loc -> loc.write(dimensions)));
@@ -40,12 +40,12 @@ public class TrackEdgeIntersection {
 
 	public static TrackEdgeIntersection read(CompoundTag nbt, DimensionPalette dimensions) {
 		TrackEdgeIntersection intersection = new TrackEdgeIntersection();
-		intersection.id = nbt.getUUID("Id");
+		intersection.id = com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(nbt, "Id"));
 		if (nbt.contains("GroupId"))
-			intersection.groupId = nbt.getUUID("GroupId");
-		intersection.location = nbt.getDouble("Location");
-		intersection.targetLocation = nbt.getDouble("TargetLocation");
-		intersection.target = Couple.deserializeEach(nbt.getList("TargetEdge", Tag.TAG_COMPOUND),
+			intersection.groupId = com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(nbt, "GroupId"));
+		intersection.location = nbt.getDouble("Location").orElse(0.0D);
+		intersection.targetLocation = nbt.getDouble("TargetLocation").orElse(0.0D);
+		intersection.target = Couple.deserializeEach(nbt.getListOrEmpty("TargetEdge"),
 			tag -> TrackNodeLocation.read(tag, dimensions));
 		return intersection;
 	}

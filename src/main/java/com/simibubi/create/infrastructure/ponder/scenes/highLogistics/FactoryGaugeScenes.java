@@ -18,6 +18,7 @@ import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.redstone.link.RedstoneLinkBlock;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.math.Pointing;
@@ -735,7 +736,7 @@ public class FactoryGaugeScenes {
 			.modifyBlockEntityNBT(basin, BasinBlockEntity.class, nbt -> {
 				nbt.put("VisualizedItems",
 					NBTHelper.writeCompoundList(
-						ImmutableList.of(IntAttached.with(1, AllItems.ANDESITE_ALLOY.asStack())), ia -> (CompoundTag) ia.getValue().saveOptional(builder.world().getHolderLookupProvider())));
+						ImmutableList.of(IntAttached.with(1, AllItems.ANDESITE_ALLOY.asStack())), ia -> CreateNbt.writeItemStack(builder.world().getHolderLookupProvider(), ia.getValue())));
 			});
 		scene.idle(4);
 		scene.rotateCameraY(90);

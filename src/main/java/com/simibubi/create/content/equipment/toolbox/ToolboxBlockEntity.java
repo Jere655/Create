@@ -17,6 +17,7 @@ import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.animatedContainer.AnimatedContainerBehaviour;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.foundation.utility.ResetableLazy;
 
 import net.createmod.catnip.animation.LerpedFloat;
@@ -24,7 +25,9 @@ import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentMap.Builder;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -148,7 +151,7 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 				if (clear || !playerStack.isEmpty()
 					&& !ToolboxInventory.canItemsShareCompartment(playerStack, referenceItem)) {
 					player.getPersistentData()
-						.getCompound("CreateToolboxData")
+						.getCompoundOrEmpty("CreateToolboxData")
 						.remove(String.valueOf(hotbarSlot));
 					playerEntries.remove();
 					if (player instanceof ServerPlayer)
@@ -282,12 +285,11 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
+		inventory.deserializeNBT(registries, compound.getCompoundOrEmpty("Inventory"));
 		super.read(compound, registries, clientPacket);
-		if (compound.contains("UniqueId", 11))
-			this.uniqueId = compound.getUUID("UniqueId");
-		if (compound.contains("CustomName", 8))
-			this.customName = Component.Serializer.fromJson(compound.getString("CustomName"), registries);
+		this.uniqueId = compound.read("UniqueId", UUIDUtil.CODEC).orElse(null);
+		this.customName = CreateNbt.readComponent(registries, compound.getStringOr("CustomName", ""))
+			.orElse(null);
 	}
 
 	@Override
@@ -296,10 +298,10 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 			uniqueId = UUID.randomUUID();
 
 		compound.put("Inventory", inventory.serializeNBT(registries));
-		compound.putUUID("UniqueId", uniqueId);
+		compound.store("UniqueId", UUIDUtil.CODEC, uniqueId);
 
 		if (customName != null)
-			compound.putString("CustomName", Component.Serializer.toJson(customName, registries));
+			compound.putString("CustomName", CreateNbt.writeComponent(registries, customName));
 		super.write(compound, registries, clientPacket);
 	}
 
@@ -384,7 +386,7 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 	}
 
 	@Override
-	protected void applyImplicitComponents(DataComponentInput componentInput) {
+	protected void applyImplicitComponents(DataComponentGetter componentInput) {
 		setUniqueId(componentInput.get(AllDataComponents.TOOLBOX_UUID));
 		readInventory(componentInput.get(AllDataComponents.TOOLBOX_INVENTORY));
 	}

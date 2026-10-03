@@ -2,12 +2,12 @@ package com.simibubi.create.content.kinetics.transmission.sequencer;
 
 import com.simibubi.create.foundation.data.SpecialBlockStateGen;
 import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
+import com.tterrag.registrate.providers.generators.RegistrateBlockModelGenerator;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 
 public class SequencedGearshiftGenerator extends SpecialBlockStateGen {
 
@@ -22,14 +22,13 @@ public class SequencedGearshiftGenerator extends SpecialBlockStateGen {
 	}
 
 	@Override
-	public <T extends Block> ModelFile getModel(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov,
+	public <T extends Block> ResourceLocation getModel(DataGenContext<Block, T> ctx, RegistrateBlockModelGenerator prov,
 		BlockState state) {
 		String variant = "idle";
 		int seq = state.getValue(SequencedGearshiftBlock.STATE);
 		if (seq > 0)
 			variant = "seq_" + seq;
-		return prov.models()
-			.getExistingFile(prov.modLoc("block/" + ctx.getName() + "/" + variant));
+		return prov.modLoc("block/" + ctx.getName() + "/" + variant);
 	}
 
 }

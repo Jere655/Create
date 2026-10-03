@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -26,12 +25,12 @@ public class ExperienceNuggetItem extends Item {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+	public InteractionResult use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
 		ItemStack itemInHand = pPlayer.getItemInHand(pUsedHand);
 		if (pLevel.isClientSide) {
 			pLevel.playSound(pPlayer, pPlayer.blockPosition(), SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS,
 				.5f, 1);
-			return InteractionResultHolder.consume(itemInHand);
+			return InteractionResult.CONSUME;
 		}
 
 		int amountUsed = pPlayer.isShiftKeyDown() ? 1 : itemInHand.getCount();
@@ -63,10 +62,10 @@ public class ExperienceNuggetItem extends Item {
 
 		itemInHand.shrink(amountUsed);
 		if (!itemInHand.isEmpty())
-			return InteractionResultHolder.success(itemInHand);
+			return InteractionResult.SUCCESS;
 
 		pPlayer.setItemInHand(pUsedHand, ItemStack.EMPTY);
-		return InteractionResultHolder.consume(itemInHand);
+		return InteractionResult.CONSUME;
 	}
 
 }

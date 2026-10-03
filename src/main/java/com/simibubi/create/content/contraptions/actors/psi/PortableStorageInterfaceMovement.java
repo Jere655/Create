@@ -36,8 +36,8 @@ public class PortableStorageInterfaceMovement implements MovementBehaviour {
 
 	@Override
 	public Vec3 getActiveAreaOffset(MovementContext context) {
-		return Vec3.atLowerCornerOf(context.state.getValue(PortableStorageInterfaceBlock.FACING)
-			.getNormal())
+		return context.state.getValue(PortableStorageInterfaceBlock.FACING)
+			.getUnitVec3()
 			.scale(1.85f);
 	}
 
@@ -138,15 +138,15 @@ public class PortableStorageInterfaceMovement implements MovementBehaviour {
 		if (psi.isPowered())
 			return false;
 
-		context.data.put(_workingPos_, NbtUtils.writeBlockPos(psi.getBlockPos()));
+		context.data.put(_workingPos_, com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(psi.getBlockPos()));
 		if (!context.world.isClientSide) {
 			Vec3 diff = VecHelper.getCenterOf(psi.getBlockPos())
 				.subtract(context.position);
-			diff = VecHelper.project(diff, Vec3.atLowerCornerOf(currentFacing.getNormal()));
+			diff = VecHelper.project(diff, currentFacing.getUnitVec3());
 			float distance = (float) (diff.length() + 1.85f - 1);
 			psi.startTransferringTo(context.contraption, distance);
 		} else {
-			context.data.put(_clientPrevPos_, NbtUtils.writeBlockPos(pos));
+			context.data.put(_clientPrevPos_, com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
 			if (context.contraption instanceof CarriageContraption || context.contraption.entity.isStalled()
 				|| context.motion.lengthSqr() == 0)
 				getAnimation(context).chase(psi.getConnectionDistance() / 2, 0.25f, Chaser.LINEAR);
@@ -200,11 +200,11 @@ public class PortableStorageInterfaceMovement implements MovementBehaviour {
 	}
 
 	private Optional<Direction> getCurrentFacingIfValid(MovementContext context) {
-		Vec3 directionVec = Vec3.atLowerCornerOf(context.state.getValue(PortableStorageInterfaceBlock.FACING)
-			.getNormal());
+		Vec3 directionVec = context.state.getValue(PortableStorageInterfaceBlock.FACING)
+			.getUnitVec3();
 		directionVec = context.rotation.apply(directionVec);
-		Direction facingFromVector = Direction.getNearest(directionVec.x, directionVec.y, directionVec.z);
-		if (directionVec.distanceTo(Vec3.atLowerCornerOf(facingFromVector.getNormal())) > 1 / 2f)
+		Direction facingFromVector = Direction.getApproximateNearest(new Vec3(directionVec.x, directionVec.y, directionVec.z));
+		if (directionVec.distanceTo(facingFromVector.getUnitVec3()) > 1 / 2f)
 			return Optional.empty();
 		return Optional.of(facingFromVector);
 	}

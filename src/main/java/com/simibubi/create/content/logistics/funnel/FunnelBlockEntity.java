@@ -167,7 +167,7 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 			.isVertical();
 		boolean up = facing == Direction.UP;
 
-		outputPos = outputPos.add(Vec3.atLowerCornerOf(facing.getNormal())
+		outputPos = outputPos.add(facing.getUnitVec3()
 			.scale(vertical ? up ? .15f : .5f : .25f));
 		if (!vertical)
 			outputPos = outputPos.subtract(0, .45f, 0);
@@ -350,7 +350,7 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		extractionCooldown = compound.getInt("TransferCooldown");
+		extractionCooldown = compound.getInt("TransferCooldown").orElse(0);
 
 		if (clientPacket)
 			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> VisualizationHelper.queueUpdate(this));

@@ -48,7 +48,7 @@ import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 public class TrackBlockEntity extends SmartBlockEntity implements TransformableBlockEntity, IMergeableBE {
 
@@ -197,7 +197,7 @@ public class TrackBlockEntity extends SmartBlockEntity implements TransformableB
 			tag.putDouble("Smoothing", tilt.smoothingAngle.get());
 		if (boundLocation == null)
 			return;
-		tag.put("BoundLocation", NbtUtils.writeBlockPos(boundLocation.getSecond()));
+		tag.put("BoundLocation", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(boundLocation.getSecond()));
 		tag.putString("BoundDimension", boundLocation.getFirst()
 			.location()
 			.toString());
@@ -215,7 +215,7 @@ public class TrackBlockEntity extends SmartBlockEntity implements TransformableB
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
 		connections.clear();
-		for (Tag t : tag.getList("Connections", Tag.TAG_COMPOUND)) {
+		for (Tag t : tag.getListOrEmpty("Connections")) {
 			if (!(t instanceof CompoundTag))
 				return;
 			BezierConnection connection = new BezierConnection((CompoundTag) t, worldPosition);
@@ -223,7 +223,7 @@ public class TrackBlockEntity extends SmartBlockEntity implements TransformableB
 		}
 
 		boolean smoothingPreviously = tilt.smoothingAngle.isPresent();
-		tilt.smoothingAngle = Optional.ofNullable(tag.contains("Smoothing") ? tag.getDouble("Smoothing") : null);
+		tilt.smoothingAngle = Optional.ofNullable(tag.contains("Smoothing") ? tag.getDouble("Smoothing").orElse(0.0D) : null);
 		if (smoothingPreviously != tilt.smoothingAngle.isPresent() && clientPacket) {
 			requestModelDataUpdate();
 			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 16);
@@ -238,7 +238,7 @@ public class TrackBlockEntity extends SmartBlockEntity implements TransformableB
 
 		if (tag.contains("BoundLocation"))
 			boundLocation = Pair.of(
-				ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("BoundDimension"))),
+				ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("BoundDimension").orElse(""))),
 				NBTHelper.readBlockPos(tag, "BoundLocation"));
 	}
 

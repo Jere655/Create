@@ -9,9 +9,11 @@ import com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler.Freq
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -70,7 +72,7 @@ public class RedstoneLinkCondition extends ScheduleWaitCondition {
 
 	@Override
 	public boolean tickCompletion(Level level, Train train, CompoundTag context) {
-		int lastChecked = context.contains("LastChecked") ? context.getInt("LastChecked") : -1;
+		int lastChecked = context.getIntOr("LastChecked", -1);
 		int status = Create.REDSTONE_LINK_NETWORK_HANDLER.globalPowerVersion.get();
 		if (status == lastChecked)
 			return false;
@@ -97,7 +99,10 @@ public class RedstoneLinkCondition extends ScheduleWaitCondition {
 
 	@Override
 	protected void writeAdditional(HolderLookup.Provider registries, CompoundTag tag) {
-		tag.put("Frequency", freq.serializeEach(f -> (CompoundTag) f.getStack().saveOptional(registries)));
+		tag.put("Frequency", freq.serializeEach(f -> CatnipCodecUtils.encode(ItemStack.OPTIONAL_CODEC, registries, f.getStack())
+			.filter(CompoundTag.class::isInstance)
+			.map(CompoundTag.class::cast)
+			.orElseGet(CompoundTag::new)));
 	}
 
 	public boolean lowActivation() {
@@ -107,7 +112,7 @@ public class RedstoneLinkCondition extends ScheduleWaitCondition {
 	@Override
 	protected void readAdditional(HolderLookup.Provider registries, CompoundTag tag) {
 		if (tag.contains("Frequency"))
-			freq = Couple.deserializeEach(tag.getList("Frequency", Tag.TAG_COMPOUND), c -> Frequency.of(ItemStack.parseOptional(registries, c)));
+			freq = Couple.deserializeEach(tag.getListOrEmpty("Frequency"), c -> Frequency.of(CreateNbt.readItemStack(registries, c)));
 	}
 
 	@Override

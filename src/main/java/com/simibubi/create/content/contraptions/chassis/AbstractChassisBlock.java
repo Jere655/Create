@@ -13,7 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -36,15 +36,15 @@ public abstract class AbstractChassisBlock extends RotatedPillarBlock implements
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (!player.mayBuild())
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 		boolean isSlimeBall = stack.is(Tags.Items.SLIMEBALLS) || AllItems.SUPER_GLUE.isIn(stack);
 
 		BooleanProperty affectedSide = getGlueableSide(state, hitResult.getDirection());
 		if (affectedSide == null)
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 		if (isSlimeBall && state.getValue(affectedSide)) {
 			for (Direction face : Iterate.directions) {
@@ -54,7 +54,7 @@ public abstract class AbstractChassisBlock extends RotatedPillarBlock implements
 					if (level.isClientSide) {
 						Vec3 vec = hitResult.getLocation();
 						level.addParticle(ParticleTypes.ITEM_SLIME, vec.x, vec.y, vec.z, 0, 0, 0);
-						return ItemInteractionResult.SUCCESS;
+						return InteractionResult.SUCCESS;
 					}
 					AllSoundEvents.SLIME_ADDED.playOnServer(level, pos, .5f, 1);
 					state = state.setValue(glueableSide, true);
@@ -62,24 +62,24 @@ public abstract class AbstractChassisBlock extends RotatedPillarBlock implements
 			}
 			if (!level.isClientSide)
 				level.setBlockAndUpdate(pos, state);
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 
 		if ((!stack.isEmpty() || !player.isShiftKeyDown()) && !isSlimeBall)
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		if (state.getValue(affectedSide) == isSlimeBall)
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		if (!glueAllowedOnSide(level, pos, state, hitResult.getDirection()))
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		if (level.isClientSide) {
 			Vec3 vec = hitResult.getLocation();
 			level.addParticle(ParticleTypes.ITEM_SLIME, vec.x, vec.y, vec.z, 0, 0, 0);
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 
 		AllSoundEvents.SLIME_ADDED.playOnServer(level, pos, .5f, 1);
 		level.setBlockAndUpdate(pos, state.setValue(affectedSide, isSlimeBall));
-		return ItemInteractionResult.SUCCESS;
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override

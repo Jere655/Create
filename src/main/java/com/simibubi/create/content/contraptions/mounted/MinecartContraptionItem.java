@@ -19,6 +19,7 @@ import com.simibubi.create.content.contraptions.data.ContraptionPickupLimiting;
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.nbt.NBTHelper;
@@ -35,9 +36,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.AbstractMinecart.Type;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -57,18 +59,30 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 @EventBusSubscriber
 public class MinecartContraptionItem extends Item {
 
-	private final AbstractMinecart.Type minecartType;
+	private final MinecartKind minecartType;
+
+	private enum MinecartKind {
+		RIDEABLE(EntityType.MINECART),
+		FURNACE(EntityType.FURNACE_MINECART),
+		CHEST(EntityType.CHEST_MINECART);
+
+		private final EntityType<? extends AbstractMinecart> entityType;
+
+		MinecartKind(EntityType<? extends AbstractMinecart> entityType) {
+			this.entityType = entityType;
+		}
+	}
 
 	public static MinecartContraptionItem rideable(Properties builder) {
-		return new MinecartContraptionItem(Type.RIDEABLE, builder);
+		return new MinecartContraptionItem(MinecartKind.RIDEABLE, builder);
 	}
 
 	public static MinecartContraptionItem furnace(Properties builder) {
-		return new MinecartContraptionItem(Type.FURNACE, builder);
+		return new MinecartContraptionItem(MinecartKind.FURNACE, builder);
 	}
 
 	public static MinecartContraptionItem chest(Properties builder) {
-		return new MinecartContraptionItem(Type.CHEST, builder);
+		return new MinecartContraptionItem(MinecartKind.CHEST, builder);
 	}
 
 	@Override
@@ -76,7 +90,7 @@ public class MinecartContraptionItem extends Item {
 		return AllConfigs.server().kinetics.minecartContraptionInContainers.get();
 	}
 
-	private MinecartContraptionItem(Type minecartTypeIn, Properties builder) {
+	private MinecartContraptionItem(MinecartKind minecartTypeIn, Properties builder) {
 		super(builder);
 		this.minecartType = minecartTypeIn;
 		DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
@@ -102,7 +116,7 @@ public class MinecartContraptionItem extends Item {
 				: RailShape.NORTH_SOUTH;
 			double d3;
 			if (blockstate.is(BlockTags.RAILS)) {
-				if (railshape.isAscending()) {
+				if (railshape.isSlope()) {
 					d3 = 0.6D;
 				} else {
 					d3 = 0.1D;
@@ -118,15 +132,16 @@ public class MinecartContraptionItem extends Item {
 					? ((BaseRailBlock) blockstate1.getBlock()).getRailDirection(blockstate1, world, blockpos.below(),
 					null)
 					: RailShape.NORTH_SOUTH;
-				if (direction != Direction.DOWN && railshape1.isAscending()) {
+				if (direction != Direction.DOWN && railshape1.isSlope()) {
 					d3 = -0.4D;
 				} else {
 					d3 = -0.9D;
 				}
 			}
 
+			MinecartKind kind = ((MinecartContraptionItem) stack.getItem()).minecartType;
 			AbstractMinecart abstractminecartentity = AbstractMinecart.createMinecart(world, d0, d1 + d3, d2,
-				((MinecartContraptionItem) stack.getItem()).minecartType, stack, null);
+				kind.entityType, EntitySpawnReason.DISPENSER, stack, null);
 			if (stack.has(DataComponents.CUSTOM_NAME))
 				abstractminecartentity.setCustomName(stack.getHoverName());
 			world.addFreshEntity(abstractminecartentity);
@@ -158,13 +173,14 @@ public class MinecartContraptionItem extends Item {
 					? ((BaseRailBlock) blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null)
 					: RailShape.NORTH_SOUTH;
 				double d0 = 0.0D;
-				if (railshape.isAscending()) {
+				if (railshape.isSlope()) {
 					d0 = 0.5D;
 				}
 
 				AbstractMinecart abstractminecartentity =
 					AbstractMinecart.createMinecart(serverlevel, (double) blockpos.getX() + 0.5D,
-						(double) blockpos.getY() + 0.0625D + d0, (double) blockpos.getZ() + 0.5D, this.minecartType, itemstack, null);
+						(double) blockpos.getY() + 0.0625D + d0, (double) blockpos.getZ() + 0.5D, this.minecartType.entityType,
+						EntitySpawnReason.SPAWN_ITEM_USE, itemstack, null);
 				if (itemstack.has(DataComponents.CUSTOM_NAME))
 					abstractminecartentity.setCustomName(itemstack.getHoverName());
 				Player player = context.getPlayer();
@@ -197,11 +213,6 @@ public class MinecartContraptionItem extends Item {
 		}
 	}
 
-	@Override
-	public String getDescriptionId(ItemStack stack) {
-		return "item.create.minecart_contraption";
-	}
-
 	@SubscribeEvent
 	public static void wrenchCanBeUsedToPickUpMinecartContraptions(PlayerInteractEvent.EntityInteract event) {
 		Entity entity = event.getTarget();
@@ -222,8 +233,8 @@ public class MinecartContraptionItem extends Item {
 			return;
 		if (player instanceof DeployerFakePlayer dfp && dfp.onMinecartContraption)
 			return;
-		Type type = cart.getMinecartType();
-		if (type != Type.RIDEABLE && type != Type.FURNACE && type != Type.CHEST)
+		MinecartKind type = kindOf(cart);
+		if (type == null)
 			return;
 		List<Entity> passengers = cart.getPassengers();
 		if (passengers.isEmpty() || !(passengers.get(0) instanceof OrientedContraptionEntity oce))
@@ -252,7 +263,7 @@ public class MinecartContraptionItem extends Item {
 		ItemStack generatedStack = create(type, oce);
 		generatedStack.set(DataComponents.CUSTOM_NAME, entity.getCustomName());
 
-		if (ContraptionPickupLimiting.isTooLargeForPickup(generatedStack.saveOptional(event.getLevel().registryAccess()))) {
+		if (ContraptionPickupLimiting.isTooLargeForPickup(CreateNbt.writeItemStack(event.getLevel().registryAccess(), generatedStack))) {
 			MutableComponent message = CreateLang.translateDirect("contraption.minecart_contraption_too_big")
 				.withStyle(ChatFormatting.RED);
 			player.displayClientMessage(message, true);
@@ -271,7 +282,17 @@ public class MinecartContraptionItem extends Item {
 		event.setCanceled(true);
 	}
 
-	public static ItemStack create(Type type, OrientedContraptionEntity entity) {
+	private static @Nullable MinecartKind kindOf(AbstractMinecart cart) {
+		if (cart.getType() == EntityType.MINECART)
+			return MinecartKind.RIDEABLE;
+		if (cart.getType() == EntityType.FURNACE_MINECART)
+			return MinecartKind.FURNACE;
+		if (cart.getType() == EntityType.CHEST_MINECART)
+			return MinecartKind.CHEST;
+		return null;
+	}
+
+	public static ItemStack create(MinecartKind type, OrientedContraptionEntity entity) {
 		ItemStack stack = ItemStack.EMPTY;
 
 		switch (type) {

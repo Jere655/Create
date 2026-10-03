@@ -75,7 +75,7 @@ public class TrackNodeLocation extends Vec3i {
 
 	public CompoundTag write(DimensionPalette dimensions) {
 		CompoundTag c = new CompoundTag();
-		c.put("Pos", NbtUtils.writeBlockPos(new BlockPos(this)));
+		c.put("Pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(new BlockPos(this)));
 		if (dimensions != null)
 			c.putInt("D", dimensions.encode(dimension));
 		if (yOffsetPixels != 0)
@@ -85,10 +85,10 @@ public class TrackNodeLocation extends Vec3i {
 
 	public static TrackNodeLocation read(CompoundTag tag, DimensionPalette dimensions) {
 		TrackNodeLocation location = fromPackedPos(tag.contains("Pos") ? NBTHelper.readBlockPos(tag, "Pos")
-			: new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z")));
+			: new BlockPos(tag.getInt("X").orElse(0), tag.getInt("Y").orElse(0), tag.getInt("Z").orElse(0)));
 		if (dimensions != null)
-			location.dimension = dimensions.decode(tag.getInt("D"));
-		location.yOffsetPixels = tag.getInt("YO");
+			location.dimension = dimensions.decode(tag.getInt("D").orElse(0));
+		location.yOffsetPixels = tag.getInt("YO").orElse(0);
 		return location;
 	}
 

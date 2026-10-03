@@ -227,9 +227,9 @@ public class FlapDisplayBlockEntity extends KineticBlockEntity {
 		int prevX = xSize;
 		int prevY = ySize;
 
-		isController = tag.getBoolean("Controller");
-		xSize = tag.getInt("XSize");
-		ySize = tag.getInt("YSize");
+		isController = tag.getBooleanOr("Controller", false);
+		xSize = tag.getIntOr("XSize", 1);
+		ySize = tag.getIntOr("YSize", 1);
 
 		manualLines = new boolean[ySize * 2];
 		for (int i = 0; i < ySize * 2; i++)
@@ -251,7 +251,7 @@ public class FlapDisplayBlockEntity extends KineticBlockEntity {
 		List<FlapDisplayLayout> lines = getLines();
 		for (int i = 0; i < lines.size(); i++)
 			lines.get(i)
-				.read(tag.getCompound("Display" + i), registries);
+				.read(tag.getCompoundOrEmpty("Display" + i), registries);
 	}
 
 	public int getLineIndexAt(double yCoord) {
@@ -302,7 +302,7 @@ public class FlapDisplayBlockEntity extends KineticBlockEntity {
 		if (!isController)
 			return aabb;
 		Vec3i normal = getDirection().getClockWise()
-			.getNormal();
+			.getUnitVec3i();
 		return aabb.expandTowards(normal.getX() * xSize, -ySize, normal.getZ() * xSize);
 	}
 

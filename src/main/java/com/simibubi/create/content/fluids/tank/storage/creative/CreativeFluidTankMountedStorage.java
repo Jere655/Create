@@ -8,6 +8,7 @@ import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageType
 import com.simibubi.create.api.contraption.storage.fluid.WrapperMountedFluidStorage;
 import com.simibubi.create.content.fluids.tank.CreativeFluidTankBlockEntity;
 import com.simibubi.create.content.fluids.tank.CreativeFluidTankBlockEntity.CreativeSmartFluidTank;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -46,8 +47,8 @@ public class CreativeFluidTankMountedStorage extends WrapperMountedFluidStorage<
 	}
 
 	public static CreativeFluidTankMountedStorage fromLegacy(HolderLookup.Provider registries, CompoundTag nbt) {
-		int capacity = nbt.getInt("Capacity");
-		FluidStack fluid = FluidStack.parseOptional(registries, nbt.getCompound("ProvidedStack"));
+		int capacity = nbt.getInt("Capacity").orElse(0);
+		FluidStack fluid = CreateNbt.readFluidStack(registries, nbt.getCompound("ProvidedStack").orElseGet(CompoundTag::new));
 		CreativeSmartFluidTank tank = new CreativeSmartFluidTank(capacity, $ -> {});
 		tank.setContainedFluid(fluid);
 		return new CreativeFluidTankMountedStorage(tank);

@@ -98,7 +98,7 @@ public class BlazeBurnerMovementBehaviour implements MovementBehaviour {
 		CompoundTag data = context.data;
 		if (!data.contains("Conductor"))
 			data.putBoolean("Conductor", determineIfConducting(context));
-		return data.getBoolean("Conductor") && (context.contraption.entity instanceof CarriageContraptionEntity cce)
+		return data.getBoolean("Conductor").orElse(false) && (context.contraption.entity instanceof CarriageContraptionEntity cce)
 			&& cce.hasSchedule();
 	}
 

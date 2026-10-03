@@ -11,13 +11,17 @@ import com.google.common.collect.Sets;
 import com.simibubi.create.content.kinetics.crafter.MechanicalCraftingRecipe;
 
 import net.createmod.catnip.registry.RegisteredObjectsHelper;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 
@@ -31,6 +35,7 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
  */
 public class MechanicalCraftingRecipeBuilder {
 
+	private final HolderGetter<Item> items;
 	private final Item result;
 	private final int count;
 	private final List<String> pattern = Lists.newArrayList();
@@ -38,7 +43,8 @@ public class MechanicalCraftingRecipeBuilder {
 	private boolean acceptMirrored;
 	private final List<ICondition> recipeConditions;
 
-	public MechanicalCraftingRecipeBuilder(ItemLike result, int resultCount) {
+	public MechanicalCraftingRecipeBuilder(HolderGetter<Item> items, ItemLike result, int resultCount) {
+		this.items = items;
 		this.result = result.asItem();
 		count = resultCount;
 		acceptMirrored = true;
@@ -48,22 +54,22 @@ public class MechanicalCraftingRecipeBuilder {
 	/**
 	 * Creates a new builder for a shaped recipe with the specified result with a count of 1
 	 */
-	public static MechanicalCraftingRecipeBuilder shapedRecipe(ItemLike result) {
-		return shapedRecipe(result, 1);
+	public static MechanicalCraftingRecipeBuilder shapedRecipe(HolderGetter<Item> items, ItemLike result) {
+		return shapedRecipe(items, result, 1);
 	}
 
 	/**
 	 * Creates a new builder for a shaped recipe with the specified result and count.
 	 */
-	public static MechanicalCraftingRecipeBuilder shapedRecipe(ItemLike result, int resultCount) {
-		return new MechanicalCraftingRecipeBuilder(result, resultCount);
+	public static MechanicalCraftingRecipeBuilder shapedRecipe(HolderGetter<Item> items, ItemLike result, int resultCount) {
+		return new MechanicalCraftingRecipeBuilder(items, result, resultCount);
 	}
 
 	/**
 	 * Adds a new unique key to the recipe key for use in the pattern
 	 */
 	public MechanicalCraftingRecipeBuilder key(Character c, TagKey<Item> tag) {
-		return this.key(c, Ingredient.of(tag));
+		return this.key(c, Ingredient.of(items.getOrThrow(tag)));
 	}
 
 	/**
@@ -143,7 +149,7 @@ public class MechanicalCraftingRecipeBuilder {
 			new ItemStack(result, count),
 			acceptMirrored
 		);
-		output.accept(id, recipe, null, recipeConditions.toArray(ICondition[]::new));
+		output.accept(ResourceKey.<Recipe<?>>create(Registries.RECIPE, id), recipe, null, recipeConditions.toArray(ICondition[]::new));
 	}
 
 	/**

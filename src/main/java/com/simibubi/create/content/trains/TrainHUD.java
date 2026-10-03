@@ -1,6 +1,5 @@
 package com.simibubi.create.content.trains;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsBlock;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsHandler;
 import com.simibubi.create.content.trains.entity.Carriage;
@@ -19,7 +18,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -30,7 +30,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 public class TrainHUD {
 
-	public static final LayeredDraw.Layer OVERLAY = TrainHUD::renderOverlay;
+	public static final GuiLayer OVERLAY = TrainHUD::renderOverlay;
 
 	static LerpedFloat displayedSpeed = LerpedFloat.linear();
 	static LerpedFloat displayedThrottle = LerpedFloat.linear();
@@ -138,7 +138,7 @@ public class TrainHUD {
 		int w = (int) (AllGuiTextures.TRAIN_HUD_SPEED.getWidth() * displayedSpeed.getValue(partialTicks));
 		int h = AllGuiTextures.TRAIN_HUD_SPEED.getHeight();
 
-		guiGraphics.blit(AllGuiTextures.TRAIN_HUD_SPEED.location, 0, 0, 0, AllGuiTextures.TRAIN_HUD_SPEED.getStartX(),
+		guiGraphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, AllGuiTextures.TRAIN_HUD_SPEED.location, 0, 0, 0, AllGuiTextures.TRAIN_HUD_SPEED.getStartX(),
 			AllGuiTextures.TRAIN_HUD_SPEED.getStartY(), w, h, 256, 256);
 
 		int promptSize = (int) displayedPromptSize.getValue(partialTicks);
@@ -149,7 +149,7 @@ public class TrainHUD {
 
 			AllGuiTextures.TRAIN_PROMPT_L.render(guiGraphics, -3, 0);
 			AllGuiTextures.TRAIN_PROMPT_R.render(guiGraphics, promptSize, 0);
-			guiGraphics.blit(AllGuiTextures.TRAIN_PROMPT.location, 0, 0, 0, AllGuiTextures.TRAIN_PROMPT.getStartX() + (128 - promptSize / 2f),
+			guiGraphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, AllGuiTextures.TRAIN_PROMPT.location, 0, 0, 0, AllGuiTextures.TRAIN_PROMPT.getStartX() + (128 - promptSize / 2f),
 				AllGuiTextures.TRAIN_PROMPT.getStartY(), promptSize, AllGuiTextures.TRAIN_PROMPT.getHeight(), 256, 256);
 
 			poseStack.popPose();
@@ -170,7 +170,7 @@ public class TrainHUD {
 
 		w = (int) (AllGuiTextures.TRAIN_HUD_THROTTLE.getWidth() * (1 - displayedThrottle.getValue(partialTicks)));
 		int invW = AllGuiTextures.TRAIN_HUD_THROTTLE.getWidth() - w;
-		guiGraphics.blit(AllGuiTextures.TRAIN_HUD_THROTTLE.location, invW, 0, 0, AllGuiTextures.TRAIN_HUD_THROTTLE.getStartX() + invW,
+		guiGraphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, AllGuiTextures.TRAIN_HUD_THROTTLE.location, invW, 0, 0, AllGuiTextures.TRAIN_HUD_THROTTLE.getStartX() + invW,
 			AllGuiTextures.TRAIN_HUD_THROTTLE.getStartY(), w, h, 256, 256);
 		AllGuiTextures.TRAIN_HUD_THROTTLE_POINTER.render(guiGraphics,
 			Math.max(1, AllGuiTextures.TRAIN_HUD_THROTTLE.getWidth() - w) - 3, -2);

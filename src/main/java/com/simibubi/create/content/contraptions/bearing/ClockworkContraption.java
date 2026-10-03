@@ -114,9 +114,9 @@ public class ClockworkContraption extends Contraption {
 
 	@Override
 	public void readNBT(Level world, CompoundTag tag, boolean spawnData) {
-		facing = Direction.from3DDataValue(tag.getInt("facing"));
+		facing = Direction.from3DDataValue(tag.getInt("facing").orElse(0));
 		handType = NBTHelper.readEnum(tag, "HandType", HandType.class);
-		offset = tag.getInt("offset");
+		offset = tag.getInt("offset").orElse(0);
 		super.readNBT(world, tag, spawnData);
 	}
 

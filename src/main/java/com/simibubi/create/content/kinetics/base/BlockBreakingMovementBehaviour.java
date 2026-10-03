@@ -46,7 +46,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 
 		if (!canBreak(world, pos, stateVisited))
 			return;
-		context.data.put("BreakingPos", NbtUtils.writeBlockPos(pos));
+		context.data.put("BreakingPos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
 		context.stall = true;
 	}
 
@@ -107,7 +107,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 			return;
 
 		Level world = context.world;
-		int id = data.getInt("BreakerId");
+		int id = data.getInt("BreakerId").orElse(0);
 		BlockPos breakingPos = NBTHelper.readBlockPos(data, "BreakingPos");
 
 		data.remove("Progress");
@@ -131,7 +131,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 		if (!data.contains("WaitingTicks"))
 			return;
 
-		int waitingTicks = data.getInt("WaitingTicks");
+		int waitingTicks = data.getInt("WaitingTicks").orElse(0);
 		if (waitingTicks-- > 0) {
 			data.putInt("WaitingTicks", waitingTicks);
 			context.stall = true;
@@ -158,7 +158,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 			return;
 		}
 
-		int ticksUntilNextProgress = data.getInt("TicksUntilNextProgress");
+		int ticksUntilNextProgress = data.getInt("TicksUntilNextProgress").orElse(0);
 		if (ticksUntilNextProgress-- > 0) {
 			data.putInt("TicksUntilNextProgress", ticksUntilNextProgress);
 			return;
@@ -166,8 +166,8 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 
 		Level world = context.world;
 		BlockPos breakingPos = NBTHelper.readBlockPos(data, "BreakingPos");
-		int destroyProgress = data.getInt("Progress");
-		int id = data.getInt("BreakerId");
+		int destroyProgress = data.getInt("Progress").orElse(0);
+		int id = data.getInt("BreakerId").orElse(0);
 		BlockState stateToBreak = world.getBlockState(breakingPos);
 		float blockHardness = stateToBreak.getDestroySpeed(world, breakingPos);
 
@@ -246,7 +246,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 
 		CompoundTag data = context.data;
 		data.putInt("WaitingTicks", 10);
-		data.put("LastPos", NbtUtils.writeBlockPos(pos));
+		data.put("LastPos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
 		context.stall = true;
 	}
 

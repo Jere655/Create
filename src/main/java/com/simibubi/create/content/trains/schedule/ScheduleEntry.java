@@ -52,10 +52,10 @@ public class ScheduleEntry {
 
 	public static ScheduleEntry fromTag(HolderLookup.Provider registries, CompoundTag tag) {
 		ScheduleEntry entry = new ScheduleEntry();
-		entry.instruction = ScheduleInstruction.fromTag(registries, tag.getCompound("Instruction"));
+		entry.instruction = ScheduleInstruction.fromTag(registries, tag.getCompoundOrEmpty("Instruction"));
 		entry.conditions = new ArrayList<>();
 		if (entry.instruction.supportsConditions())
-			for (Tag t : tag.getList("Conditions", Tag.TAG_LIST))
+			for (Tag t : tag.getListOrEmpty("Conditions"))
 				if (t instanceof ListTag list)
 					entry.conditions.add(NBTHelper.readCompoundList(list, conditionTag -> ScheduleWaitCondition.fromTag(registries, conditionTag)));
 		return entry;

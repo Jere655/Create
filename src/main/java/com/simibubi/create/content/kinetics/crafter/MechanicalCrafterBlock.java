@@ -22,7 +22,6 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -154,13 +153,13 @@ public class MechanicalCrafterBlock extends HorizontalKineticBlock
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (!(blockEntity instanceof MechanicalCrafterBlockEntity crafter))
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 		if (AllBlocks.MECHANICAL_ARM.isIn(stack))
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 		boolean isHand = stack.isEmpty() && hand == InteractionHand.MAIN_HAND;
 		boolean wrenched = AllItems.WRENCH.isIn(stack);
@@ -169,34 +168,34 @@ public class MechanicalCrafterBlock extends HorizontalKineticBlock
 
 			if (crafter.phase != Phase.IDLE && !wrenched) {
 				crafter.ejectWholeGrid();
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			}
 
 			if (crafter.phase == Phase.IDLE && !isHand && !wrenched) {
 				if (level.isClientSide)
-					return ItemInteractionResult.SUCCESS;
+					return InteractionResult.SUCCESS;
 
 				if (AllItems.CRAFTER_SLOT_COVER.isIn(stack)) {
 					if (crafter.covered)
-						return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+						return InteractionResult.TRY_WITH_EMPTY_HAND;
 					if (!crafter.inventory.isEmpty())
-						return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+						return InteractionResult.TRY_WITH_EMPTY_HAND;
 					crafter.covered = true;
 					crafter.setChanged();
 					crafter.sendData();
 					if (!player.isCreative())
 						stack.shrink(1);
-					return ItemInteractionResult.SUCCESS;
+					return InteractionResult.SUCCESS;
 				}
 
 				IItemHandler capability = level.getCapability(Capabilities.ItemHandler.BLOCK, crafter.getBlockPos(), null);
 				if (capability == null)
-					return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return InteractionResult.TRY_WITH_EMPTY_HAND;
 				ItemStack remainder =
 					ItemHandlerHelper.insertItem(capability, stack.copy(), false);
 				if (remainder.getCount() != stack.getCount())
 					player.setItemInHand(hand, remainder);
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			}
 
 			ItemStack inSlot = crafter.getInventory()
@@ -204,29 +203,29 @@ public class MechanicalCrafterBlock extends HorizontalKineticBlock
 			if (inSlot.isEmpty()) {
 				if (crafter.covered && !wrenched) {
 					if (level.isClientSide)
-						return ItemInteractionResult.SUCCESS;
+						return InteractionResult.SUCCESS;
 					crafter.covered = false;
 					crafter.setChanged();
 					crafter.sendData();
 					if (!player.isCreative())
 						player.getInventory()
 							.placeItemBackInInventory(AllItems.CRAFTER_SLOT_COVER.asStack());
-					return ItemInteractionResult.SUCCESS;
+					return InteractionResult.SUCCESS;
 				}
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			}
 			if (!isHand && !ItemStack.isSameItemSameComponents(stack, inSlot))
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			if (level.isClientSide)
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			player.getInventory()
 				.placeItemBackInInventory(inSlot);
 			crafter.getInventory()
 				.setStackInSlot(0, ItemStack.EMPTY);
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
 	@Override
@@ -255,7 +254,7 @@ public class MechanicalCrafterBlock extends HorizontalKineticBlock
 		Vec3 targetVec = new Vec3(0, 1, 0);
 		targetVec = VecHelper.rotate(targetVec, -point.getXRotation(), Axis.Z);
 		targetVec = VecHelper.rotate(targetVec, AngleHelper.horizontalAngle(facing), Axis.Y);
-		return Direction.getNearest(targetVec.x, targetVec.y, targetVec.z);
+		return Direction.getApproximateNearest(new Vec3(targetVec.x, targetVec.y, targetVec.z));
 	}
 
 	public static boolean isValidTarget(Level world, BlockPos targetPos, BlockState crafterState) {

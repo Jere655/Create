@@ -17,7 +17,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +43,7 @@ public class TrackBlockItem extends BlockItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+	public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
 		ItemStack stack = player.getItemInHand(usedHand);
 		if (player.isShiftKeyDown() && isFoil(stack)) {
 			return clearSelection(stack, level, player);
@@ -90,7 +89,7 @@ public class TrackBlockItem extends BlockItem {
 			}
 			return super.useOn(pContext);
 		} else if (player.isShiftKeyDown()) {
-			return clearSelection(stack, level, player).getResult();
+			return clearSelection(stack, level, player);
 		}
 
 		boolean placing = !(state.getBlock() instanceof ITrackBlock);
@@ -134,14 +133,14 @@ public class TrackBlockItem extends BlockItem {
 		return InteractionResult.SUCCESS;
 	}
 
-	public static InteractionResultHolder<ItemStack> clearSelection(ItemStack stack, Level level, Player player) {
+	public static InteractionResult clearSelection(ItemStack stack, Level level, Player player) {
 		if (level.isClientSide) {
 			level.playSound(player, player.blockPosition(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.75f, 1.0f);
 		} else {
 			player.displayClientMessage(CreateLang.translateDirect("track.selection_cleared"), true);
 			stack.remove(AllDataComponents.TRACK_CONNECTING_FROM);
 		}
-		return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+		return InteractionResult.SUCCESS;
 	}
 
 	public BlockState getPlacementState(UseOnContext pContext) {

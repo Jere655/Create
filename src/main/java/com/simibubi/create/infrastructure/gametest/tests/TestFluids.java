@@ -3,6 +3,7 @@ package com.simibubi.create.infrastructure.gametest.tests;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
@@ -18,8 +19,9 @@ import com.simibubi.create.infrastructure.gametest.GameTestGroup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.gametest.framework.GameTest;
+import com.simibubi.create.infrastructure.gametest.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -217,7 +219,7 @@ public class TestFluids {
 
 	@GameTest(template = "waterwheel_materials", timeoutTicks = CreateGameTestHelper.FIFTEEN_SECONDS)
 	public static void waterwheelMaterials(CreateGameTestHelper helper) {
-		List<Item> planks = BuiltInRegistries.BLOCK.getOrCreateTag(BlockTags.PLANKS).stream()
+		List<Item> planks = StreamSupport.stream(BuiltInRegistries.BLOCK.getTagOrEmpty(BlockTags.PLANKS).spliterator(), false)
 				.map(Holder::value).map(ItemLike::asItem).collect(Collectors.toCollection(ArrayList::new));
 		List<BlockPos> chests = List.of(new BlockPos(6, 4, 2), new BlockPos(6, 4, 3));
 		List<BlockPos> deployers = chests.stream().map(pos -> pos.below(2)).toList();
@@ -233,7 +235,7 @@ public class TestFluids {
 		helper.succeedWhen(() -> {
 			Item plank = planks.get(0);
 			if (!(plank instanceof BlockItem blockItem))
-				throw new GameTestAssertException(BuiltInRegistries.ITEM.getKey(plank) + " is not a BlockItem");
+				throw new GameTestAssertException(Component.literal(BuiltInRegistries.ITEM.getKey(plank) + " is not a BlockItem"), (int) helper.getTick());
 			Block block = blockItem.getBlock();
 
 			WaterWheelBlockEntity smallWheelBe = helper.getBlockEntity(AllBlockEntityTypes.WATER_WHEEL.get(), smallWheel);
@@ -327,16 +329,16 @@ public class TestFluids {
 
 		helper.succeedWhen(() -> {
 			if (stage1.booleanValue()) {
-				helper.assertTrue(firstZombie.isOnFire(), "not ignited");
-				helper.assertFalse(secondZombie.getActiveEffects().isEmpty(), "no effects");
+				helper.assertTrue(firstZombie.isOnFire(), Component.literal("not ignited"));
+				helper.assertFalse(secondZombie.getActiveEffects().isEmpty(), Component.literal("no effects"));
 				// success, stage 2 time
 				stage1.setFalse();
 				helper.pullLever(effects);
 				helper.pullLever(removers);
 				helper.fail("switching stages");
 			} else {
-				helper.assertFalse(firstZombie.isOnFire(), "not extinguished");
-				helper.assertTrue(secondZombie.getActiveEffects().isEmpty(), "has effects");
+				helper.assertFalse(firstZombie.isOnFire(), Component.literal("not extinguished"));
+				helper.assertTrue(secondZombie.getActiveEffects().isEmpty(), Component.literal("has effects"));
 				// all done
 			}
 		});

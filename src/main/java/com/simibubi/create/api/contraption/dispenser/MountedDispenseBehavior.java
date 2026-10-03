@@ -44,12 +44,12 @@ public interface MountedDispenseBehavior {
 
 	static Vec3 getDispenserNormal(MovementContext ctx) {
 		Direction facing = ctx.state.getValue(DispenserBlock.FACING);
-		Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
+		Vec3 normal = facing.getUnitVec3();
 		return ctx.rotation.apply(normal).normalize();
 	}
 
 	static Direction getClosestFacingDirection(Vec3 facing) {
-		return Direction.getNearest(facing.x, facing.y, facing.z);
+		return Direction.getApproximateNearest(new Vec3(facing.x, facing.y, facing.z));
 	}
 
 	/**

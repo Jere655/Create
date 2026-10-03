@@ -4,6 +4,7 @@ plugins {
     id("maven-publish")
     id("net.kyori.blossom") version "2.2.0" // https://github.com/KyoriPowered/blossom
     id("dev.ithundxr.silk") version "1.0.1" // https://github.com/ithundxr/silk
+    id("io.freefair.lombok") version "8.13"
     id("net.neoforged.moddev") version "2.0.141" // https://projects.neoforged.net/neoforged/ModDevGradle
     id("me.modmuss50.mod-publish-plugin") version "1.1.0" // https://github.com/modmuss50/mod-publish-plugin
 }
@@ -16,8 +17,28 @@ group = "com.simibubi.create"
 version = mod_version + (dev && buildNumber != null ? "-${buildNumber}" : "")
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
-    withSourcesJar()
+	toolchain.languageVersion = JavaLanguageVersion.of(21)
+	withSourcesJar()
+}
+
+// Registrate's released 1.21 binary targets the pre-1.21.6 tag API. Delombok
+// the vendored post-rewrite source into this build so Lombok-generated accessors
+// are available to the same transformed source set as Create.
+def delombokedRegistrate = layout.buildDirectory.dir("generated/sources/registrate/main")
+def delombokRegistrate = tasks.register("delombokRegistrate", JavaExec) {
+    classpath = configurations.annotationProcessor + sourceSets.main.compileClasspath
+    mainClass = "lombok.launch.Main"
+    inputs.dir("Registrate-modern/src/main/java")
+    inputs.file("Registrate-modern/lombok.config")
+    outputs.dir(delombokedRegistrate)
+    doFirst {
+        delete(delombokedRegistrate)
+    }
+    args("delombok", "Registrate-modern/src/main/java", "-d", delombokedRegistrate.get().asFile)
+}
+sourceSets.main.java.srcDir(delombokedRegistrate)
+tasks.named("compileJava", JavaCompile).configure {
+    dependsOn(delombokRegistrate)
 }
 
 println("Java: ${System.getProperty("java.version")}, JVM: ${System.getProperty("java.vm.version")} (${System.getProperty("java.vendor")}), Arch: ${System.getProperty("os.arch")}")
@@ -95,6 +116,7 @@ neoForge {
 }
 
 repositories {
+    mavenLocal()
     maven { url = "https://maven.createmod.net" } // Ponder, Flywheel
     maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
     maven { url = "https://maven.blamejared.com" } // JEI, Vazkii's Mods
@@ -126,8 +148,10 @@ configurations {
 }
 
 dependencies {
-    // Required dependencies
-    jarJar(api("com.tterrag.registrate:Registrate:$registrate_version"))
+	// Required dependencies
+	compileOnly("org.projectlombok:lombok:1.18.36")
+	annotationProcessor("org.projectlombok:lombok:1.18.36")
+	implementation("javax.annotation:javax.annotation-api:1.3.2")
 
     compileOnlyApi("dev.engine-room.flywheel:flywheel-neoforge-api-$minecraft_version:$flywheel_version")
     jarJar(runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-$minecraft_version:$flywheel_version") {
@@ -145,14 +169,17 @@ dependencies {
     })
 
     // Local dependencies - not published to consumers
-    localRuntimeOnly("dev.engine-room.vanillin:vanillin-neoforge-$minecraft_version:$vanillin_version")
+    // Disabled for the Minecraft 1.21.7 port.
+    // Vanillin is only a local development runtime helper here; Create does not
+    // compile against it. The available Vanillin source is based on newer MC APIs.
+    // localRuntimeOnly("dev.engine-room.vanillin:vanillin-neoforge-$minecraft_version:$vanillin_version")
 
     localImplementation("mezz.jei:jei-$minecraft_version-neoforge:$jei_version")
 
-    compileOnly("top.theillusivec4.curios:curios-neoforge:$curios_version+$minecraft_version:api")
-    localRuntimeOnly("top.theillusivec4.curios:curios-neoforge:$curios_version+$minecraft_version")
+    compileOnly("maven.modrinth:vvuO3ImH:UW476H0a")
+    localRuntimeOnly("maven.modrinth:vvuO3ImH:UW476H0a")
 
-    compileOnly("maven.modrinth:sodium:mc$minecraft_version-$sodium_version-neoforge")
+    compileOnly("maven.modrinth:AANobbMI:ihzX2Dvy")
 
     if (cc_tweaked_enable.toBoolean()) {
         compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-core-api:$cc_tweaked_version")
@@ -213,6 +240,7 @@ tasks.withType(Jar).configureEach {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
+
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [

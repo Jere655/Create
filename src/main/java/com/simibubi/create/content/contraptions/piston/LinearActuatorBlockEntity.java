@@ -239,11 +239,11 @@ public abstract class LinearActuatorBlockEntity extends KineticBlockEntity
 		boolean forceMovement = compound.contains("ForceMovement");
 		float offsetBefore = offset;
 
-		running = compound.getBoolean("Running");
-		waitingForSpeedChange = compound.getBoolean("Waiting");
-		offset = compound.getFloat("Offset");
+		running = compound.getBooleanOr("Running", false);
+		waitingForSpeedChange = compound.getBooleanOr("Waiting", false);
+		offset = compound.getFloatOr("Offset", 0);
 		sequencedOffsetLimit =
-			compound.contains("SequencedOffsetLimit") ? compound.getDouble("SequencedOffsetLimit") : -1;
+			compound.getDoubleOr("SequencedOffsetLimit", -1);
 		lastException = AssemblyException.read(compound, registries);
 		super.read(compound, registries, clientPacket);
 

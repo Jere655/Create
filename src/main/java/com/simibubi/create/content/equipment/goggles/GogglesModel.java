@@ -1,23 +1,26 @@
 package com.simibubi.create.content.equipment.goggles;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllPartialModels;
-import net.minecraft.client.resources.model.BakedModel;
+import javax.annotation.Nullable;
+
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 
-public class GogglesModel extends BakedModelWrapper<BakedModel> {
+/** Item-model boundary for goggles; head-specific geometry is supplied by the equipment renderer. */
+public class GogglesModel implements ItemModel {
+	private final ItemModel template;
 
-	public GogglesModel(BakedModel template) {
-		super(template);
+	public GogglesModel(ItemModel template) {
+		this.template = template;
 	}
 
 	@Override
-	public BakedModel applyTransform(ItemDisplayContext cameraItemDisplayContext, PoseStack mat, boolean leftHanded) {
-		if (cameraItemDisplayContext == ItemDisplayContext.HEAD)
-			return AllPartialModels.GOGGLES.get()
-				.applyTransform(cameraItemDisplayContext, mat, leftHanded);
-		return super.applyTransform(cameraItemDisplayContext, mat, leftHanded);
+	public void update(ItemStackRenderState renderState, net.minecraft.world.item.ItemStack stack, ItemModelResolver resolver,
+		ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+		template.update(renderState, stack, resolver, displayContext, level, entity, seed);
 	}
 
 }

@@ -108,10 +108,10 @@ public class Schedule {
 
 	public static Schedule fromTag(HolderLookup.Provider registries, CompoundTag tag) {
 		Schedule schedule = new Schedule();
-		schedule.entries = NBTHelper.readCompoundList(tag.getList("Entries", Tag.TAG_COMPOUND), t -> ScheduleEntry.fromTag(registries, t));
-		schedule.cyclic = tag.getBoolean("Cyclic");
+		schedule.entries = NBTHelper.readCompoundList(tag.getListOrEmpty("Entries"), t -> ScheduleEntry.fromTag(registries, t));
+		schedule.cyclic = tag.getBooleanOr("Cyclic", false);
 		if (tag.contains("Progress"))
-			schedule.savedProgress = tag.getInt("Progress");
+			schedule.savedProgress = tag.getIntOr("Progress", 0);
 		return schedule;
 	}
 

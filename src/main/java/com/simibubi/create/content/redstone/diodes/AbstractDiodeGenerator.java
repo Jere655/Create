@@ -1,32 +1,30 @@
 package com.simibubi.create.content.redstone.diodes;
 
 import java.util.List;
+import java.util.Map;
 
 import com.simibubi.create.Create;
+import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SpecialBlockStateGen;
 import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
-import com.tterrag.registrate.providers.RegistrateItemModelProvider;
+import com.tterrag.registrate.providers.generators.RegistrateBlockModelGenerator;
+import com.tterrag.registrate.providers.generators.RegistrateItemModelGenerator;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFile;
 
 public abstract class AbstractDiodeGenerator extends SpecialBlockStateGen {
 
-	private List<ModelFile> models;
+	private List<ResourceLocation> models;
 
-	public static <I extends BlockItem> void diodeItemModel(DataGenContext<Item, I> c, RegistrateItemModelProvider p) {
+	public static <I extends BlockItem> void diodeItemModel(DataGenContext<Item, I> c, RegistrateItemModelGenerator p) {
 		String name = c.getName();
 		String path = "block/diodes/";
-		ItemModelBuilder builder = p.withExistingParent(name, p.modLoc(path + name));
-		builder.texture("top", path + name + "/item");
+		AssetLookup.itemInherit(p, c.get(), AssetLookup.itemLoc(p, name), p.modLoc(path + name),
+			Map.of(AssetLookup.slot("top"), p.modLoc(path + name + "/item")));
 	}
 
 	@Override
@@ -39,21 +37,17 @@ public abstract class AbstractDiodeGenerator extends SpecialBlockStateGen {
 		return horizontalAngle(state.getValue(AbstractDiodeBlock.FACING));
 	}
 
-	protected abstract <T extends Block> List<ModelFile> createModels(DataGenContext<Block, T> ctx,
-																	  BlockModelProvider prov);
+	protected abstract <T extends Block> List<ResourceLocation> createModels(DataGenContext<Block, T> ctx,
+		RegistrateBlockModelGenerator prov);
 
 	protected abstract int getModelIndex(BlockState state);
 
 	@Override
-	public final <T extends Block> ModelFile getModel(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov,
-		BlockState state) {
+	public final <T extends Block> ResourceLocation getModel(DataGenContext<Block, T> ctx,
+		RegistrateBlockModelGenerator prov, BlockState state) {
 		if (models == null)
-			models = createModels(ctx, prov.models());
+			models = createModels(ctx, prov);
 		return models.get(getModelIndex(state));
-	}
-
-	protected ExistingModelFile existingModel(BlockModelProvider prov, String name) {
-		return prov.getExistingFile(existing(name));
 	}
 
 	protected ResourceLocation existing(String name) {

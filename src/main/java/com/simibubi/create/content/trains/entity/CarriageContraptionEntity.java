@@ -468,15 +468,15 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	@Override
 	protected void writeAdditional(CompoundTag compound, HolderLookup.Provider registries, boolean spawnPacket) {
 		super.writeAdditional(compound, registries, spawnPacket);
-		compound.putUUID("TrainId", trainId);
+		compound.put("TrainId", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(trainId));
 		compound.putInt("CarriageIndex", carriageIndex);
 	}
 
 	@Override
 	protected void readAdditional(CompoundTag compound, boolean spawnPacket) {
 		super.readAdditional(compound, spawnPacket);
-		trainId = compound.getUUID("TrainId");
-		carriageIndex = compound.getInt("CarriageIndex");
+		trainId = com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(compound, "TrainId"));
+		carriageIndex = compound.getInt("CarriageIndex").orElse(0);
 		if (spawnPacket) {
 			xOld = getX();
 			yOld = getY();

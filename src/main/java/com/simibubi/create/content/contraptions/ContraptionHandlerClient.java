@@ -52,7 +52,7 @@ public class ContraptionHandlerClient {
 		if (!data.contains("LastOverrideLimbSwingUpdate"))
 			return;
 
-		int lastOverride = data.getInt("LastOverrideLimbSwingUpdate");
+		int lastOverride = data.getInt("LastOverrideLimbSwingUpdate").orElse(0);
 		data.putInt("LastOverrideLimbSwingUpdate", lastOverride + 1);
 		if (lastOverride > 5) {
 			data.remove("LastOverrideLimbSwingUpdate");
@@ -60,7 +60,7 @@ public class ContraptionHandlerClient {
 			return;
 		}
 
-		float limbSwing = data.getFloat("OverrideLimbSwing");
+		float limbSwing = data.getFloat("OverrideLimbSwing").orElse(0.0F);
 		remotePlayer.xo = remotePlayer.getX() - (limbSwing / 4);
 		remotePlayer.zo = remotePlayer.getZ();
 	}

@@ -30,6 +30,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -279,7 +280,7 @@ public class AllFanProcessingTypes {
 			}
 			if (entity instanceof Horse horse) {
 				int progress = horse.getPersistentData()
-					.getInt("CreateHaunting");
+					.getInt("CreateHaunting").orElse(0);
 				if (progress < 100) {
 					if (progress % 10 == 0) {
 						level.playSound(null, entity.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.NEUTRAL,
@@ -296,9 +297,9 @@ public class AllFanProcessingTypes {
 				SkeletonHorse skeletonHorse = EntityType.SKELETON_HORSE.create(level);
 				CompoundTag serializeNBT = horse.saveWithoutId(new CompoundTag());
 				serializeNBT.remove("UUID");
-				if (!horse.getBodyArmorItem()
+				if (level instanceof ServerLevel serverLevel && !horse.getBodyArmorItem()
 					.isEmpty())
-					horse.spawnAtLocation(horse.getBodyArmorItem());
+					horse.spawnAtLocation(serverLevel, horse.getBodyArmorItem());
 
 				skeletonHorse.deserializeNBT(entity.registryAccess(), serializeNBT);
 				skeletonHorse.setPos(horse.getPosition(0));

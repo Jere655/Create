@@ -417,7 +417,7 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		int prevLum = luminosity;
 
 		updateConnectivity = compound.contains("Uninitialized");
-		luminosity = compound.getInt("Luminosity");
+		luminosity = compound.getInt("Luminosity").orElse(0);
 
 		lastKnownPos = null;
 		if (compound.contains("LastKnownPos"))
@@ -428,17 +428,17 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 			controller = NBTHelper.readBlockPos(compound, "Controller");
 
 		if (isController()) {
-			window = compound.getBoolean("Window");
-			width = compound.getInt("Size");
-			height = compound.getInt("Height");
+			window = compound.getBoolean("Window").orElse(false);
+			width = compound.getInt("Size").orElse(0);
+			height = compound.getInt("Height").orElse(0);
 			tankInventory.setCapacity(getTotalTankSize() * getCapacityMultiplier());
 
-			tankInventory.readFromNBT(registries, compound.getCompound("TankContent"));
+			tankInventory.readFromNBT(registries, compound.getCompound("TankContent").orElseGet(CompoundTag::new));
 			if (tankInventory.getSpace() < 0)
 				tankInventory.drain(-tankInventory.getSpace(), FluidAction.EXECUTE);
 		}
 
-		boiler.read(compound.getCompound("Boiler"), width * width * height);
+		boiler.read(compound.getCompound("Boiler").orElseGet(CompoundTag::new), width * width * height);
 
 		if (compound.contains("ForceFluidLevel") || fluidLevel == null)
 			fluidLevel = LerpedFloat.linear()
@@ -483,9 +483,9 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 			compound.putBoolean("Uninitialized", true);
 		compound.put("Boiler", boiler.write());
 		if (lastKnownPos != null)
-			compound.put("LastKnownPos", NbtUtils.writeBlockPos(lastKnownPos));
+			compound.put("LastKnownPos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(lastKnownPos));
 		if (!isController())
-			compound.put("Controller", NbtUtils.writeBlockPos(controller));
+			compound.put("Controller", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(controller));
 		if (isController()) {
 			compound.putBoolean("Window", window);
 			compound.put("TankContent", tankInventory.writeToNBT(registries, new CompoundTag()));

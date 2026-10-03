@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -19,7 +21,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -48,9 +49,9 @@ public class LogisticallyLinkedBlockItem extends BlockItem {
 	@Nullable
 	public static UUID networkFromStack(ItemStack pStack) {
 		CompoundTag tag = pStack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
-		if (!tag.hasUUID("Freq"))
+		if (!tag.contains("Freq"))
 			return null;
-		return tag.getUUID("Freq");
+		return CreateNbt.readUUID(NBTHelper.getINBT(tag, "Freq"));
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class LogisticallyLinkedBlockItem extends BlockItem {
 		super.appendHoverText(stack, tooltipContext, tooltipComponents, tooltipFlag);
 
 		CompoundTag tag = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
-		if (!tag.hasUUID("Freq"))
+		if (!tag.contains("Freq"))
 			return;
 
 		CreateLang.translate("logistically_linked.tooltip")
@@ -72,7 +73,7 @@ public class LogisticallyLinkedBlockItem extends BlockItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+	public InteractionResult use(Level level, Player player, InteractionHand usedHand) {
 		ItemStack stack = player.getItemInHand(usedHand);
 		if (isTuned(stack)) {
 			if (level.isClientSide) {
@@ -81,7 +82,7 @@ public class LogisticallyLinkedBlockItem extends BlockItem {
 				player.displayClientMessage(CreateLang.translateDirect("logistically_linked.cleared"), true);
 				stack.remove(DataComponents.BLOCK_ENTITY_DATA);
 			}
-			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+			return InteractionResult.SUCCESS;
 		} else {
 			return super.use(level, player, usedHand);
 		}
@@ -124,7 +125,7 @@ public class LogisticallyLinkedBlockItem extends BlockItem {
 
 	public static void assignFrequency(ItemStack stack, Player player, UUID frequency) {
 		CompoundTag tag = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
-		tag.putUUID("Freq", frequency);
+		tag.put("Freq", CreateNbt.writeUUID(frequency));
 
 		player.displayClientMessage(CreateLang.translateDirect("logistically_linked.tuned"), true);
 

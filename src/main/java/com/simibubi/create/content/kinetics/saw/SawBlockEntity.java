@@ -22,6 +22,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingInventory;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.recipe.RecipeConditions;
@@ -123,17 +124,17 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity implements C
 
 		if (!clientPacket || playEvent.isEmpty())
 			return;
-		compound.put("PlayEvent", playEvent.saveOptional(registries));
+		compound.put("PlayEvent", CreateNbt.writeItemStack(registries, playEvent));
 		playEvent = ItemStack.EMPTY;
 	}
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
-		recipeIndex = compound.getInt("RecipeIndex");
+		inventory.deserializeNBT(registries, compound.getCompound("Inventory").orElseGet(CompoundTag::new));
+		recipeIndex = compound.getInt("RecipeIndex").orElse(0);
 		if (compound.contains("PlayEvent"))
-			playEvent = ItemStack.parseOptional(registries, compound.getCompound("PlayEvent"));
+			playEvent = CreateNbt.readItemStack(registries, compound.getCompound("PlayEvent").orElseGet(CompoundTag::new));
 	}
 
 	@Override
@@ -200,7 +201,7 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity implements C
 		}
 
 		Vec3 itemMovement = getItemMovementVec();
-		Direction itemMovementFacing = Direction.getNearest(itemMovement.x, itemMovement.y, itemMovement.z);
+		Direction itemMovementFacing = Direction.getApproximateNearest(new Vec3(itemMovement.x, itemMovement.y, itemMovement.z));
 		if (inventory.remainingTime > 0)
 			return;
 		inventory.remainingTime = 0;

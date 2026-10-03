@@ -132,7 +132,7 @@ public class DeployerRenderer extends SafeBlockEntityRenderer<DeployerBlockEntit
 
 	protected Vec3 getHandOffset(DeployerBlockEntity be, float partialTicks, BlockState blockState) {
 		float distance = be.getHandOffset(partialTicks);
-		return Vec3.atLowerCornerOf(blockState.getValue(FACING).getNormal()).scale(distance);
+		return blockState.getValue(FACING).getUnitVec3().scale(distance);
 	}
 
 	protected BlockState getRenderedBlockState(KineticBlockEntity be) {
@@ -181,7 +181,7 @@ public class DeployerRenderer extends SafeBlockEntityRenderer<DeployerBlockEntit
 		}
 
 		Vec3 offset = Vec3.atLowerCornerOf(blockState.getValue(FACING)
-			.getNormal()).scale(factor);
+			.getUnitVec3()).scale(factor);
 
 		PoseStack m = matrices.getModel();
 		m.pushPose();

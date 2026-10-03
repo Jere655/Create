@@ -53,7 +53,7 @@ public class KineticDebugger {
 		if (state.getBlock() instanceof IRotate) {
 			Axis axis = ((IRotate) state.getBlock()).getRotationAxis(state);
 			Vec3 vec = Vec3.atLowerCornerOf(Direction.get(AxisDirection.POSITIVE, axis)
-				.getNormal());
+				.getUnitVec3());
 			Vec3 center = VecHelper.getCenterOf(be.getBlockPos());
 			Outliner.getInstance().showLine("rotationAxis", center.add(vec), center.subtract(vec))
 				.lineWidth(1 / 16f);

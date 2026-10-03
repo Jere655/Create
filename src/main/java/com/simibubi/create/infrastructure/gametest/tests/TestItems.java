@@ -24,18 +24,18 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTest;
+import com.simibubi.create.infrastructure.gametest.GameTest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
 
@@ -44,6 +44,14 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 @GameTestGroup(path = "items")
 public class TestItems {
+	private static ItemStack enchantedBook(Holder<Enchantment> enchantment) {
+		ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+		enchantments.set(enchantment, 1);
+		ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+		book.set(DataComponents.STORED_ENCHANTMENTS, enchantments.toImmutable());
+		return book;
+	}
+
 	@GameTest(template = "andesite_tunnel_split")
 	public static void andesiteTunnelSplit(CreateGameTestHelper helper) {
 		BlockPos lever = new BlockPos(2, 6, 2);
@@ -70,7 +78,7 @@ public class TestItems {
 				helper.assertBlockState(
 					pos,
 					state -> state.getValue(BlazeBurnerBlock.HEAT_LEVEL) == HeatLevel.KINDLED,
-					() -> "Blaze burner isn't lit!"
+					state -> Component.literal("Blaze burner isn't lit!")
 				);
 		});
 	}
@@ -104,16 +112,14 @@ public class TestItems {
 	public static void attributeFilters(CreateGameTestHelper helper) {
 		BlockPos lever = new BlockPos(2, 3, 1);
 		BlockPos end = new BlockPos(11, 2, 2);
-		Holder<Enchantment> PROTECTION_ENCHANT = helper.getLevel().registryAccess()
-				.registryOrThrow(Registries.ENCHANTMENT)
-				.getHolderOrThrow(Enchantments.PROTECTION);
+		var enchantments = helper.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+		Holder<Enchantment> PROTECTION_ENCHANT = enchantments.wrapAsHolder(
+			enchantments.getValueOrThrow(Enchantments.PROTECTION));
 		Map<BlockPos, ItemStack> outputs = Map.of(
 				new BlockPos(3, 2, 1), new ItemStack(AllBlocks.BRASS_BLOCK.get()),
 				new BlockPos(4, 2, 1), new ItemStack(Items.APPLE),
 				new BlockPos(5, 2, 1), new ItemStack(Items.WATER_BUCKET),
-				new BlockPos(6, 2, 1), EnchantedBookItem.createForEnchantment(
-						new EnchantmentInstance(PROTECTION_ENCHANT, 1)
-				),
+				new BlockPos(6, 2, 1), enchantedBook(PROTECTION_ENCHANT),
 				new BlockPos(7, 2, 1), Util.make(
 						new ItemStack(Items.NETHERITE_SWORD),
 						s -> s.setDamageValue(1)

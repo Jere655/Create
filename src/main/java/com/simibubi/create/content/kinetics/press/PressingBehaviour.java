@@ -10,6 +10,7 @@ import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
 import com.simibubi.create.content.processing.basin.BasinBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.math.VecHelper;
@@ -71,15 +72,15 @@ public class PressingBehaviour extends BeltProcessingBehaviour {
 
 	@Override
 	public void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		running = compound.getBoolean("Running");
-		mode = Mode.values()[compound.getInt("Mode")];
-		finished = compound.getBoolean("Finished");
-		prevRunningTicks = runningTicks = compound.getInt("Ticks");
+		running = compound.getBoolean("Running").orElse(false);
+		mode = Mode.values()[compound.getInt("Mode").orElse(0)];
+		finished = compound.getBoolean("Finished").orElse(false);
+		prevRunningTicks = runningTicks = compound.getInt("Ticks").orElse(0);
 		super.read(compound, registries, clientPacket);
 
 		if (clientPacket) {
-			NBTHelper.iterateCompoundList(compound.getList("ParticleItems", Tag.TAG_COMPOUND),
-				c -> particleItems.add(ItemStack.parseOptional(registries, c)));
+			NBTHelper.iterateCompoundList(compound.getListOrEmpty("ParticleItems"),
+				c -> particleItems.add(CreateNbt.readItemStack(registries, c)));
 			spawnParticles();
 		}
 	}
@@ -93,7 +94,7 @@ public class PressingBehaviour extends BeltProcessingBehaviour {
 		super.write(compound, registries, clientPacket);
 
 		if (clientPacket) {
-			compound.put("ParticleItems", NBTHelper.writeCompoundList(particleItems, s -> (CompoundTag) s.saveOptional(registries)));
+			compound.put("ParticleItems", NBTHelper.writeCompoundList(particleItems, s -> CreateNbt.writeItemStack(registries, s)));
 			particleItems.clear();
 		}
 	}

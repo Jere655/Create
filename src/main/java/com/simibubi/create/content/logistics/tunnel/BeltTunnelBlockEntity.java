@@ -108,13 +108,13 @@ public class BeltTunnelBlockEntity extends SmartBlockEntity {
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		Set<Direction> newFlaps = new HashSet<>(6);
-		ListTag flapsNBT = compound.getList("Flaps", Tag.TAG_INT);
+		ListTag flapsNBT = compound.getListOrEmpty("Flaps");
 		for (Tag inbt : flapsNBT)
 			if (inbt instanceof IntTag)
 				newFlaps.add(Direction.from3DDataValue(((IntTag) inbt).getAsInt()));
 
 		sides.clear();
-		ListTag sidesNBT = compound.getList("Sides", Tag.TAG_INT);
+		ListTag sidesNBT = compound.getListOrEmpty("Sides");
 		for (Tag inbt : sidesNBT)
 			if (inbt instanceof IntTag)
 				sides.add(Direction.from3DDataValue(((IntTag) inbt).getAsInt()));

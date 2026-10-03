@@ -190,7 +190,7 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity impleme
 				ItemEntity entityIn = new ItemEntity(level, outPos.x, outPos.y, outPos.z, stack);
 				entityIn.setDeltaMovement(outSpeed);
 				entityIn.getPersistentData()
-					.put("BypassCrushingWheel", NbtUtils.writeBlockPos(worldPosition));
+					.put("BypassCrushingWheel", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(worldPosition));
 				level.addFreshEntity(entityIn);
 			}
 			inventory.clear();
@@ -348,8 +348,8 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity impleme
 			entityUUID = NbtUtils.loadUUID(NBTHelper.getINBT(compound, "Entity"));
 			this.searchForEntity = true;
 		}
-		crushingspeed = compound.getFloat("Speed");
-		inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
+		crushingspeed = compound.getFloat("Speed").orElse(0.0F);
+		inventory.deserializeNBT(registries, compound.getCompound("Inventory").orElseGet(CompoundTag::new));
 	}
 
 	@Override

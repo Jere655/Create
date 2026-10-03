@@ -164,15 +164,15 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 	@Override
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		lastException = AssemblyException.read(tag, registries);
-		failedCarriageIndex = tag.getInt("FailedCarriageIndex");
+		failedCarriageIndex = tag.getInt("FailedCarriageIndex").orElse(0);
 		super.read(tag, registries, clientPacket);
 		invalidateRenderBoundingBox();
 
 		if (tag.contains("ForceFlag"))
-			trainPresent = tag.getBoolean("ForceFlag");
+			trainPresent = tag.getBoolean("ForceFlag").orElse(false);
 		if (tag.contains("PrevTrainName"))
-			lastDisassembledTrainName = Component.Serializer.fromJson(tag.getString("PrevTrainName"), registries);
-		lastDisassembledMapColorIndex = tag.getInt("PrevTrainColor");
+			lastDisassembledTrainName = Component.Serializer.fromJson(tag.getString("PrevTrainName").orElse(""), registries);
+		lastDisassembledMapColorIndex = tag.getInt("PrevTrainColor").orElse(0);
 
 		if (!clientPacket)
 			return;
@@ -184,7 +184,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 			return;
 		}
 
-		imminentTrain = tag.getUUID("ImminentTrain");
+		imminentTrain = com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(tag, "ImminentTrain"));
 		trainPresent = tag.contains("TrainPresent");
 		trainCanDisassemble = tag.contains("TrainCanDisassemble");
 		trainBackwards = tag.contains("TrainBackwards");
@@ -208,7 +208,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 		if (imminentTrain == null)
 			return;
 
-		tag.putUUID("ImminentTrain", imminentTrain);
+		tag.put("ImminentTrain", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(imminentTrain));
 
 		if (trainPresent)
 			NBTHelper.putMarker(tag, "TrainPresent");
@@ -655,7 +655,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 			.get(0)
 			.normalize()
 			.scale(axisDirection.getStep());
-		return assemblyDirection = Direction.getNearest(axis.x, axis.y, axis.z);
+		return assemblyDirection = Direction.getApproximateNearest(new Vec3(axis.x, axis.y, axis.z));
 	}
 
 	@Override
@@ -689,7 +689,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 		Vec3 center = Vec3.atBottomCenterOf(trackPosition)
 			.add(0, track.getElevationAtCenter(level, trackPosition, trackState), 0);
 		Collection<DiscoveredLocation> ends = track.getConnected(level, trackPosition, trackState, true, null);
-		Vec3 targetOffset = Vec3.atLowerCornerOf(assemblyDirection.getNormal());
+		Vec3 targetOffset = assemblyDirection.getUnitVec3();
 		for (DiscoveredLocation end : ends)
 			if (Mth.equal(0, targetOffset.distanceToSqr(end.getLocation()
 				.subtract(center)
@@ -718,7 +718,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 		}
 
 		List<TravellingPoint> points = new ArrayList<>();
-		Vec3 directionVec = Vec3.atLowerCornerOf(assemblyDirection.getNormal());
+		Vec3 directionVec = assemblyDirection.getUnitVec3();
 		TrackGraph graph = null;
 		TrackNode secondNode = null;
 
@@ -981,7 +981,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 		if (axis == null)
 			return false;
 
-		Direction nearest = Direction.getNearest(axis.x, 0, axis.z);
+		Direction nearest = Direction.getApproximateNearest(new Vec3(axis.x, 0, axis.z));
 		flagYRot = (int) (-nearest.toYRot() - 90);
 
 		Vec3 diff = Vec3.atLowerCornerOf(trackPos.subtract(worldPosition))
@@ -990,7 +990,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 			return true;
 
 		flagFlipped = diff.dot(Vec3.atLowerCornerOf(nearest.getClockWise()
-			.getNormal())) > 0;
+			.getUnitVec3())) > 0;
 
 		return true;
 	}

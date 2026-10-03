@@ -30,7 +30,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -54,7 +54,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 // TODO - Split up into specific overlays
 public class BlueprintOverlayRenderer {
 
-	public static final LayeredDraw.Layer OVERLAY = BlueprintOverlayRenderer::renderOverlay;
+	public static final GuiLayer OVERLAY = BlueprintOverlayRenderer::renderOverlay;
 
 	static boolean active;
 	static boolean empty;
@@ -173,7 +173,7 @@ public class BlueprintOverlayRenderer {
 
 	private static boolean canAfford(Player player, BigItemStack entry) {
 		int itemsPresent = 0;
-		for (int i = 0; i < player.getInventory().items.size(); i++) {
+		for (int i = 0; i < player.getInventory().getNonEquipmentItems().size(); i++) {
 			ItemStack item = player.getInventory()
 				.getItem(i);
 			if (item.isEmpty() || !ItemStack.isSameItemSameComponents(item, entry.stack))

@@ -76,9 +76,9 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		totalUseTicks = compound.getInt("TotalUseTicks");
-		startAngle = compound.getInt("StartAngle");
-		targetAngle = compound.getInt("TargetAngle");
+		totalUseTicks = compound.getInt("TotalUseTicks").orElse(0);
+		startAngle = compound.getInt("StartAngle").orElse(0);
+		targetAngle = compound.getInt("TargetAngle").orElse(0);
 	}
 
 	@Override

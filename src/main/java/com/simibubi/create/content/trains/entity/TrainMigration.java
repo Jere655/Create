@@ -110,11 +110,11 @@ public class TrainMigration {
 
 	public static TrainMigration read(CompoundTag tag, DimensionPalette dimensions) {
 		TrainMigration trainMigration = new TrainMigration();
-		trainMigration.curve = tag.getBoolean("Curve");
-		trainMigration.fallback = VecHelper.readNBT(tag.getList("Fallback", Tag.TAG_DOUBLE));
-		trainMigration.positionOnOldEdge = tag.getDouble("Position");
+		trainMigration.curve = tag.getBoolean("Curve").orElse(false);
+		trainMigration.fallback = VecHelper.readNBT(tag.getListOrEmpty("Fallback"));
+		trainMigration.positionOnOldEdge = tag.getDouble("Position").orElse(0.0D);
 		trainMigration.locations =
-			Couple.deserializeEach(tag.getList("Nodes", Tag.TAG_COMPOUND), c -> TrackNodeLocation.read(c, dimensions));
+			Couple.deserializeEach(tag.getListOrEmpty("Nodes"), c -> TrackNodeLocation.read(c, dimensions));
 		return trainMigration;
 	}
 

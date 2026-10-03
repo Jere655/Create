@@ -23,6 +23,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -123,7 +125,7 @@ public class GantryContraptionEntity extends AbstractContraptionEntity {
 
 		if (sequencedOffsetLimit >= 0)
 			pinionMovementSpeed = (float) Mth.clamp(pinionMovementSpeed, -sequencedOffsetLimit, sequencedOffsetLimit);
-		movementVec = Vec3.atLowerCornerOf(direction.getNormal())
+		movementVec = direction.getUnitVec3()
 			.scale(pinionMovementSpeed);
 
 		Vec3 nextPosition = currentPosition.add(movementVec);
@@ -160,8 +162,23 @@ public class GantryContraptionEntity extends AbstractContraptionEntity {
 	protected void readAdditional(CompoundTag compound, boolean spawnData) {
 		movementAxis = NBTHelper.readEnum(compound, "GantryAxis", Direction.class);
 		sequencedOffsetLimit =
-			compound.contains("SequencedOffsetLimit") ? compound.getDouble("SequencedOffsetLimit") : -1;
+			compound.contains("SequencedOffsetLimit") ? compound.getDouble("SequencedOffsetLimit").orElse(0.0D) : -1;
 		super.readAdditional(compound, spawnData);
+	}
+
+	@Override
+	protected void writePersistentData(ValueOutput output) {
+		output.store("GantryAxis", Direction.CODEC, movementAxis);
+		if (sequencedOffsetLimit >= 0)
+			output.putDouble("SequencedOffsetLimit", sequencedOffsetLimit);
+		super.writePersistentData(output);
+	}
+
+	@Override
+	protected void readPersistentData(ValueInput input) {
+		movementAxis = input.read("GantryAxis", Direction.CODEC).orElse(Direction.NORTH);
+		sequencedOffsetLimit = input.getDoubleOr("SequencedOffsetLimit", -1);
+		super.readPersistentData(input);
 	}
 
 	@Override
@@ -212,7 +229,7 @@ public class GantryContraptionEntity extends AbstractContraptionEntity {
 	public void updateClientMotion() {
 		float modifier = movementAxis.getAxisDirection()
 			.getStep();
-		Vec3 motion = Vec3.atLowerCornerOf(movementAxis.getNormal())
+		Vec3 motion = movementAxis.getUnitVec3()
 			.scale((axisMotion + clientOffsetDiff * modifier / 2d) * ServerSpeedProvider.get());
 		if (sequencedOffsetLimit >= 0)
 			motion = VecHelper.clampComponentWise(motion, (float) sequencedOffsetLimit);

@@ -34,7 +34,6 @@ import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -235,7 +234,7 @@ public class DeployerHandler {
 		BlockState clickedState = level.getBlockState(clickedPos);
 		Direction face = result.getDirection();
 		if (face == null)
-			face = Direction.getNearest(extensionVector.x, extensionVector.y, extensionVector.z)
+			face = Direction.getApproximateNearest(new Vec3(extensionVector.x, extensionVector.y, extensionVector.z))
 				.getOpposite();
 
 		// Left click
@@ -349,9 +348,9 @@ public class DeployerHandler {
 		if (item instanceof BucketItem || item instanceof SandPaperItem)
 			itemUseWorld = new ItemUseWorld(level, face, pos);
 
-		InteractionResultHolder<ItemStack> onItemRightClick = item.use(itemUseWorld, player, hand);
+		InteractionResult onItemRightClick = item.use(itemUseWorld, player, hand);
 
-		if (onItemRightClick.getResult().consumesAction() && item instanceof MobBucketItem bucketItem)
+		if (onItemRightClick.consumesAction() && item instanceof MobBucketItem bucketItem)
 			bucketItem.checkExtraContent(player, level, stack, clickedPos);
 
 		ItemStack resultStack = onItemRightClick.getObject();

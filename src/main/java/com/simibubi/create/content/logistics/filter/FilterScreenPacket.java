@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
@@ -45,8 +46,8 @@ public record FilterScreenPacket(Option option, @Nullable CompoundTag data) impl
 				c.respectNBT = false;
 			if (this.option == Option.UPDATE_FILTER_ITEM)
 				c.ghostInventory.setStackInSlot(
-					tag.getInt("Slot"),
-					ItemStack.parseOptional(player.registryAccess(), tag.getCompound("Item"))
+					tag.getInt("Slot").orElse(0),
+					CreateNbt.readItemStack(player.registryAccess(), tag.getCompound("Item").orElseGet(CompoundTag::new))
 				);
 		}
 
@@ -65,7 +66,7 @@ public record FilterScreenPacket(Option option, @Nullable CompoundTag data) impl
 
 		if (player.containerMenu instanceof PackageFilterMenu c) {
 			if (option == Option.UPDATE_ADDRESS)
-				c.address = tag.getString("Address");
+				c.address = tag.getString("Address").orElse("");
 		}
 	}
 

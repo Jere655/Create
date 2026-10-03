@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 public class CopycatPanelModel extends CopycatModel {
 
@@ -59,7 +59,7 @@ public class CopycatPanelModel extends CopycatModel {
 
 		List<BakedQuad> quads = new ArrayList<>();
 
-		Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
+		Vec3 normal = facing.getUnitVec3();
 		Vec3 normalScaled14 = normal.scale(14 / 16f);
 
 		// 2 Pieces

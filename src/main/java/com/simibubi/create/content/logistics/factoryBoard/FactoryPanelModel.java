@@ -27,8 +27,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelProperty;
 
 public class FactoryPanelModel extends BakedModelWrapperWithData {
 
@@ -85,7 +85,7 @@ public class FactoryPanelModel extends BakedModelWrapperWithData {
 			int[] transformedVertices = Arrays.copyOf(vertices, vertices.length);
 
 			Vec3 quadNormal = Vec3.atLowerCornerOf(bakedQuad.getDirection()
-				.getNormal());
+				.getUnitVec3());
 			quadNormal = VecHelper.rotate(quadNormal, 180, Axis.Y);
 			quadNormal = VecHelper.rotate(quadNormal, xRot + 90, Axis.X);
 			quadNormal = VecHelper.rotate(quadNormal, yRot, Axis.Y);

@@ -130,7 +130,7 @@ public class BracketedBlockEntityBehaviour extends BlockEntityBehaviour {
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		if (nbt.contains("Bracket")) {
 			bracket = null;
-			BlockState readBlockState = NbtUtils.readBlockState(blockEntity.blockHolderGetter(), nbt.getCompound("Bracket"));
+			BlockState readBlockState = NbtUtils.readBlockState(blockEntity.blockHolderGetter(), nbt.getCompound("Bracket").orElseGet(CompoundTag::new));
 			if (isBracketValid(readBlockState))
 				bracket = readBlockState;
 		}

@@ -14,12 +14,15 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Builder;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ItemLike;
 
@@ -105,6 +108,6 @@ public class SequencedAssemblyRecipeBuilder {
 		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(holder.id().getNamespace(),
 				AllRecipeTypes.SEQUENCED_ASSEMBLY.getId().getPath() + "/" + holder.id().getPath());
 
-		consumer.accept(id, holder.value(), null, recipeConditions.toArray(new ICondition[0]));
+		consumer.accept(ResourceKey.create(Registries.RECIPE, id), holder.value(), null, recipeConditions.toArray(new ICondition[0]));
 	}
 }

@@ -33,7 +33,7 @@ public class HauntedBellMovementBehaviour extends BellMovementBehaviour {
 
 	private int getRecharge(MovementContext context) {
 		if (!(context.temporaryData instanceof Integer) && context.world != null) {
-			context.temporaryData = context.blockEntityData.getInt("Recharge");
+			context.temporaryData = context.blockEntityData.getInt("Recharge").orElse(0);
 		}
 		return (Integer) context.temporaryData;
 	}

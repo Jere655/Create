@@ -160,7 +160,7 @@ public class DisplayLinkBlockEntity extends LinkWithBulbBlockEntity  implements 
 	}
 
 	private void writeGatheredData(CompoundTag tag) {
-		tag.put("TargetOffset", NbtUtils.writeBlockPos(targetOffset));
+		tag.putLong("TargetOffset", targetOffset.asLong());
 		tag.putInt("TargetLine", targetLine);
 
 		if (activeSource != null) {
@@ -176,16 +176,18 @@ public class DisplayLinkBlockEntity extends LinkWithBulbBlockEntity  implements 
 	@Override
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
-		targetOffset = NBTHelper.readBlockPos(tag, "TargetOffset");
-		targetLine = tag.getInt("TargetLine");
+		targetOffset = tag.getLong("TargetOffset").orElse(0L)
+			.map(BlockPos::of)
+			.orElseGet(() -> NBTHelper.readBlockPos(tag, "TargetOffset"));
+		targetLine = tag.getIntOr("TargetLine", 0);
 
 		if (clientPacket && tag.contains("TargetType"))
-			activeTarget = DisplayTarget.get(ResourceLocation.tryParse(tag.getString("TargetType")));
+			activeTarget = DisplayTarget.get(ResourceLocation.tryParse(tag.getStringOr("TargetType", "")));
 		if (!tag.contains("Source"))
 			return;
 
-		CompoundTag data = tag.getCompound("Source");
-		activeSource = DisplaySource.get(ResourceLocation.tryParse(data.getString("Id")));
+		CompoundTag data = tag.getCompoundOrEmpty("Source");
+		activeSource = DisplaySource.get(ResourceLocation.tryParse(data.getStringOr("Id", "")));
 		sourceConfig = new CompoundTag();
 		if (activeSource != null)
 			sourceConfig = data.copy();

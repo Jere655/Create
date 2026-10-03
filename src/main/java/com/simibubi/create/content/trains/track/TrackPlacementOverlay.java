@@ -9,13 +9,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameType;
 
-public class TrackPlacementOverlay implements LayeredDraw.Layer {
+public class TrackPlacementOverlay implements GuiLayer {
 	public static final TrackPlacementOverlay INSTANCE = new TrackPlacementOverlay();
 
 	@Override

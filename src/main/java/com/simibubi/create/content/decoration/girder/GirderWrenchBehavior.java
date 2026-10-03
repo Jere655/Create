@@ -59,8 +59,8 @@ public class GirderWrenchBehavior {
 			return;
 
 		Vec3 center = VecHelper.getCenterOf(pos);
-		Vec3 edge = center.add(Vec3.atLowerCornerOf(dirPair.getFirst()
-			.getNormal())
+		Vec3 edge = center.add(dirPair.getFirst()
+			.getUnitVec3()
 			.scale(0.4));
 		Direction.Axis[] axes = Arrays.stream(Iterate.axes)
 			.filter(axis -> axis != dirPair.getFirst()
@@ -69,27 +69,27 @@ public class GirderWrenchBehavior {
 
 		double normalMultiplier = dirPair.getSecond() == Action.PAIR ? 4 : 1;
 		Vec3 corner1 = edge
-			.add(Vec3.atLowerCornerOf(Direction.fromAxisAndDirection(axes[0], Direction.AxisDirection.POSITIVE)
-				.getNormal())
+			.add(Direction.fromAxisAndDirection(axes[0], Direction.AxisDirection.POSITIVE)
+				.getUnitVec3()
 				.scale(0.3))
-			.add(Vec3.atLowerCornerOf(Direction.fromAxisAndDirection(axes[1], Direction.AxisDirection.POSITIVE)
-				.getNormal())
+			.add(Direction.fromAxisAndDirection(axes[1], Direction.AxisDirection.POSITIVE)
+				.getUnitVec3()
 				.scale(0.3))
-			.add(Vec3.atLowerCornerOf(dirPair.getFirst()
-				.getNormal())
+			.add(dirPair.getFirst()
+				.getUnitVec3()
 				.scale(0.1 * normalMultiplier));
 
 		normalMultiplier = dirPair.getSecond() == Action.HORIZONTAL ? 9 : 2;
 		Vec3 corner2 = edge
-			.add(Vec3.atLowerCornerOf(Direction.fromAxisAndDirection(axes[0], Direction.AxisDirection.NEGATIVE)
-				.getNormal())
+			.add(Direction.fromAxisAndDirection(axes[0], Direction.AxisDirection.NEGATIVE)
+				.getUnitVec3()
 				.scale(0.3))
-			.add(Vec3.atLowerCornerOf(Direction.fromAxisAndDirection(axes[1], Direction.AxisDirection.NEGATIVE)
-				.getNormal())
+			.add(Direction.fromAxisAndDirection(axes[1], Direction.AxisDirection.NEGATIVE)
+				.getUnitVec3()
 				.scale(0.3))
-			.add(Vec3.atLowerCornerOf(dirPair.getFirst()
+			.add(dirPair.getFirst()
 				.getOpposite()
-				.getNormal())
+				.getUnitVec3()
 				.scale(0.1 * normalMultiplier));
 
 		Outliner.getInstance().showAABB("girderWrench", new AABB(corner1, corner2))

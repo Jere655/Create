@@ -43,7 +43,7 @@ public class MechanicalCrafterRenderer extends SafeBlockEntityRenderer<Mechanica
 		ms.pushPose();
 		Direction facing = be.getBlockState()
 			.getValue(HORIZONTAL_FACING);
-		Vec3 vec = Vec3.atLowerCornerOf(facing.getNormal())
+		Vec3 vec = facing.getUnitVec3()
 			.scale(.58)
 			.add(.5, .5, .5);
 
@@ -51,7 +51,7 @@ public class MechanicalCrafterRenderer extends SafeBlockEntityRenderer<Mechanica
 			Direction targetDirection = MechanicalCrafterBlock.getTargetDirection(be.getBlockState());
 			float progress =
 				Mth.clamp((1000 - be.countDown + be.getCountDownSpeed() * partialTicks) / 1000f, 0, 1);
-			vec = vec.add(Vec3.atLowerCornerOf(targetDirection.getNormal())
+			vec = vec.add(targetDirection.getUnitVec3()
 				.scale(progress * .75f));
 		}
 

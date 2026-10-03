@@ -36,7 +36,11 @@ public final class ContraptionType {
 		}
 
 		ResourceLocation id = ResourceLocation.tryParse(typeId);
-		ContraptionType type = CreateBuiltInRegistries.CONTRAPTION_TYPE.get(id);
-		return type == null ? null : type.factory.get();
+		if (id == null)
+			return null;
+		return CreateBuiltInRegistries.CONTRAPTION_TYPE.get(id)
+			.map(Holder.Reference::value)
+			.map(type -> type.factory.get())
+			.orElse(null);
 	}
 }

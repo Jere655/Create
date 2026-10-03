@@ -30,6 +30,7 @@ import net.createmod.catnip.data.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -233,13 +234,13 @@ public class LogisticallyLinkedBehaviour extends BlockEntityBehaviour {
 
 	@Override
 	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
-		tag.putUUID("Freq", freqId);
+		tag.store("Freq", UUIDUtil.CODEC, freqId);
 	}
 
 	@Override
 	public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.write(tag, registries, clientPacket);
-		tag.putUUID("Freq", freqId);
+		tag.store("Freq", UUIDUtil.CODEC, freqId);
 		tag.putInt("Power", redstonePower);
 		tag.putBoolean("Added", addedGlobally);
 	}
@@ -247,10 +248,9 @@ public class LogisticallyLinkedBehaviour extends BlockEntityBehaviour {
 	@Override
 	public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
-		if (tag.hasUUID("Freq"))
-			freqId = tag.getUUID("Freq");
-		redstonePower = tag.getInt("Power");
-		addedGlobally = tag.getBoolean("Added");
+		freqId = tag.read("Freq", UUIDUtil.CODEC).orElse(null);
+		redstonePower = tag.getIntOr("Power", 0);
+		addedGlobally = tag.getBooleanOr("Added", false);
 	}
 
 	@Override

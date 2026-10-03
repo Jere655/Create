@@ -5,6 +5,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.mojang.serialization.MapCodec;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.content.contraptions.minecart.MinecartSim2020;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 
 import net.createmod.catnip.data.Iterate;
@@ -59,7 +60,7 @@ public class ControllerRailBlock extends BaseRailBlock implements IWrenchable {
 
 	public static Vec3i getAccelerationVector(BlockState state) {
 		Direction pointingTo = getPointingTowards(state);
-		return (isStateBackwards(state) ? pointingTo.getOpposite() : pointingTo).getNormal();
+		return (isStateBackwards(state) ? pointingTo.getOpposite() : pointingTo).getUnitVec3i();
 	}
 
 	private static Direction getPointingTowards(BlockState state) {
@@ -113,13 +114,13 @@ public class ControllerRailBlock extends BaseRailBlock implements IWrenchable {
 		cart.setDeltaMovement(diff.x / 16f, 0, diff.z / 16f);
 
 		if (cart instanceof MinecartFurnace fme) {
-			fme.xPush = fme.zPush = 0;
+			fme.push = Vec3.ZERO;
 		}
 	}
 
 	private static boolean isStableWith(BlockState testState, BlockGetter world, BlockPos pos) {
 		return canSupportRigidBlock(world, pos.below()) && (!testState.getValue(SHAPE)
-			.isAscending() || canSupportRigidBlock(world, pos.relative(getPointingTowards(testState))));
+			.isSlope() || canSupportRigidBlock(world, pos.relative(getPointingTowards(testState))));
 	}
 
 	@Override
@@ -145,11 +146,10 @@ public class ControllerRailBlock extends BaseRailBlock implements IWrenchable {
 		if (world.isClientSide)
 			return;
 		Vec3 accelerationVec = Vec3.atLowerCornerOf(getAccelerationVector(state));
-		double targetSpeed = cart.getMaxSpeedWithRail() * state.getValue(POWER) / 15f;
+		double targetSpeed = MinecartSim2020.getMaxRailSpeed(cart) * state.getValue(POWER) / 15f;
 
 		if (cart instanceof MinecartFurnace fme) {
-			fme.xPush = accelerationVec.x;
-			fme.zPush = accelerationVec.z;
+			fme.push = accelerationVec;
 		}
 
 		Vec3 motion = cart.getDeltaMovement();
@@ -235,7 +235,7 @@ public class ControllerRailBlock extends BaseRailBlock implements IWrenchable {
 		world.setBlock(pos, state, Block.UPDATE_ALL);
 		world.updateNeighborsAt(pos.below(), this);
 		if (state.getValue(SHAPE)
-			.isAscending())
+			.isSlope())
 			world.updateNeighborsAt(pos.above(), this);
 	}
 
@@ -248,7 +248,7 @@ public class ControllerRailBlock extends BaseRailBlock implements IWrenchable {
 		BlockPos baseTestPos = reversed ? from.subtract(accelerationVec) : from.offset(accelerationVec);
 		for (BlockPos testPos : Iterate.hereBelowAndAbove(baseTestPos)) {
 			if (testPos.getY() > from.getY() && !current.getValue(SHAPE)
-				.isAscending())
+				.isSlope())
 				continue;
 			BlockState testState = world.getBlockState(testPos);
 			if (testState.getBlock() instanceof ControllerRailBlock

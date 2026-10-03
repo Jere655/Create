@@ -140,7 +140,7 @@ public class Instruction {
 	static Instruction deserialize(CompoundTag tag) {
 		Instruction instruction = new Instruction(NBTHelper.readEnum(tag, "Type", SequencerInstructions.class));
 		instruction.speedModifier = NBTHelper.readEnum(tag, "Modifier", InstructionSpeedModifiers.class);
-		instruction.value = tag.getInt("Value");
+		instruction.value = tag.getIntOr("Value", 0);
 		return instruction;
 	}
 

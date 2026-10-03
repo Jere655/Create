@@ -66,9 +66,9 @@ public class ProcessingInventory extends ItemStackHandler {
 
 	@Override
 	public void deserializeNBT(@NotNull HolderLookup.Provider registries, CompoundTag nbt) {
-		remainingTime = nbt.getFloat("ProcessingTime");
-		recipeDuration = nbt.getFloat("RecipeTime");
-		appliedRecipe = nbt.getBoolean("AppliedRecipe");
+		remainingTime = nbt.getFloat("ProcessingTime").orElse(0.0F);
+		recipeDuration = nbt.getFloat("RecipeTime").orElse(0.0F);
+		appliedRecipe = nbt.getBoolean("AppliedRecipe").orElse(false);
 		super.deserializeNBT(registries, nbt);
 		if (isEmpty())
 			appliedRecipe = false;

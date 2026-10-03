@@ -1,14 +1,16 @@
 package com.simibubi.create.content.redstone.thresholdSwitch;
 
 import com.simibubi.create.Create;
+import com.simibubi.create.foundation.data.AssetLookup;
+import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.SpecialBlockStateGen;
 import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
+import com.tterrag.registrate.providers.generators.RegistrateBlockModelGenerator;
 
 import net.createmod.catnip.lang.Lang;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 
 public class ThresholdSwitchGenerator extends SpecialBlockStateGen {
 
@@ -23,14 +25,13 @@ public class ThresholdSwitchGenerator extends SpecialBlockStateGen {
 	}
 
 	@Override
-	public <T extends Block> ModelFile getModel(DataGenContext<Block, T> ctx, RegistrateBlockstateProvider prov,
+	public <T extends Block> ResourceLocation getModel(DataGenContext<Block, T> ctx, RegistrateBlockModelGenerator prov,
 		BlockState state) {
 		int level = state.getValue(ThresholdSwitchBlock.LEVEL);
 		String path = "block/threshold_switch/block_" + Lang.asId(state.getValue(ThresholdSwitchBlock.TARGET)
 			.name());
-		return prov.models()
-			.withExistingParent(path + "_" + level, Create.asResource(path))
-			.texture("level", Create.asResource("block/threshold_switch/level_" + level));
+		return BlockStateGen.inherit(prov, path + "_" + level, Create.asResource(path),
+			b -> b.texture(AssetLookup.slot("level"), Create.asResource("block/threshold_switch/level_" + level)));
 	}
 
 }

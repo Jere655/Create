@@ -57,8 +57,8 @@ public class NozzleBlockEntity extends SmartBlockEntity {
 		super.read(compound, registries, clientPacket);
 		if (!clientPacket)
 			return;
-		range = compound.getFloat("Range");
-		pushing = compound.getBoolean("Pushing");
+		range = compound.getFloat("Range").orElse(0.0F);
+		pushing = compound.getBoolean("Pushing").orElse(false);
 	}
 
 	@Override

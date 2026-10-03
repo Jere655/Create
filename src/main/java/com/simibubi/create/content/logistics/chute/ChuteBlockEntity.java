@@ -26,6 +26,7 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.VersionedInventoryTrackerBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.foundation.item.ItemHelper.ExtractionCountMode;
 import com.simibubi.create.foundation.particle.AirParticleData;
 import com.simibubi.create.foundation.utility.BlockHelper;
@@ -550,7 +551,7 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 
 	@Override
 	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-		compound.put("Item", item.saveOptional(registries));
+		compound.put("Item", CreateNbt.writeItemStack(registries, item));
 		compound.putFloat("ItemPosition", itemPosition.getValue());
 		compound.putFloat("Pull", pull);
 		compound.putFloat("Push", push);
@@ -561,11 +562,11 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		ItemStack previousItem = item;
-		item = ItemStack.parseOptional(registries, compound.getCompound("Item"));
-		itemPosition.startWithValue(compound.getFloat("ItemPosition"));
-		pull = compound.getFloat("Pull");
-		push = compound.getFloat("Push");
-		bottomPullDistance = compound.getFloat("BottomAirFlowDistance");
+		item = CreateNbt.readItemStack(registries, compound.getCompound("Item").orElseGet(CompoundTag::new));
+		itemPosition.startWithValue(compound.getFloat("ItemPosition").orElse(0.0F));
+		pull = compound.getFloat("Pull").orElse(0.0F);
+		push = compound.getFloat("Push").orElse(0.0F);
+		bottomPullDistance = compound.getFloat("BottomAirFlowDistance").orElse(0.0F);
 		super.read(compound, registries, clientPacket);
 //		if (clientPacket)
 //			airCurrent.rebuild();

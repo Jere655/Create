@@ -101,8 +101,8 @@ public class ContraptionControlsBlockEntity extends SmartBlockEntity implements 
 	@Override
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
-		disabled = tag.getBoolean("Disabled");
-		powered = tag.getBoolean("Powered");
+		disabled = tag.getBoolean("Disabled").orElse(false);
+		powered = tag.getBoolean("Powered").orElse(false);
 	}
 
 	@Override

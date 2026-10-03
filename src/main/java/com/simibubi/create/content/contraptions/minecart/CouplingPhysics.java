@@ -45,7 +45,7 @@ public class CouplingPhysics {
 			carts = carts.swap();
 
 		Couple<Vec3> corrections = Couple.create(null, null);
-		Couple<Float> maxSpeed = carts.map(AbstractMinecart::getMaxCartSpeedOnRail);
+		Couple<Float> maxSpeed = carts.map(MinecartSim2020::getMaxRailSpeed);
 		boolean firstLoop = true;
 		for (boolean current : new boolean[]{true, false, true}) {
 			AbstractMinecart cart = carts.get(current);
@@ -58,7 +58,7 @@ public class CouplingPhysics {
 				continue;
 
 			RailShape shape = null;
-			BlockPos railPosition = cart.getCurrentRailPosition();
+			BlockPos railPosition = MinecartSim2020.getCurrentRailPosition(cart);
 			BlockState railState = world.getBlockState(railPosition.above());
 
 			if (railState.getBlock() instanceof BaseRailBlock block) {
@@ -97,7 +97,7 @@ public class CouplingPhysics {
 	}
 
 	public static void softCollisionStep(Level world, Couple<AbstractMinecart> carts, double couplingLength) {
-		Couple<Float> maxSpeed = carts.map(AbstractMinecart::getMaxCartSpeedOnRail);
+		Couple<Float> maxSpeed = carts.map(MinecartSim2020::getMaxRailSpeed);
 		Couple<Boolean> canAddmotion = carts.map(MinecartSim2020::canAddMotion);
 
 		// Assuming Minecarts will never move faster than 1 block/tick

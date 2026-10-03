@@ -3,29 +3,31 @@ package com.simibubi.create.content.redstone.diodes;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.simibubi.create.foundation.data.AssetLookup;
+import com.simibubi.create.foundation.data.BlockStateGen;
 import com.tterrag.registrate.providers.DataGenContext;
+import com.tterrag.registrate.providers.generators.RegistrateBlockModelGenerator;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 
 public class ToggleLatchGenerator extends AbstractDiodeGenerator {
 
 	@Override
-	protected <T extends Block> List<ModelFile> createModels(DataGenContext<Block, T> ctx, BlockModelProvider prov) {
+	protected <T extends Block> List<ResourceLocation> createModels(DataGenContext<Block, T> ctx,
+		RegistrateBlockModelGenerator prov) {
 		String name = ctx.getName();
-		List<ModelFile> models = new ArrayList<>(4);
+		List<ResourceLocation> models = new ArrayList<>(4);
 		ResourceLocation off = existing("latch_off");
 		ResourceLocation on = existing("latch_on");
 
-		models.add(prov.getExistingFile(off));
-		models.add(prov.withExistingParent(name + "_off_powered", off)
-			.texture("top", texture(ctx, "powered")));
-		models.add(prov.getExistingFile(on));
-		models.add(prov.withExistingParent(name + "_on_powered", on)
-			.texture("top", texture(ctx, "powered_powering")));
+		models.add(off);
+		models.add(BlockStateGen.inherit(prov, name + "_off_powered", off,
+			b -> b.texture(AssetLookup.slot("top"), texture(ctx, "powered"))));
+		models.add(on);
+		models.add(BlockStateGen.inherit(prov, name + "_on_powered", on,
+			b -> b.texture(AssetLookup.slot("top"), texture(ctx, "powered_powering"))));
 
 		return models;
 	}

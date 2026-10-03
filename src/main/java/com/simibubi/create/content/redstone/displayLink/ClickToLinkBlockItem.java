@@ -124,7 +124,7 @@ public abstract class ClickToLinkBlockItem extends BlockItem {
 		}
 
 		CompoundTag beTag = new CompoundTag();
-		beTag.put("TargetOffset", NbtUtils.writeBlockPos(selectedPos.subtract(placedPos)));
+		beTag.put("TargetOffset", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(selectedPos.subtract(placedPos)));
 		NBTHelper.writeResourceLocation(beTag, "TargetDimension", selectedDim);
 		BlockEntity.addEntityType(beTag, ((IBE<?>) this.getBlock()).getBlockEntityType());
 		stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(beTag));

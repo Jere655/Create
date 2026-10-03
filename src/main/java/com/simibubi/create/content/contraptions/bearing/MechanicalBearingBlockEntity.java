@@ -91,9 +91,9 @@ public class MechanicalBearingBlockEntity extends GeneratingKineticBlockEntity
 		}
 
 		float angleBefore = angle;
-		running = compound.getBoolean("Running");
-		angle = compound.getFloat("Angle");
-		sequencedAngleLimit = compound.contains("SequencedAngleLimit") ? compound.getDouble("SequencedAngleLimit") : -1;
+		running = compound.getBoolean("Running").orElse(false);
+		angle = compound.getFloat("Angle").orElse(0.0F);
+		sequencedAngleLimit = compound.contains("SequencedAngleLimit") ? compound.getDouble("SequencedAngleLimit").orElse(0.0D) : -1;
 		lastException = AssemblyException.read(compound, registries);
 		super.read(compound, registries, clientPacket);
 		if (!clientPacket)

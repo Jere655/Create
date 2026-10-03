@@ -14,7 +14,6 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -55,29 +54,25 @@ public class ClipboardBlockItem extends BlockItem implements SupportsItemCopying
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+	public InteractionResult use(Level world, Player player, InteractionHand hand) {
 		ItemStack heldItem = player.getItemInHand(hand);
 		if (hand == InteractionHand.OFF_HAND)
-			return InteractionResultHolder.pass(heldItem);
+			return InteractionResult.PASS;
 
 		player.getCooldowns()
-			.addCooldown(heldItem.getItem(), 10);
+			.addCooldown(heldItem, 10);
 		if (world.isClientSide)
 			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> openScreen(player, heldItem.getComponents()));
 		ClipboardContent content = heldItem.getOrDefault(AllDataComponents.CLIPBOARD_CONTENT, ClipboardContent.EMPTY);
 		heldItem.set(AllDataComponents.CLIPBOARD_CONTENT, content.setType(ClipboardType.EDITING));
 
-		return InteractionResultHolder.success(heldItem);
+		return InteractionResult.SUCCESS;
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	private void openScreen(Player player, DataComponentMap components) {
 		if (Minecraft.getInstance().player == player)
-			ScreenOpener.open(new ClipboardScreen(player.getInventory().selected, components, null));
-	}
-
-	public void registerModelOverrides() {
-		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> ClipboardOverrides.registerModelOverridesClient(this));
+			ScreenOpener.open(new ClipboardScreen(player.getInventory().getSelectedSlot(), components, null));
 	}
 
 	@Override

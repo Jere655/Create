@@ -17,6 +17,7 @@ import com.simibubi.create.content.contraptions.render.ActorVisual;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.content.kinetics.base.BlockBreakingMovementBehaviour;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.content.trains.bogey.StandardBogeyBlock;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageBogey;
@@ -92,7 +93,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 	@Override
 	public Vec3 getActiveAreaOffset(MovementContext context) {
 		return Vec3.atLowerCornerOf(context.state.getValue(RollerBlock.FACING)
-			.getNormal())
+			.getUnitVec3())
 			.scale(.45)
 			.subtract(0, 2, 0);
 	}
@@ -149,8 +150,8 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 			return;
 		}
 
-		context.data.put("ReferencePos", NbtUtils.writeBlockPos(pos));
-		context.data.put("BreakingPos", NbtUtils.writeBlockPos(argMax));
+		context.data.put("ReferencePos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
+		context.data.put("BreakingPos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(argMax));
 		context.stall = true;
 	}
 
@@ -313,7 +314,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 
 		Vec3 directionVec = Vec3.atLowerCornerOf(context.state.getValue(RollerBlock.FACING)
 			.getClockWise()
-			.getNormal());
+			.getUnitVec3());
 		directionVec = context.rotation.apply(directionVec);
 		PaveResult paveResult = PaveResult.PASS;
 		int yOffset = 0;
@@ -385,7 +386,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 
 		if (paveResult == PaveResult.SUCCESS) {
 			context.data.putInt("WaitingTicks", 2);
-			context.data.put("LastPos", NbtUtils.writeBlockPos(pos));
+			context.data.put("LastPos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
 			context.stall = true;
 		}
 	}
@@ -402,7 +403,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 	}
 
 	protected BlockState getStateToPaveWith(MovementContext context) {
-		return getStateToPaveWith(ItemStack.parseOptional(context.world.registryAccess(), context.blockEntityData.getCompound("Filter")));
+		return getStateToPaveWith(CreateNbt.readItemStack(context.world.registryAccess(), context.blockEntityData.getCompound("Filter").orElseGet(CompoundTag::new)));
 	}
 
 	protected BlockState getStateToPaveWithAsSlab(MovementContext context) {
@@ -439,7 +440,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 	}
 
 	protected RollingMode getMode(MovementContext context) {
-		return RollingMode.values()[context.blockEntityData.getInt("ScrollValue")];
+		return RollingMode.values()[context.blockEntityData.getInt("ScrollValue").orElse(0)];
 	}
 
 	private final class RollerTravellingPoint extends TravellingPoint {

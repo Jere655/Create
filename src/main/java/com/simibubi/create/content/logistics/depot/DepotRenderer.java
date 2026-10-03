@@ -56,7 +56,7 @@ public class DepotRenderer extends SafeBlockEntityRenderer<DepotBlockEntity> {
 			if (tis.insertedFrom.getAxis()
 				.isHorizontal()) {
 				Vec3 offsetVec = Vec3.atLowerCornerOf(tis.insertedFrom.getOpposite()
-					.getNormal())
+					.getUnitVec3())
 					.scale(.5f - offset);
 				ms.translate(offsetVec.x, offsetVec.y, offsetVec.z);
 				boolean alongX = tis.insertedFrom.getClockWise()

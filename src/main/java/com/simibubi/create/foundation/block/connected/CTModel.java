@@ -10,9 +10,9 @@ import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.simibubi.create.foundation.model.BakedQuadHelper;
 
 import net.createmod.catnip.data.Iterate;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
@@ -20,9 +20,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelData.Builder;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData.Builder;
+import net.neoforged.neoforge.model.data.ModelProperty;
 
 public class CTModel extends BakedModelWrapperWithData {
 
@@ -30,7 +30,7 @@ public class CTModel extends BakedModelWrapperWithData {
 
 	private final ConnectedTextureBehaviour behaviour;
 
-	public CTModel(BakedModel originalModel, ConnectedTextureBehaviour behaviour) {
+	public CTModel(BlockStateModel originalModel, ConnectedTextureBehaviour behaviour) {
 		super(originalModel);
 		this.behaviour = behaviour;
 	}
@@ -47,7 +47,7 @@ public class CTModel extends BakedModelWrapperWithData {
 		for (Direction face : Iterate.directions) {
 			BlockState actualState = world.getBlockState(pos);
 			if (!behaviour.buildContextForOccludedDirections()
-				&& !Block.shouldRenderFace(state, world, pos, face, mutablePos.setWithOffset(pos, face))
+				&& !Block.shouldRenderFace(world, pos, state, world.getBlockState(mutablePos.setWithOffset(pos, face)), face)
 				&& !(actualState.getBlock()instanceof CopycatBlock ufb
 					&& !ufb.canFaceBeOccluded(actualState, face)))
 				continue;
@@ -61,41 +61,34 @@ public class CTModel extends BakedModelWrapperWithData {
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand, ModelData extraData, RenderType renderType) {
-		List<BakedQuad> quads = super.getQuads(state, side, rand, extraData, renderType);
-		if (!extraData.has(CT_PROPERTY))
-			return quads;
-
-		CTData data = extraData.get(CT_PROPERTY);
-		quads = new ArrayList<>(quads);
-
-		for (int i = 0; i < quads.size(); i++) {
-			BakedQuad quad = quads.get(i);
-
-			int index = data.get(quad.getDirection());
-			if (index == -1)
-				continue;
-
-			CTSpriteShiftEntry spriteShift = behaviour.getShift(state, rand, quad.getDirection(), quad.getSprite());
-			if (spriteShift == null)
-				continue;
-			if (quad.getSprite() != spriteShift.getOriginal())
-				continue;
-
-			BakedQuad newQuad = BakedQuadHelper.clone(quad);
-			int[] vertexData = newQuad.getVertices();
-
-			for (int vertex = 0; vertex < 4; vertex++) {
-				float u = BakedQuadHelper.getU(vertexData, vertex);
-				float v = BakedQuadHelper.getV(vertexData, vertex);
-				BakedQuadHelper.setU(vertexData, vertex, spriteShift.getTargetU(u, index));
-				BakedQuadHelper.setV(vertexData, vertex, spriteShift.getTargetV(v, index));
-			}
-
-			quads.set(i, newQuad);
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random, ModelData data,
+		List<BlockModelPart> parts) {
+		List<BlockModelPart> originalParts = new ArrayList<>();
+		collectOriginalParts(world, pos, state, random, originalParts);
+		if (!data.has(CT_PROPERTY)) {
+			parts.addAll(originalParts);
+			return;
 		}
 
-		return quads;
+		CTData ctData = data.get(CT_PROPERTY);
+		for (BlockModelPart part : originalParts)
+			parts.add(transformPart(part, quad -> transformQuad(state, random, ctData, quad)));
+	}
+
+	private BakedQuad transformQuad(BlockState state, RandomSource random, CTData data, BakedQuad quad) {
+		int index = data.get(quad.direction());
+		if (index == -1)
+			return quad;
+		CTSpriteShiftEntry spriteShift = behaviour.getShift(state, random, quad.direction(), quad.sprite());
+		if (spriteShift == null || quad.sprite() != spriteShift.getOriginal())
+			return quad;
+		BakedQuad newQuad = BakedQuadHelper.clone(quad);
+		int[] vertexData = newQuad.vertices();
+		for (int vertex = 0; vertex < 4; vertex++) {
+			BakedQuadHelper.setU(vertexData, vertex, spriteShift.getTargetU(BakedQuadHelper.getU(vertexData, vertex), index));
+			BakedQuadHelper.setV(vertexData, vertex, spriteShift.getTargetV(BakedQuadHelper.getV(vertexData, vertex), index));
+		}
+		return newQuad;
 	}
 
 	private static class CTData {

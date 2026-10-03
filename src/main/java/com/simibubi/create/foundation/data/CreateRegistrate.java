@@ -37,7 +37,10 @@ import com.tterrag.registrate.util.nullness.NonNullSupplier;
 
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.registry.RegisteredObjectsHelper;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -188,17 +191,16 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 			.transform(pickaxeOnly())
 			.blockstate(hasNaturalVariants ? BlockStateGen.naturalStoneTypeBlock(name) : (c, p) -> {
 				final String location = "block/palettes/stone_types/" + c.getName();
-				p.simpleBlock(c.get(), p.models()
-					.cubeAll(c.getName(), p.modLoc(location)));
+				p.generateWithTemplate(c.get(), ModelTemplates.CUBE_ALL, TextureMapping.cube(p.modLoc(location)));
 			})
 			.tag(BlockTags.DRIPSTONE_REPLACEABLE)
 			.tag(BlockTags.AZALEA_ROOT_REPLACEABLE)
 			.tag(BlockTags.MOSS_REPLACEABLE)
 			.tag(BlockTags.LUSH_GROUND_REPLACEABLE)
 			.item()
-			.model((c, p) -> p.cubeAll(c.getName(),
+			.model(() -> (c, p) -> p.generateWithTemplate(c.get(), ModelTemplates.CUBE_ALL, TextureMapping.cube(
 				p.modLoc(hasNaturalVariants ? "block/palettes/stone_types/natural/" + name + "_1"
-					: "block/palettes/stone_types/" + c.getName())))
+					: "block/palettes/stone_types/" + c.getName()))))
 			.build();
 		return builder;
 	}
@@ -213,58 +215,39 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	public <T extends BaseFlowingFluid> FluidBuilder<T, CreateRegistrate> virtualFluid(String name,
 																					   FluidBuilder.FluidTypeFactory typeFactory, NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory,
 																					   NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
-		return entry(name,
-			c -> new VirtualFluidBuilder<>(self(), self(), name, c, ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"),
-				ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"), typeFactory, sourceFactory, flowingFactory));
+		return virtualFluid(name, defaultFluidTexture(name, "_still"), defaultFluidTexture(name, "_flow"), typeFactory, sourceFactory, flowingFactory);
 	}
 
 	public <T extends BaseFlowingFluid> FluidBuilder<T, CreateRegistrate> virtualFluid(String name,
-																						ResourceLocation still, ResourceLocation flow, FluidBuilder.FluidTypeFactory typeFactory,
-																						NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory, NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
-		return entry(name, c -> new VirtualFluidBuilder<>(self(), self(), name, c, still, flow, typeFactory, sourceFactory, flowingFactory));
+																					   ResourceLocation still, ResourceLocation flow, FluidBuilder.FluidTypeFactory typeFactory,
+																					   NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory, NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
+		return entry(name, c -> new FluidBuilder<T, CreateRegistrate>(self(), self(), name, c, typeFactory, flowingFactory::apply)
+			.source(sourceFactory::apply)
+			.clientExtension(still, flow)
+			.noBlock()
+			.noBucket());
 	}
 
 	public FluidBuilder<VirtualFluid, CreateRegistrate> virtualFluid(String name) {
-		return entry(name,
-			c -> new VirtualFluidBuilder<>(self(), self(), name, c,
-				ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"), ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"),
-				CreateRegistrate::defaultFluidType, VirtualFluid::createSource, VirtualFluid::createFlowing));
+		return virtualFluid(name, FluidType::new, VirtualFluid::createSource, VirtualFluid::createFlowing);
 	}
 
 	public FluidBuilder<VirtualFluid, CreateRegistrate> virtualFluid(String name, ResourceLocation still,
 																	 ResourceLocation flow) {
-		return entry(name, c -> new VirtualFluidBuilder<>(self(), self(), name, c, still, flow,
-			CreateRegistrate::defaultFluidType, VirtualFluid::createSource, VirtualFluid::createFlowing));
+		return virtualFluid(name, still, flow, FluidType::new, VirtualFluid::createSource, VirtualFluid::createFlowing);
 	}
 
 	public FluidBuilder<BaseFlowingFluid.Flowing, CreateRegistrate> standardFluid(String name) {
-		return fluid(name, ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"), ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"));
+		return fluid(name, defaultFluidTexture(name, "_still"), defaultFluidTexture(name, "_flow"));
 	}
 
 	public FluidBuilder<BaseFlowingFluid.Flowing, CreateRegistrate> standardFluid(String name,
 																				   FluidBuilder.FluidTypeFactory typeFactory) {
-		return fluid(name, ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"), ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"),
-			typeFactory);
+		return fluid(name, defaultFluidTexture(name, "_still"), defaultFluidTexture(name, "_flow"), typeFactory);
 	}
 
-	public static FluidType defaultFluidType(FluidType.Properties properties, ResourceLocation stillTexture,
-											 ResourceLocation flowingTexture) {
-		return new FluidType(properties) {
-			@Override
-			public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-				consumer.accept(new IClientFluidTypeExtensions() {
-					@Override
-					public ResourceLocation getStillTexture() {
-						return stillTexture;
-					}
-
-					@Override
-					public ResourceLocation getFlowingTexture() {
-						return flowingTexture;
-					}
-				});
-			}
-		};
+	private ResourceLocation defaultFluidTexture(String name, String suffix) {
+		return ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + suffix);
 	}
 
 	/* Util */
@@ -275,12 +258,12 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	}
 
 	public static <T extends Block> NonNullConsumer<? super T> blockModel(
-		Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+		Supplier<NonNullFunction<BlockStateModel, ? extends BlockStateModel>> func) {
 		return entry -> CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> registerBlockModel(entry, func));
 	}
 
 	public static <T extends Item> NonNullConsumer<? super T> itemModel(
-		Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+		Supplier<NonNullFunction<ItemModel, ? extends ItemModel>> func) {
 		return entry -> CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> registerItemModel(entry, func));
 	}
 
@@ -297,14 +280,14 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 
 	@OnlyIn(Dist.CLIENT)
 	private static void registerBlockModel(Block entry,
-										   Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+										   Supplier<NonNullFunction<BlockStateModel, ? extends BlockStateModel>> func) {
 		CreateClient.MODEL_SWAPPER.getCustomBlockModels()
 			.register(RegisteredObjectsHelper.getKeyOrThrow(entry), func.get());
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	private static void registerItemModel(Item entry,
-										  Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+										  Supplier<NonNullFunction<ItemModel, ? extends ItemModel>> func) {
 		CreateClient.MODEL_SWAPPER.getCustomItemModels()
 			.register(RegisteredObjectsHelper.getKeyOrThrow(entry), func.get());
 	}

@@ -231,7 +231,7 @@ public class SteamEngineBlockEntity extends SmartBlockEntity implements IHaveGog
 		offset = VecHelper.rotate(offset, AngleHelper.horizontalAngle(facing), Axis.Y);
 		Vec3 v = offset.scale(.5f)
 			.add(Vec3.atCenterOf(worldPosition));
-		Vec3 m = offset.subtract(Vec3.atLowerCornerOf(facing.getNormal())
+		Vec3 m = offset.subtract(facing.getUnitVec3()
 			.scale(.75f));
 		level.addParticle(new SteamJetParticleData(1), v.x, v.y, v.z, m.x, m.y, m.z);
 

@@ -108,7 +108,7 @@ public class MechanicalPressBlockEntity extends BasinOperatingBlockEntity implem
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		tracksCreated = compound.getInt("TracksCreated");
+		tracksCreated = compound.getInt("TracksCreated").orElse(0);
 	}
 
 	@Override

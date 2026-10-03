@@ -10,6 +10,7 @@ import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllEntityTypes;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.logistics.chute.ChuteBlock;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
@@ -33,7 +34,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -191,7 +192,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 			return;
 		CompoundTag nbt = new CompoundTag();
 		itemEntity.addAdditionalSaveData(nbt);
-		if (nbt.getInt("PickupDelay") != 32767) // See: ItemEntity#makeFakeItem
+		if (nbt.getInt("PickupDelay").orElse(0) != 32767) // See: ItemEntity#makeFakeItem
 			return;
 		discard();
 	}
@@ -377,7 +378,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 			if (itemstack.getItem() instanceof SpawnEggItem sei) {
 				EntityType<?> entitytype = sei.getType(itemstack);
 				Entity entity =
-					entitytype.spawn(level, itemstack, null, blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+					entitytype.spawn(level, itemstack, null, blockPosition(), EntitySpawnReason.SPAWN_ITEM_USE, false, false);
 				if (entity != null)
 					itemstack.shrink(1);
 			}
@@ -392,14 +393,14 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	@Override
 	public void readAdditionalSaveData(CompoundTag compound) {
 		super.readAdditionalSaveData(compound);
-		box = ItemStack.parseOptional(level().registryAccess(), compound.getCompound("Box"));
+		box = CreateNbt.readItemStack(level().registryAccess(), compound.getCompound("Box").orElseGet(CompoundTag::new));
 		refreshDimensions();
 	}
 
 	@Override
 	public void addAdditionalSaveData(CompoundTag compound) {
 		super.addAdditionalSaveData(compound);
-		compound.put("Box", box.saveOptional(level().registryAccess()));
+		compound.put("Box", CreateNbt.writeItemStack(level().registryAccess(), box));
 	}
 
 	@Override

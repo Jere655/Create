@@ -32,6 +32,7 @@ import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.item.SmartInventory;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.animation.LerpedFloat;
@@ -165,26 +166,26 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		inputInventory.deserializeNBT(registries, compound.getCompound("InputItems"));
-		outputInventory.deserializeNBT(registries, compound.getCompound("OutputItems"));
+		inputInventory.deserializeNBT(registries, compound.getCompoundOrEmpty("InputItems"));
+		outputInventory.deserializeNBT(registries, compound.getCompoundOrEmpty("OutputItems"));
 
 		preferredSpoutput = null;
 		if (compound.contains("PreferredSpoutput"))
 			preferredSpoutput = NBTHelper.readEnum(compound, "PreferredSpoutput", Direction.class);
 		disabledSpoutputs.clear();
-		ListTag disabledList = compound.getList("DisabledSpoutput", Tag.TAG_STRING);
-		disabledList.forEach(d -> disabledSpoutputs.add(Direction.valueOf(((StringTag) d).getAsString())));
-		spoutputBuffer = NBTHelper.readItemList(compound.getList("Overflow", Tag.TAG_COMPOUND), registries);
-		spoutputFluidBuffer = NBTHelper.readCompoundList(compound.getList("FluidOverflow", Tag.TAG_COMPOUND), tag -> FluidStack.parseOptional(registries, tag));
+		ListTag disabledList = compound.getListOrEmpty("DisabledSpoutput");
+		disabledList.forEach(d -> disabledSpoutputs.add(Direction.valueOf(((StringTag) d).value())));
+		spoutputBuffer = NBTHelper.readItemList(compound.getListOrEmpty("Overflow"), registries);
+		spoutputFluidBuffer = NBTHelper.readCompoundList(compound.getListOrEmpty("FluidOverflow"), tag -> CreateNbt.readFluidStack(registries, tag));
 
 		if (!clientPacket)
 			return;
 
-		NBTHelper.iterateCompoundList(compound.getList("VisualizedItems", Tag.TAG_COMPOUND),
-			c -> visualizedOutputItems.add(IntAttached.with(OUTPUT_ANIMATION_TIME, ItemStack.parseOptional(registries, c))));
-		NBTHelper.iterateCompoundList(compound.getList("VisualizedFluids", Tag.TAG_COMPOUND),
+		NBTHelper.iterateCompoundList(compound.getListOrEmpty("VisualizedItems"),
+			c -> visualizedOutputItems.add(IntAttached.with(OUTPUT_ANIMATION_TIME, CreateNbt.readItemStack(registries, c))));
+		NBTHelper.iterateCompoundList(compound.getListOrEmpty("VisualizedFluids"),
 			c -> visualizedOutputFluids
-				.add(IntAttached.with(OUTPUT_ANIMATION_TIME, FluidStack.parseOptional(registries, c))));
+				.add(IntAttached.with(OUTPUT_ANIMATION_TIME, CreateNbt.readFluidStack(registries, c))));
 	}
 
 	@Override
@@ -200,13 +201,13 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		compound.put("DisabledSpoutput", disabledList);
 		compound.put("Overflow", NBTHelper.writeItemList(spoutputBuffer, registries));
 		compound.put("FluidOverflow",
-			NBTHelper.writeCompoundList(spoutputFluidBuffer, fs -> (CompoundTag) fs.saveOptional(registries)));
+			NBTHelper.writeCompoundList(spoutputFluidBuffer, fs -> CreateNbt.writeFluidStack(registries, fs)));
 
 		if (!clientPacket)
 			return;
 
-		compound.put("VisualizedItems", NBTHelper.writeCompoundList(visualizedOutputItems, ia -> (CompoundTag) ia.getValue().saveOptional(registries)));
-		compound.put("VisualizedFluids", NBTHelper.writeCompoundList(visualizedOutputFluids, ia -> (CompoundTag) ia.getValue().saveOptional(registries)));
+		compound.put("VisualizedItems", NBTHelper.writeCompoundList(visualizedOutputItems, ia -> CreateNbt.writeItemStack(registries, ia.getValue())));
+		compound.put("VisualizedFluids", NBTHelper.writeCompoundList(visualizedOutputFluids, ia -> CreateNbt.writeFluidStack(registries, ia.getValue())));
 		visualizedOutputItems.clear();
 		visualizedOutputFluids.clear();
 	}
@@ -611,8 +612,8 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	}
 
 	public void readOnlyItems(CompoundTag compound, HolderLookup.Provider registries) {
-		inputInventory.deserializeNBT(registries, compound.getCompound("InputItems"));
-		outputInventory.deserializeNBT(registries, compound.getCompound("OutputItems"));
+		inputInventory.deserializeNBT(registries, compound.getCompoundOrEmpty("InputItems"));
+		outputInventory.deserializeNBT(registries, compound.getCompoundOrEmpty("OutputItems"));
 	}
 
 	public static HeatLevel getHeatLevelOf(BlockState state) {
@@ -695,7 +696,7 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		Direction direction = blockState.getValue(BasinBlock.FACING);
 		if (direction == Direction.DOWN)
 			return;
-		Vec3 directionVec = Vec3.atLowerCornerOf(direction.getNormal());
+		Vec3 directionVec = direction.getUnitVec3();
 		Vec3 outVec = VecHelper.getCenterOf(worldPosition)
 			.add(directionVec.scale(.65)
 				.subtract(0, 1 / 4f, 0));

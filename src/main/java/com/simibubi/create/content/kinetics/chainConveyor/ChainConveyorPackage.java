@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.cache.Cache;
 import com.simibubi.create.foundation.utility.TickBasedCache;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.WorldAttached;
@@ -95,15 +96,15 @@ public class ChainConveyorPackage {
 	public CompoundTag write(HolderLookup.Provider registries) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putFloat("Position", chainPosition);
-		compoundTag.put("Item", item.saveOptional(registries));
+		compoundTag.put("Item", CreateNbt.writeItemStack(registries, item));
 		return compoundTag;
 	}
 
 	public static ChainConveyorPackage read(CompoundTag compoundTag, HolderLookup.Provider registries) {
-		float pos = compoundTag.getFloat("Position");
-		ItemStack item = ItemStack.parseOptional(registries, compoundTag.getCompound("Item"));
+		float pos = compoundTag.getFloat("Position").orElse(0.0F);
+		ItemStack item = CreateNbt.readItemStack(registries, compoundTag.getCompound("Item").orElseGet(CompoundTag::new));
 		if (compoundTag.contains("NetID"))
-			return new ChainConveyorPackage(pos, item, compoundTag.getInt("NetID"));
+			return new ChainConveyorPackage(pos, item, compoundTag.getInt("NetID").orElse(0));
 		return new ChainConveyorPackage(pos, item);
 	}
 

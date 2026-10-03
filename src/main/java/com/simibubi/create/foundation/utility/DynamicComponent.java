@@ -51,9 +51,9 @@ public class DynamicComponent {
 	}
 
 	public void read(BlockPos pos, CompoundTag nbt, HolderLookup.Provider registries) {
-		rawCustomText = getJsonFromString(nbt.getString("RawCustomText"));
+		rawCustomText = getJsonFromString(nbt.getString("RawCustomText").orElse(""));
 		try {
-			parsedCustomText = Component.Serializer.fromJson(nbt.getString("CustomText"), registries);
+			parsedCustomText = Component.Serializer.fromJson(nbt.getString("CustomText").orElse(""), registries);
 		} catch (JsonParseException e) {
 			parsedCustomText = null;
 		}

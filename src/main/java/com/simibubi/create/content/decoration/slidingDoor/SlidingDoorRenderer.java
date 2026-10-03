@@ -44,9 +44,9 @@ public class SlidingDoorRenderer extends SafeBlockEntityRenderer<SlidingDoorBloc
 		float value2 = Mth.clamp(value * 10, 0, 1);
 
 		VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
-		Vec3 offset = Vec3.atLowerCornerOf(movementDirection.getNormal())
+		Vec3 offset = movementDirection.getUnitVec3()
 			.scale(value * value * 13 / 16f)
-			.add(Vec3.atLowerCornerOf(facing.getNormal())
+			.add(facing.getUnitVec3()
 				.scale(value2 * 1 / 32f));
 
 		if (((SlidingDoorBlock) blockState.getBlock()).isFoldingDoor()) {
@@ -59,7 +59,7 @@ public class SlidingDoorRenderer extends SafeBlockEntityRenderer<SlidingDoorBloc
 				float f = flip ? -1 : 1;
 
 				partial.translate(0, -1 / 512f, 0)
-					.translate(Vec3.atLowerCornerOf(facing.getNormal())
+					.translate(facing.getUnitVec3()
 						.scale(value2 * 1 / 32f));
 				partial.rotateCentered(
 					Mth.DEG_TO_RAD * AngleHelper.horizontalAngle(facing.getClockWise()), Direction.UP);

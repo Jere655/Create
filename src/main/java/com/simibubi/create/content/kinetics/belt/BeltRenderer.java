@@ -202,7 +202,7 @@ public class BeltRenderer extends SafeBlockEntityRenderer<BeltBlockEntity> {
 		ms.pushPose();
 
 		Direction beltFacing = be.getBeltFacing();
-		Vec3i directionVec = beltFacing.getNormal();
+		Vec3i directionVec = beltFacing.getUnitVec3i();
 		Vec3 beltStartOffset = Vec3.atLowerCornerOf(directionVec)
 			.scale(-.5)
 			.add(.5, 15 / 16f, .5);

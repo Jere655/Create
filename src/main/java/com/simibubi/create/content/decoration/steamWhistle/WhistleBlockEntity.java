@@ -103,7 +103,7 @@ public class WhistleBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 
 	@Override
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-		pitch = tag.getInt("Pitch");
+		pitch = tag.getInt("Pitch").orElse(0);
 		super.read(tag, registries, clientPacket);
 	}
 
@@ -167,7 +167,7 @@ public class WhistleBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 		Vec3 v = offset.scale(.45f)
 			.add(sizeOffset)
 			.add(Vec3.atCenterOf(worldPosition));
-		Vec3 m = offset.subtract(Vec3.atLowerCornerOf(facing.getNormal())
+		Vec3 m = offset.subtract(facing.getUnitVec3()
 			.scale(.75f));
 		level.addParticle(new SteamJetParticleData(1), v.x, v.y, v.z, m.x, m.y, m.z);
 	}

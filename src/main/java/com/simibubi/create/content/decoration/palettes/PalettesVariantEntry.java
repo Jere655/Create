@@ -14,6 +14,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
@@ -53,7 +54,7 @@ public class PalettesVariantEntry {
 			itemBuilder.tag(paletteStoneVariants.materialTag);
 
 			if (pattern.isTranslucent())
-				builder.addLayer(() -> RenderType::translucent);
+				builder.addLayer(() -> () -> ChunkSectionLayer.TRANSLUCENT);
 			pattern.createCTBehaviour(name)
 				.ifPresent(b -> builder.onRegister(connectedTextures(b)));
 

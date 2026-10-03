@@ -112,7 +112,7 @@ public class PumpBlockEntity extends KineticBlockEntity {
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		if (compound.getBoolean("Reversed"))
+		if (compound.getBoolean("Reversed").orElse(false))
 			scheduleFlip = true;
 	}
 

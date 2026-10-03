@@ -32,7 +32,7 @@ public class SeatMovementBehaviour implements MovementBehaviour {
 		AbstractContraptionEntity contraptionEntity = context.contraption.entity;
 		if (contraptionEntity == null)
 			return;
-		int index = context.data.getInt("SeatIndex");
+		int index = context.data.getInt("SeatIndex").orElse(0);
 		if (index == -1)
 			return;
 

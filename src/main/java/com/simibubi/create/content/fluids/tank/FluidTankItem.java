@@ -6,6 +6,7 @@ import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.equipment.symmetryWand.SymmetryWandItem;
 
 import com.simibubi.create.foundation.block.IBE;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -54,10 +55,10 @@ public class FluidTankItem extends BlockItem {
 			nbt.remove("Controller");
 			nbt.remove("LastKnownPos");
 			if (nbt.contains("TankContent")) {
-				FluidStack fluid = FluidStack.parseOptional(minecraftserver.registryAccess(), nbt.getCompound("TankContent"));
+				FluidStack fluid = CreateNbt.readFluidStack(minecraftserver.registryAccess(), nbt.getCompound("TankContent").orElseGet(CompoundTag::new));
 				if (!fluid.isEmpty()) {
 					fluid.setAmount(Math.min(FluidTankBlockEntity.getCapacityMultiplier(), fluid.getAmount()));
-					nbt.put("TankContent", fluid.saveOptional(minecraftserver.registryAccess()));
+					nbt.put("TankContent", CreateNbt.writeFluidStack(minecraftserver.registryAccess(), fluid));
 				}
 			}
 			BlockEntity.addEntityType(nbt, ((IBE<?>) this.getBlock()).getBlockEntityType());

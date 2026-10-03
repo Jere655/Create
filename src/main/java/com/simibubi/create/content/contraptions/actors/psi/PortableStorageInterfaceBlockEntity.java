@@ -121,10 +121,10 @@ public abstract class PortableStorageInterfaceBlockEntity extends SmartBlockEnti
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		transferTimer = compound.getInt("Timer");
-		distance = compound.getFloat("Distance");
+		transferTimer = compound.getIntOr("Timer", 0);
+		distance = compound.getFloatOr("Distance", 0);
 		boolean poweredPreviously = powered;
-		powered = compound.getBoolean("Powered");
+		powered = compound.getBooleanOr("Powered", false);
 		if (clientPacket && powered != poweredPreviously && !powered)
 			notifyContraptions();
 	}

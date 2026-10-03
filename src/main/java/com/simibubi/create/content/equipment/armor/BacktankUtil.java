@@ -39,9 +39,13 @@ public class BacktankUtil {
 	static {
 		addBacktankSupplier(entity -> {
 			List<ItemStack> stacks = new ArrayList<>();
-			for (ItemStack itemStack : entity.getArmorSlots())
+			for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
+				if (slot.getType() != net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR)
+					continue;
+				ItemStack itemStack = entity.getItemBySlot(slot);
 				if (AllTags.AllItemTags.PRESSURIZED_AIR_SOURCES.matches(itemStack))
 					stacks.add(itemStack);
+			}
 
 			return stacks;
 		});

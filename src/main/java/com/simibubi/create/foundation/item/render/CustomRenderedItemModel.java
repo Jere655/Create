@@ -1,32 +1,36 @@
 package com.simibubi.create.foundation.item.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import javax.annotation.Nullable;
 
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 
-public class CustomRenderedItemModel extends BakedModelWrapper<BakedModel> {
+/**
+ * The item-model counterpart to Create's old custom-renderer wrapper.
+ *
+ * The 1.21.7 item pipeline no longer exposes a baked model from the item renderer.
+ * This wrapper deliberately stays at the ItemModel boundary; specialized Create item
+ * renderers are migrated to fill an ItemStackRenderState in their own follow-up layer.
+ */
+public class CustomRenderedItemModel implements ItemModel {
 
-	public CustomRenderedItemModel(BakedModel originalModel) {
-		super(originalModel);
+	protected final ItemModel originalModel;
+
+	public CustomRenderedItemModel(ItemModel originalModel) {
+		this.originalModel = originalModel;
 	}
 
 	@Override
-	public boolean isCustomRenderer() {
-		return true;
+	public void update(ItemStackRenderState renderState, net.minecraft.world.item.ItemStack stack, ItemModelResolver resolver,
+		ItemDisplayContext displayContext, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+		originalModel.update(renderState, stack, resolver, displayContext, level, entity, seed);
 	}
 
-	@Override
-	public BakedModel applyTransform(ItemDisplayContext cameraItemDisplayContext, PoseStack mat,
-		boolean leftHand) {
-		// Super call returns originalModel, but we want to return this, else BEWLR
-		// won't be used.
-		super.applyTransform(cameraItemDisplayContext, mat, leftHand);
-		return this;
-	}
-
-	public BakedModel getOriginalModel() {
+	public ItemModel getOriginalModel() {
 		return originalModel;
 	}
 

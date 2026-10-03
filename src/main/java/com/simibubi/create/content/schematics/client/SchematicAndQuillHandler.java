@@ -58,7 +58,7 @@ public class SchematicAndQuillHandler {
 			return true;
 
 		AABB bb = new AABB(Vec3.atLowerCornerOf(firstPos), Vec3.atLowerCornerOf(secondPos));
-		Vec3i vec = selectedFace.getNormal();
+		Vec3i vec = selectedFace.getUnitVec3i();
 		Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera()
 			.getPosition();
 		if (bb.contains(projectedView))

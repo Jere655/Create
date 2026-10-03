@@ -12,6 +12,7 @@ import com.simibubi.create.content.kinetics.belt.BeltSlope;
 import com.simibubi.create.content.kinetics.belt.item.BeltConnectorItem;
 import com.simibubi.create.content.kinetics.simpleRelays.AbstractSimpleShaftBlock;
 import com.simibubi.create.foundation.utility.BlockHelper;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
@@ -69,8 +70,8 @@ public abstract class LaunchedItem {
 		CompoundTag c = new CompoundTag();
 		c.putInt("TotalTicks", totalTicks);
 		c.putInt("TicksLeft", ticksRemaining);
-		c.put("Stack", stack.saveOptional(registries));
-		c.put("Target", NbtUtils.writeBlockPos(target));
+		c.put("Stack", CreateNbt.writeItemStack(registries, stack));
+		c.put("Target", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(target));
 		return c;
 	}
 
@@ -85,9 +86,9 @@ public abstract class LaunchedItem {
 
 	void readNBT(CompoundTag c, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
 		target = NBTHelper.readBlockPos(c, "Target");
-		ticksRemaining = c.getInt("TicksLeft");
-		totalTicks = c.getInt("TotalTicks");
-		stack = ItemStack.parseOptional(registries, c.getCompound("Stack"));
+		ticksRemaining = c.getInt("TicksLeft").orElse(0);
+		totalTicks = c.getInt("TotalTicks").orElse(0);
+		stack = CreateNbt.readItemStack(registries, c.getCompound("Stack").orElseGet(CompoundTag::new));
 	}
 
 	public static class ForBlockState extends LaunchedItem {
@@ -119,10 +120,8 @@ public abstract class LaunchedItem {
 		@Override
 		void readNBT(CompoundTag nbt, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
 			super.readNBT(nbt, registries, holderGetter);
-			state = NbtUtils.readBlockState(holderGetter, nbt.getCompound("BlockState"));
-			if (nbt.contains("Data", Tag.TAG_COMPOUND)) {
-				data = nbt.getCompound("Data");
-			}
+			state = NbtUtils.readBlockState(holderGetter, nbt.getCompoundOrEmpty("BlockState"));
+			nbt.getCompound("Data").orElseGet(CompoundTag::new).ifPresent(value -> data = value);
 		}
 
 		@Override
@@ -150,7 +149,7 @@ public abstract class LaunchedItem {
 
 		@Override
 		void readNBT(CompoundTag nbt, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
-			length = nbt.getInt("Length");
+			length = nbt.getInt("Length").orElse(0);
 			int[] intArray = nbt.getIntArray("Casing");
 			casings = new CasingType[length];
 			for (int i = 0; i < casings.length; i++)
@@ -230,7 +229,7 @@ public abstract class LaunchedItem {
 		void readNBT(CompoundTag nbt, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
 			super.readNBT(nbt, registries, holderGetter);
 			if (nbt.contains("Entity"))
-				deferredTag = nbt.getCompound("Entity");
+				deferredTag = nbt.getCompound("Entity").orElseGet(CompoundTag::new);
 		}
 
 		@Override

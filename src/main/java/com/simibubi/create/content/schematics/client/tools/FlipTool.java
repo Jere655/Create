@@ -60,7 +60,7 @@ public class FlipTool extends PlacementToolBase {
 		AABB bounds = schematicHandler.getBounds();
 
 		Vec3 directionVec = Vec3.atLowerCornerOf(Direction.get(AxisDirection.POSITIVE, facing.getAxis())
-			.getNormal());
+			.getUnitVec3());
 		Vec3 boundsSize = new Vec3(bounds.getXsize(), bounds.getYsize(), bounds.getZsize());
 		Vec3 vec = boundsSize.multiply(directionVec);
 		bounds = bounds.contract(vec.x, vec.y, vec.z)

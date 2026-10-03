@@ -850,7 +850,7 @@ public class Navigation {
 
 		removeBrokenPathEntries();
 
-		tag.putUUID("Destination", destination.id);
+		tag.put("Destination", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(destination.id));
 		tag.putDouble("DistanceToDestination", distanceToDestination);
 		tag.putDouble("DistanceStartedAt", distanceStartedAt);
 		tag.putBoolean("BehindTrain", destinationBehindTrain);
@@ -863,7 +863,7 @@ public class Navigation {
 		}));
 		if (waitingForSignal == null)
 			return tag;
-		tag.putUUID("BlockingSignal", waitingForSignal.getFirst());
+		tag.put("BlockingSignal", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(waitingForSignal.getFirst()));
 		tag.putBoolean("BlockingSignalSide", waitingForSignal.getSecond());
 		tag.putDouble("DistanceToSignal", distanceToSignal);
 		tag.putInt("TicksWaitingForSignal", ticksWaitingForSignal);
@@ -872,31 +872,31 @@ public class Navigation {
 
 	public void read(CompoundTag tag, TrackGraph graph, DimensionPalette dimensions) {
 		destination = graph != null && tag.contains("Destination")
-			? graph.getPoint(EdgePointType.STATION, tag.getUUID("Destination"))
+			? graph.getPoint(EdgePointType.STATION, com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(tag, "Destination")))
 			: null;
 
 		if (destination == null)
 			return;
 
-		distanceToDestination = tag.getDouble("DistanceToDestination");
-		distanceStartedAt = tag.getDouble("DistanceStartedAt");
-		destinationBehindTrain = tag.getBoolean("BehindTrain");
-		announceArrival = tag.getBoolean("AnnounceArrival");
+		distanceToDestination = tag.getDouble("DistanceToDestination").orElse(0.0D);
+		distanceStartedAt = tag.getDouble("DistanceStartedAt").orElse(0.0D);
+		destinationBehindTrain = tag.getBoolean("BehindTrain").orElse(false);
+		announceArrival = tag.getBoolean("AnnounceArrival").orElse(false);
 		currentPath.clear();
-		NBTHelper.iterateCompoundList(tag.getList("Path", Tag.TAG_COMPOUND),
+		NBTHelper.iterateCompoundList(tag.getListOrEmpty("Path"),
 			c -> currentPath.add(Couple
-				.deserializeEach(c.getList("Nodes", Tag.TAG_COMPOUND), c2 -> TrackNodeLocation.read(c2, dimensions))
+				.deserializeEach(c.getListOrEmpty("Nodes"), c2 -> TrackNodeLocation.read(c2, dimensions))
 				.map(graph::locateNode)));
 
 		removeBrokenPathEntries();
 
 		waitingForSignal = tag.contains("BlockingSignal")
-			? Pair.of(tag.getUUID("BlockingSignal"), tag.getBoolean("BlockingSignalSide"))
+			? Pair.of(com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(tag, "BlockingSignal")), tag.getBoolean("BlockingSignalSide").orElse(false))
 			: null;
 		if (waitingForSignal == null)
 			return;
-		distanceToSignal = tag.getDouble("DistanceToSignal");
-		ticksWaitingForSignal = tag.getInt("TicksWaitingForSignal");
+		distanceToSignal = tag.getDouble("DistanceToSignal").orElse(0.0D);
+		ticksWaitingForSignal = tag.getInt("TicksWaitingForSignal").orElse(0);
 	}
 
 	private void removeBrokenPathEntries() {

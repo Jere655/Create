@@ -21,6 +21,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOp
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.CreateNbt;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
@@ -525,7 +526,7 @@ public class ArmBlockEntity extends KineticBlockEntity implements TransformableB
 		NBTHelper.writeEnum(compound, "Phase", phase);
 		compound.putBoolean("Powered", redstoneLocked);
 		compound.putBoolean("Goggles", goggles);
-		compound.put("HeldItem", heldItem.saveOptional(registries));
+		compound.put("HeldItem", CreateNbt.writeItemStack(registries, heldItem));
 		compound.putInt("TargetPointIndex", chasedPointIndex);
 		compound.putFloat("MovementProgress", chasedPointProgress);
 	}
@@ -544,15 +545,15 @@ public class ArmBlockEntity extends KineticBlockEntity implements TransformableB
 		ListTag interactionPointTagBefore = interactionPointTag;
 
 		super.read(tag, registries, clientPacket);
-		heldItem = ItemStack.parseOptional(registries, tag.getCompound("HeldItem"));
+		heldItem = CreateNbt.readItemStack(registries, tag.getCompound("HeldItem").orElseGet(CompoundTag::new));
 		phase = NBTHelper.readEnum(tag, "Phase", Phase.class);
-		chasedPointIndex = tag.getInt("TargetPointIndex");
-		chasedPointProgress = tag.getFloat("MovementProgress");
-		interactionPointTag = tag.getList("InteractionPoints", Tag.TAG_COMPOUND);
-		redstoneLocked = tag.getBoolean("Powered");
+		chasedPointIndex = tag.getInt("TargetPointIndex").orElse(0);
+		chasedPointProgress = tag.getFloat("MovementProgress").orElse(0.0F);
+		interactionPointTag = tag.getListOrEmpty("InteractionPoints");
+		redstoneLocked = tag.getBoolean("Powered").orElse(false);
 
 		boolean hadGoggles = goggles;
-		goggles = tag.getBoolean("Goggles");
+		goggles = tag.getBoolean("Goggles").orElse(false);
 
 		if (!clientPacket)
 			return;

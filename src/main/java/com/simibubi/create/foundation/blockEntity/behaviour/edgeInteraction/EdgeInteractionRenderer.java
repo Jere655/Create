@@ -58,7 +58,7 @@ public class EdgeInteractionRenderer {
 		double bestDistance = Double.MAX_VALUE;
 		Vec3 center = VecHelper.getCenterOf(pos);
 		for (Direction direction : connectiveSides) {
-			double distance = Vec3.atLowerCornerOf(direction.getNormal())
+			double distance = direction.getUnitVec3()
 				.subtract(target.getLocation()
 					.subtract(center))
 				.length();
@@ -70,9 +70,9 @@ public class EdgeInteractionRenderer {
 
 		AABB bb = EdgeInteractionHandler.getBB(pos, closestEdge);
 		boolean hit = bb.contains(target.getLocation());
-		Vec3 offset = Vec3.atLowerCornerOf(closestEdge.getNormal())
+		Vec3 offset = closestEdge.getUnitVec3()
 			.scale(.5)
-			.add(Vec3.atLowerCornerOf(face.getNormal())
+			.add(face.getUnitVec3()
 				.scale(.469))
 			.add(VecHelper.CENTER_OF_ORIGIN);
 

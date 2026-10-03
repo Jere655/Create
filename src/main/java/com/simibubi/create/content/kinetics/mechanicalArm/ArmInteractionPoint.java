@@ -152,14 +152,14 @@ public class ArmInteractionPoint {
 
 		CompoundTag nbt = new CompoundTag();
 		nbt.putString("Type", key.toString());
-		nbt.put("Pos", NbtUtils.writeBlockPos(pos.subtract(anchor)));
+		nbt.put("Pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos.subtract(anchor)));
 		serialize(nbt, anchor);
 		return nbt;
 	}
 
 	@Nullable
 	public static ArmInteractionPoint deserialize(CompoundTag nbt, Level level, BlockPos anchor) {
-		ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type"));
+		ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type").orElse(""));
 		if (id == null)
 			return null;
 		ArmInteractionPointType type = CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.get(id);
@@ -179,7 +179,7 @@ public class ArmInteractionPoint {
 	public static void transformPos(CompoundTag nbt, StructureTransform transform) {
 		BlockPos pos = NBTHelper.readBlockPos(nbt, "Pos");
 		pos = transform.applyWithoutOffset(pos);
-		nbt.put("Pos", NbtUtils.writeBlockPos(pos));
+		nbt.put("Pos", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(pos));
 	}
 
 	public static boolean isInteractable(Level level, BlockPos pos, BlockState state) {
