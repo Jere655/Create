@@ -45,7 +45,7 @@ public abstract class ProcessingRecipeGen<P extends ProcessingRecipeParams, R ex
 		GeneratedRecipe generatedRecipe = c -> {
 			ItemLike itemLike = singleIngredient.get();
 			transform
-				.apply(getBuilder(ResourceLocation.fromNamespaceAndPath(namespace, RegisteredObjectsHelper.getKeyOrThrow(itemLike.asItem()).getPath())).withItemIngredients(Ingredient.of(itemLike)))
+				.apply(builder(ResourceLocation.fromNamespaceAndPath(namespace, RegisteredObjectsHelper.getKeyOrThrow(itemLike.asItem()).getPath())).withItemIngredients(Ingredient.of(itemLike)))
 				.build(c);
 		};
 		all.add(generatedRecipe);
@@ -62,7 +62,7 @@ public abstract class ProcessingRecipeGen<P extends ProcessingRecipeParams, R ex
 
 	protected GeneratedRecipe createWithDeferredId(Supplier<ResourceLocation> name, UnaryOperator<B> transform) {
 		GeneratedRecipe generatedRecipe =
-			c -> transform.apply(getBuilder(name.get()))
+			c -> transform.apply(builder(name.get()))
 				.build(c);
 		all.add(generatedRecipe);
 		return generatedRecipe;
@@ -87,6 +87,10 @@ public abstract class ProcessingRecipeGen<P extends ProcessingRecipeParams, R ex
 	protected abstract IRecipeTypeInfo getRecipeType();
 
 	protected abstract B getBuilder(ResourceLocation id);
+
+	protected B builder(ResourceLocation id) {
+		return getBuilder(id).withItemLookup(items()).withFluidLookup(fluids());
+	}
 
 	protected Supplier<ResourceLocation> idWithSuffix(Supplier<ItemLike> item, String suffix) {
 		return () -> {

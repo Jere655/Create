@@ -11,6 +11,7 @@ import com.tterrag.registrate.util.entry.ItemEntry;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 
 import net.neoforged.neoforge.common.conditions.NotCondition;
@@ -31,9 +32,10 @@ public abstract class MillingRecipeGen extends StandardProcessingRecipeGen<Milli
 	@ScheduledForRemoval(inVersion = "1.21.1+ Port")
 	@Deprecated(since = "6.0.7", forRemoval = true)
 	protected GeneratedRecipe metalOre(String name, ItemEntry<? extends Item> crushed, int duration) {
+		TagKey<Item> ore = AllTags.commonItemTag("ores/" + name);
 		return create(name + "_ore", b -> b.duration(duration)
-			.withCondition(new NotCondition(new TagEmptyCondition("c", "ores/" + name)))
-			.require(AllTags.commonItemTag("ores/" + name))
+			.withCondition(new NotCondition(new TagEmptyCondition<>(ore)))
+			.require(ore)
 			.output(crushed.get()));
 	}
 

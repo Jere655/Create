@@ -208,12 +208,12 @@ public class CreateRegistrateTags {
 
 		prov.tag(ItemTags.TRIMMABLE_ARMOR)
 			.remove(
-				AllItems.COPPER_DIVING_BOOTS.getId(),
-				AllItems.COPPER_BACKTANK.getId(),
-				AllItems.COPPER_DIVING_HELMET.getId(),
-				AllItems.NETHERITE_DIVING_BOOTS.getId(),
-				AllItems.NETHERITE_BACKTANK.getId(),
-				AllItems.NETHERITE_DIVING_HELMET.getId()
+				AllItems.COPPER_DIVING_BOOTS.get(),
+				AllItems.COPPER_BACKTANK.get(),
+				AllItems.COPPER_DIVING_HELMET.get(),
+				AllItems.NETHERITE_DIVING_BOOTS.get(),
+				AllItems.NETHERITE_BACKTANK.get(),
+				AllItems.NETHERITE_DIVING_HELMET.get()
 			);
 
 		prov.tag(ItemTags.DURABILITY_ENCHANTABLE)

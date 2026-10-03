@@ -6,6 +6,7 @@ import java.util.function.UnaryOperator;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.block.model.SimpleModelWrapper;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
@@ -52,14 +53,36 @@ public abstract class BakedModelWrapperWithData extends DelegateBlockStateModel 
 		delegate.collectParts(world, pos, state, random, parts);
 	}
 
-	protected static BlockModelPart transformPart(BlockModelPart part, UnaryOperator<BakedQuad> transformer) {
+	protected static BlockModelPart transformPart(BlockModelPart part, BlockState state, UnaryOperator<BakedQuad> transformer) {
 		QuadCollection.Builder quads = new QuadCollection.Builder();
 		for (BakedQuad quad : part.getQuads(null))
 			quads.addUnculledFace(transformer.apply(quad));
 		for (Direction direction : Direction.values())
 			for (BakedQuad quad : part.getQuads(direction))
 				quads.addCulledFace(direction, transformer.apply(quad));
-		return new SimpleModelWrapper(quads.build(), part.useAmbientOcclusion(), part.particleIcon());
+		return new SimpleModelWrapper(quads.build(), part.useAmbientOcclusion(), part.particleIcon(),
+			part.getRenderType(state));
+	}
+
+	protected static BlockModelPart transformParts(List<BlockModelPart> parts, BlockState state,
+		UnaryOperator<BakedQuad> transformer) {
+		QuadCollection.Builder quads = new QuadCollection.Builder();
+		TextureAtlasSprite particle = null;
+		boolean ambientOcclusion = false;
+		ChunkSectionLayer renderType = null;
+		for (BlockModelPart part : parts) {
+			ambientOcclusion |= part.useAmbientOcclusion();
+			if (particle == null)
+				particle = part.particleIcon();
+			if (renderType == null)
+				renderType = part.getRenderType(state);
+			for (BakedQuad quad : part.getQuads(null))
+				quads.addUnculledFace(transformer.apply(quad));
+			for (Direction direction : Direction.values())
+				for (BakedQuad quad : part.getQuads(direction))
+					quads.addCulledFace(direction, transformer.apply(quad));
+		}
+		return new SimpleModelWrapper(quads.build(), ambientOcclusion, particle, renderType);
 	}
 
 }

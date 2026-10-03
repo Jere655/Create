@@ -8,11 +8,11 @@ import com.simibubi.create.Create;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.data.tags.KeyTagProvider;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageType;
 
-public class DamageTypeTagGen extends TagsProvider<DamageType> {
+public class DamageTypeTagGen extends KeyTagProvider<DamageType> {
 	public DamageTypeTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(output, Registries.DAMAGE_TYPE, lookupProvider, Create.ID);
 	}

@@ -11,7 +11,9 @@ import com.simibubi.create.foundation.data.SimpleDatagenIngredient;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -37,6 +39,10 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	protected Factory<P, R> factory;
 	protected P params;
 	protected List<ICondition> recipeConditions;
+	/** Item lookup used to resolve tag ingredients; only set while recipes are being generated. */
+	protected HolderGetter<Item> itemLookup = BuiltInRegistries.ITEM;
+	/** Fluid lookup used to resolve fluid tag ingredients; only set while recipes are being generated. */
+	protected HolderGetter<Fluid> fluidLookup = BuiltInRegistries.FLUID;
 
 	public ProcessingRecipeBuilder(Factory<P, R> factory, ResourceLocation recipeId) {
 		this.recipeId = recipeId;
@@ -131,7 +137,17 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	// Datagen shortcuts
 
 	public S require(TagKey<Item> tag) {
-		return require(Ingredient.of(tag));
+		return require(Ingredient.of(itemLookup.getOrThrow(tag)));
+	}
+
+	public S withItemLookup(HolderGetter<Item> itemLookup) {
+		this.itemLookup = itemLookup;
+		return self();
+	}
+
+	public S withFluidLookup(HolderGetter<Fluid> fluidLookup) {
+		this.fluidLookup = fluidLookup;
+		return self();
 	}
 
 	public S require(ItemLike item) {
@@ -159,7 +175,7 @@ public abstract class ProcessingRecipeBuilder<P extends ProcessingRecipeParams, 
 	}
 
 	public S require(TagKey<Fluid> fluidTag, int amount) {
-		return require(SizedFluidIngredient.of(fluidTag, amount));
+		return require(new SizedFluidIngredient(FluidIngredient.of(fluidLookup.getOrThrow(fluidTag)), amount));
 	}
 
 	public S require(SizedFluidIngredient ingredient) {

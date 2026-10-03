@@ -28,7 +28,7 @@ public abstract class SequencedAssemblyRecipeGen extends BaseRecipeProvider {
 
 	protected GeneratedRecipe create(String name, UnaryOperator<SequencedAssemblyRecipeBuilder> transform) {
 		GeneratedRecipe generatedRecipe =
-			c -> transform.apply(new SequencedAssemblyRecipeBuilder(asResource(name)))
+			c -> transform.apply(new SequencedAssemblyRecipeBuilder(asResource(name), items(), fluids()))
 				.build(c);
 		all.add(generatedRecipe);
 		return generatedRecipe;

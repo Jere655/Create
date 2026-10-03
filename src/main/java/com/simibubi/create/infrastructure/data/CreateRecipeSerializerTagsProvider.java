@@ -10,19 +10,21 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.data.tags.KeyTagProvider;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 
-public class CreateRecipeSerializerTagsProvider extends TagsProvider<RecipeSerializer<?>> {
+public class CreateRecipeSerializerTagsProvider extends KeyTagProvider<RecipeSerializer<?>> {
 	public CreateRecipeSerializerTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(output, Registries.RECIPE_SERIALIZER, lookupProvider, Create.ID);
 	}
 
 	@Override
 	protected void addTags(Provider pProvider) {
-		tag(AllRecipeSerializerTags.AUTOMATION_IGNORE.tag).addOptional(Mods.OCCULTISM.rl("spirit_trade"))
-		.addOptional(Mods.OCCULTISM.rl("ritual"));
+		tag(AllRecipeSerializerTags.AUTOMATION_IGNORE.tag)
+			.add(TagEntry.optionalElement(Mods.OCCULTISM.rl("spirit_trade")))
+			.add(TagEntry.optionalElement(Mods.OCCULTISM.rl("ritual")));
 	}
 
 	@Override

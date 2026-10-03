@@ -27,11 +27,13 @@ public final class BakedQuadHelper {
 
 	public static BakedQuad clone(BakedQuad quad) {
 		return new BakedQuad(Arrays.copyOf(quad.vertices(), quad.vertices().length),
-			quad.tintIndex(), quad.direction(), quad.sprite(), quad.shade(), quad.lightEmission());
+			quad.tintIndex(), quad.direction(), quad.sprite(), quad.shade(), quad.lightEmission(),
+			quad.hasAmbientOcclusion());
 	}
 
 	public static BakedQuad cloneWithCustomGeometry(BakedQuad quad, int[] vertexData) {
-		return new BakedQuad(vertexData, quad.tintIndex(), quad.direction(), quad.sprite(), quad.shade(), quad.lightEmission());
+		return new BakedQuad(vertexData, quad.tintIndex(), quad.direction(), quad.sprite(), quad.shade(),
+			quad.lightEmission(), quad.hasAmbientOcclusion());
 	}
 
 	public static Vec3 getXYZ(int[] vertexData, int vertex) {

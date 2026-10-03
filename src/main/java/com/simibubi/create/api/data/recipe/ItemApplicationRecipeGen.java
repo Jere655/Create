@@ -33,7 +33,7 @@ public abstract class ItemApplicationRecipeGen extends ProcessingRecipeGen<ItemA
 	}
 
 	protected GeneratedRecipe woodCasingTag(String type, Supplier<TagKey<Item>> ingredient, Supplier<ItemLike> output) {
-		return woodCasingIngredient(type, () -> Ingredient.of(ingredient.get()), output);
+		return woodCasingIngredient(type, () -> Ingredient.of(items().getOrThrow(ingredient.get())), output);
 	}
 
 	protected GeneratedRecipe woodCasingIngredient(String type, Supplier<Ingredient> ingredient,

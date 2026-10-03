@@ -5,24 +5,21 @@ import static net.createmod.catnip.render.SpriteShiftEntry.getUnInterpolatedV;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.UnaryOperator;
 
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.VecHelper;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.model.SimpleModelWrapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.SimpleBakedModel;
+import net.minecraft.client.resources.model.QuadCollection;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.model.data.ModelData;
 
 public class BakedModelHelper {
 
@@ -95,50 +92,60 @@ public class BakedModelHelper {
 		return vertexData;
 	}
 
-	public static BakedModel generateModel(BakedModel template, UnaryOperator<TextureAtlasSprite> spriteSwapper) {
+	public static BlockStateModel generateModel(BlockStateModel template, UnaryOperator<TextureAtlasSprite> spriteSwapper) {
 		RandomSource random = RandomSource.create();
-
-		Map<Direction, List<BakedQuad>> culledFaces = new EnumMap<>(Direction.class);
-		for (Direction cullFace : Iterate.directions) {
-			random.setSeed(42L);
-			List<BakedQuad> quads = template.getQuads(null, cullFace, random, ModelData.EMPTY, RenderType.solid());
-			culledFaces.put(cullFace, swapSprites(quads, spriteSwapper));
-		}
-
 		random.setSeed(42L);
-		List<BakedQuad> quads = template.getQuads(null, null, random, ModelData.EMPTY, RenderType.solid());
-		List<BakedQuad> unculledFaces = swapSprites(quads, spriteSwapper);
+		List<BlockModelPart> parts = new ArrayList<>();
+		template.collectParts(random, parts);
 
-		TextureAtlasSprite particleSprite = template.getParticleIcon(ModelData.EMPTY);
-		TextureAtlasSprite swappedParticleSprite = spriteSwapper.apply(particleSprite);
-		if (swappedParticleSprite != null) {
-			particleSprite = swappedParticleSprite;
+		QuadCollection.Builder quads = new QuadCollection.Builder();
+		TextureAtlasSprite particle = null;
+		boolean ambientOcclusion = false;
+
+		for (BlockModelPart part : parts) {
+			ambientOcclusion |= part.useAmbientOcclusion();
+			if (particle == null)
+				particle = part.particleIcon();
+
+			for (BakedQuad quad : part.getQuads(null))
+				quads.addUnculledFace(swapSprite(quad, spriteSwapper));
+			for (Direction direction : Iterate.directions)
+				for (BakedQuad quad : part.getQuads(direction))
+					quads.addCulledFace(direction, swapSprite(quad, spriteSwapper));
 		}
-		return new SimpleBakedModel(unculledFaces, culledFaces, template.useAmbientOcclusion(), template.usesBlockLight(), template.isGui3d(), particleSprite, template.getTransforms(), ItemOverrides.EMPTY);
+
+		if (particle != null) {
+			TextureAtlasSprite swappedParticle = spriteSwapper.apply(particle);
+			if (swappedParticle != null)
+				particle = swappedParticle;
+		}
+
+		return new SimpleBlockStateModel(new SimpleModelWrapper(quads.build(), ambientOcclusion, particle));
+	}
+
+	public static BakedQuad swapSprite(BakedQuad quad, UnaryOperator<TextureAtlasSprite> spriteSwapper) {
+		TextureAtlasSprite sprite = quad.sprite();
+		TextureAtlasSprite newSprite = spriteSwapper.apply(sprite);
+		if (newSprite == null || sprite == newSprite)
+			return quad;
+
+		BakedQuad newQuad = BakedQuadHelper.clone(quad);
+		int[] vertexData = newQuad.vertices();
+
+		for (int vertex = 0; vertex < 4; vertex++) {
+			float u = BakedQuadHelper.getU(vertexData, vertex);
+			float v = BakedQuadHelper.getV(vertexData, vertex);
+			BakedQuadHelper.setU(vertexData, vertex, newSprite.getU(getUnInterpolatedU(sprite, u)));
+			BakedQuadHelper.setV(vertexData, vertex, newSprite.getV(getUnInterpolatedV(sprite, v)));
+		}
+
+		return newQuad;
 	}
 
 	public static List<BakedQuad> swapSprites(List<BakedQuad> quads, UnaryOperator<TextureAtlasSprite> spriteSwapper) {
-		List<BakedQuad> newQuads = new ArrayList<>(quads);
-		int size = quads.size();
-		for (int i = 0; i < size; i++) {
-			BakedQuad quad = quads.get(i);
-			TextureAtlasSprite sprite = quad.getSprite();
-			TextureAtlasSprite newSprite = spriteSwapper.apply(sprite);
-			if (newSprite == null || sprite == newSprite)
-				continue;
-
-			BakedQuad newQuad = BakedQuadHelper.clone(quad);
-			int[] vertexData = newQuad.getVertices();
-
-			for (int vertex = 0; vertex < 4; vertex++) {
-				float u = BakedQuadHelper.getU(vertexData, vertex);
-				float v = BakedQuadHelper.getV(vertexData, vertex);
-				BakedQuadHelper.setU(vertexData, vertex, newSprite.getU(getUnInterpolatedU(sprite, u)));
-				BakedQuadHelper.setV(vertexData, vertex, newSprite.getV(getUnInterpolatedV(sprite, v)));
-			}
-
-			newQuads.set(i, newQuad);
-		}
+		List<BakedQuad> newQuads = new ArrayList<>(quads.size());
+		for (BakedQuad quad : quads)
+			newQuads.add(swapSprite(quad, spriteSwapper));
 		return newQuads;
 	}
 }

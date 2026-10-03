@@ -1,5 +1,6 @@
 package com.simibubi.create.content.kinetics.waterwheel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,9 +22,10 @@ import net.createmod.catnip.render.SuperByteBuffer;
 import net.createmod.catnip.render.SuperByteBufferCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.core.Holder;
@@ -36,7 +38,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.neoforge.model.data.ModelData;
 
 public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends KineticBlockEntityRenderer<T> {
 	public static final SuperByteBufferCache.Compartment<ModelKey> WATER_WHEEL = new SuperByteBufferCache.Compartment<>();
@@ -64,7 +65,7 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 	protected SuperByteBuffer getRotatedModel(T be, BlockState state) {
 		ModelKey key = new ModelKey(large, state, be.material);
 		return SuperByteBufferCache.getInstance().get(WATER_WHEEL, key, () -> {
-			BakedModel model = generateModel(key);
+			BlockStateModel model = generateModel(key);
 			BlockState state1 = key.state();
 			Direction dir;
 			if (key.large()) {
@@ -77,15 +78,15 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 		});
 	}
 
-	public static BakedModel generateModel(ModelKey key) {
+	public static BlockStateModel generateModel(ModelKey key) {
 		return generateModel(Variant.of(key.large(), key.state()), key.material());
 	}
 
-	public static BakedModel generateModel(Variant variant, BlockState material) {
+	public static BlockStateModel generateModel(Variant variant, BlockState material) {
 		return generateModel(variant.model(), material);
 	}
 
-	public static BakedModel generateModel(BakedModel template, BlockState planksBlockState) {
+	public static BlockStateModel generateModel(BlockStateModel template, BlockState planksBlockState) {
 		Block planksBlock = planksBlockState.getBlock();
 		ResourceLocation id = RegisteredObjectsHelper.getKeyOrThrow(planksBlock);
 		String wood = plankStateToWoodName(planksBlockState);
@@ -129,7 +130,7 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 	private static BlockState getLogBlockState(String namespace, String wood) {
 		for (String location : LOG_LOCATIONS) {
 			Optional<BlockState> state =
-				BuiltInRegistries.BLOCK.getHolder(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(namespace, location.replace("x", wood))))
+				BuiltInRegistries.BLOCK.get(ResourceKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(namespace, location.replace("x", wood))))
 					.map(Holder::value)
 					.map(Block::defaultBlockState);
 			if (state.isPresent())
@@ -139,28 +140,27 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 	}
 
 	private static TextureAtlasSprite getSpriteOnSide(BlockState state, Direction side) {
-		BakedModel model = Minecraft.getInstance()
+		BlockStateModel model = Minecraft.getInstance()
 			.getBlockRenderer()
 			.getBlockModel(state);
 		if (model == null)
 			return null;
 		RandomSource random = RandomSource.create();
 		random.setSeed(42L);
-		List<BakedQuad> quads = model.getQuads(state, side, random, ModelData.EMPTY, null);
-		if (!quads.isEmpty()) {
-			return quads.get(0)
-				.getSprite();
+		List<BlockModelPart> parts = new ArrayList<>();
+		model.collectParts(random, parts);
+		for (BlockModelPart part : parts) {
+			List<BakedQuad> quads = part.getQuads(side);
+			if (!quads.isEmpty())
+				return quads.get(0).sprite();
 		}
-		random.setSeed(42L);
-		quads = model.getQuads(state, null, random, ModelData.EMPTY, null);
-		if (!quads.isEmpty()) {
-			for (BakedQuad quad : quads) {
-				if (quad.getDirection() == side) {
-					return quad.getSprite();
-				}
+		for (BlockModelPart part : parts) {
+			for (BakedQuad quad : part.getQuads(null)) {
+				if (quad.direction() == side)
+					return quad.sprite();
 			}
 		}
-		return model.getParticleIcon(ModelData.EMPTY);
+		return model.particleIcon();
 	}
 
 	public enum Variant {
@@ -175,7 +175,7 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 			this.partial = partial;
 		}
 
-		public BakedModel model() {
+		public BlockStateModel model() {
 			return partial.get();
 		}
 

@@ -1,7 +1,6 @@
 package com.simibubi.create.foundation.data.recipe;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
@@ -17,6 +16,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.minecraft.world.level.material.Fluids;
 
 /**
@@ -57,14 +58,17 @@ public final class CreateSequencedAssemblyRecipeGen extends SequencedAssemblyRec
 		.addOutput(AllBlocks.TRACK.get(), 1)
 		.loops(1)
 		.addStep(DeployerApplicationRecipe::new,
-			rb -> rb.require(Ingredient.fromValues(
-				Stream.of(new Ingredient.TagValue(I.ironNugget()), new Ingredient.TagValue(I.zincNugget())))))
+			rb -> rb.require(nuggets()))
 		.addStep(DeployerApplicationRecipe::new,
-			rb -> rb.require(Ingredient.fromValues(
-				Stream.of(new Ingredient.TagValue(I.ironNugget()), new Ingredient.TagValue(I.zincNugget())))))
+			rb -> rb.require(nuggets()))
 		.addStep(PressingRecipe::new, rb -> rb))
 
 		;
+
+	private Ingredient nuggets() {
+		return CompoundIngredient.of(Ingredient.of(items().getOrThrow(I.ironNugget())),
+			Ingredient.of(items().getOrThrow(I.zincNugget())));
+	}
 
 	public CreateSequencedAssemblyRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, registries, Create.ID);

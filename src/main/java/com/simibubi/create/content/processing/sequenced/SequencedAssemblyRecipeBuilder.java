@@ -14,6 +14,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Builder;
 
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +26,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.material.Fluid;
 
 import net.neoforged.neoforge.common.conditions.ICondition;
 
@@ -33,9 +35,13 @@ public class SequencedAssemblyRecipeBuilder {
 	private ResourceLocation id;
 	private SequencedAssemblyRecipe recipe;
 	protected List<ICondition> recipeConditions;
+	private final HolderGetter<Item> items;
+	private final HolderGetter<Fluid> fluids;
 
-	public SequencedAssemblyRecipeBuilder(ResourceLocation id) {
+	public SequencedAssemblyRecipeBuilder(ResourceLocation id, HolderGetter<Item> items, HolderGetter<Fluid> fluids) {
 		this.id = id;
+		this.items = items;
+		this.fluids = fluids;
 		recipeConditions = new ArrayList<>();
 		this.recipe = new SequencedAssemblyRecipe(AllRecipeTypes.SEQUENCED_ASSEMBLY.getSerializer());
 	}
@@ -57,7 +63,9 @@ public class SequencedAssemblyRecipeBuilder {
 	public <B extends ProcessingRecipeBuilder<?, ?, B>> SequencedAssemblyRecipeBuilder addStep(
 		Function<ResourceLocation, B> factory,
 		UnaryOperator<B> builder) {
-		B recipeBuilder = factory.apply(ResourceLocation.withDefaultNamespace("dummy"));
+		B recipeBuilder = factory.apply(ResourceLocation.withDefaultNamespace("dummy"))
+			.withItemLookup(items)
+			.withFluidLookup(fluids);
 		Item placeHolder = recipe.getTransitionalItem().getItem();
 		recipe.getSequence()
 			.add(new SequencedRecipe<>(builder.apply(recipeBuilder.require(placeHolder)
@@ -71,7 +79,7 @@ public class SequencedAssemblyRecipeBuilder {
 	}
 
 	public SequencedAssemblyRecipeBuilder require(TagKey<Item> tag) {
-		return require(Ingredient.of(tag));
+		return require(Ingredient.of(items.getOrThrow(tag)));
 	}
 
 	public SequencedAssemblyRecipeBuilder require(Ingredient ingredient) {
@@ -99,15 +107,13 @@ public class SequencedAssemblyRecipeBuilder {
 	}
 
 	public RecipeHolder<SequencedAssemblyRecipe> build() {
-		return new RecipeHolder<>(id, recipe);
+		return new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, id), recipe);
 	}
 
 	public void build(RecipeOutput consumer) {
-		RecipeHolder<SequencedAssemblyRecipe> holder = build();
+		ResourceLocation recipeId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(),
+				AllRecipeTypes.SEQUENCED_ASSEMBLY.getId().getPath() + "/" + id.getPath());
 
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(holder.id().getNamespace(),
-				AllRecipeTypes.SEQUENCED_ASSEMBLY.getId().getPath() + "/" + holder.id().getPath());
-
-		consumer.accept(ResourceKey.create(Registries.RECIPE, id), holder.value(), null, recipeConditions.toArray(new ICondition[0]));
+		consumer.accept(ResourceKey.create(Registries.RECIPE, recipeId), recipe, null, recipeConditions.toArray(new ICondition[0]));
 	}
 }

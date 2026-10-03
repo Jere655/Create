@@ -351,7 +351,7 @@ public class AllTags {
 
 		public boolean matches(RecipeSerializer<?> recipeSerializer) {
 			ResourceKey<RecipeSerializer<?>> key = BuiltInRegistries.RECIPE_SERIALIZER.getResourceKey(recipeSerializer).orElseThrow();
-			return BuiltInRegistries.RECIPE_SERIALIZER.getHolder(key).orElseThrow().is(tag);
+			return BuiltInRegistries.RECIPE_SERIALIZER.get(key).orElseThrow().is(tag);
 		}
 	}
 

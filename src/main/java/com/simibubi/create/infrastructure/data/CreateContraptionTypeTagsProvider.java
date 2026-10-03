@@ -11,10 +11,10 @@ import com.simibubi.create.api.registry.CreateRegistries;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.TagsProvider;
+import net.minecraft.data.tags.KeyTagProvider;
 
 
-public class CreateContraptionTypeTagsProvider extends TagsProvider<ContraptionType> {
+public class CreateContraptionTypeTagsProvider extends KeyTagProvider<ContraptionType> {
 	public CreateContraptionTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
 		super(output, CreateRegistries.CONTRAPTION_TYPE, lookupProvider, Create.ID);
 	}

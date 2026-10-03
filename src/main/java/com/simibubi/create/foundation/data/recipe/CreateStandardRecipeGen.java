@@ -78,6 +78,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
@@ -1315,11 +1316,11 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 			.requires(Items.BONE_MEAL)),
 
 	NETHERITE_DIVING_HELMET = create(AllItems.NETHERITE_DIVING_HELMET)
-		.viaNetheriteSmithing(AllItems.COPPER_DIVING_HELMET::get, I::netherite),
+		.viaNetheriteSmithing(AllItems.COPPER_DIVING_HELMET::get, this::netherite),
 		NETHERITE_BACKTANK =
-			create(AllItems.NETHERITE_BACKTANK).viaNetheriteSmithing(AllItems.COPPER_BACKTANK::get, I::netherite),
+			create(AllItems.NETHERITE_BACKTANK).viaNetheriteSmithing(AllItems.COPPER_BACKTANK::get, this::netherite),
 		NETHERITE_DIVING_BOOTS = create(AllItems.NETHERITE_DIVING_BOOTS)
-			.viaNetheriteSmithing(AllItems.COPPER_DIVING_BOOTS::get, I::netherite),
+			.viaNetheriteSmithing(AllItems.COPPER_DIVING_BOOTS::get, this::netherite),
 
 	NETHERITE_DIVING_HELMET_2 = create(AllItems.NETHERITE_DIVING_HELMET).withSuffix("_from_netherite")
 		.viaNetheriteSmithing(() -> Items.NETHERITE_HELMET,
@@ -1707,6 +1708,10 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 		return "Create's Standard Recipes";
 	}
 
+	private Ingredient netherite() {
+		return Ingredient.of(items().getOrThrow(Tags.Items.INGOTS_NETHERITE));
+	}
+
 	public CreateStandardRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		super(output, registries, Create.ID);
 	}
@@ -1738,6 +1743,11 @@ public final class CreateStandardRecipeGen extends BaseRecipeProvider {
 		@Override
 		public RecipeBookCategory recipeBookCategory() {
 			throw new AssertionError("Only for datagen output");
+		}
+
+		@Override
+		public PlacementInfo placementInfo() {
+			return PlacementInfo.NOT_PLACEABLE;
 		}
 
 		@Override

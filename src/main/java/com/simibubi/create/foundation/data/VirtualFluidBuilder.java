@@ -20,8 +20,9 @@ public class VirtualFluidBuilder<T extends BaseFlowingFluid, P> extends FluidBui
 		NonNullFunction<Properties, T> sourceFactory,
 	    NonNullFunction<Properties, T> flowingFactory
    ) {
-		super(owner, parent, name, callback, stillTexture, flowingTexture, typeFactory, flowingFactory);
-		source(sourceFactory);
+		super(owner, parent, name, callback, typeFactory, flowingFactory::apply);
+		source(sourceFactory::apply);
+		clientExtension(stillTexture, flowingTexture);
 	}
 
 	@Override

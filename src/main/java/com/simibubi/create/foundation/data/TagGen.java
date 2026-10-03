@@ -15,6 +15,7 @@ import com.tterrag.registrate.util.nullness.NonNullFunction;
 import net.minecraft.core.Holder;
 import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagBuilder;
 import net.minecraft.tags.TagKey;
@@ -113,8 +114,32 @@ public class TagGen {
 			return this;
 		}
 
+		@Override
+		public CreateTagAppender<T> add(net.minecraft.tags.TagEntry entry) {
+			builder.add(entry);
+			return this;
+		}
+
+		@Override
+		public CreateTagAppender<T> replace(boolean value) {
+			builder.replace(value);
+			return this;
+		}
+
 		public CreateTagAppender<T> addOptional(ResourceLocation entry) {
 			builder.addOptionalElement(entry);
+			return this;
+		}
+
+		public CreateTagAppender<T> removeOptional(ResourceLocation entry) {
+			builder.remove(net.minecraft.tags.TagEntry.optionalElement(entry));
+			return this;
+		}
+
+		@SafeVarargs
+		public final CreateTagAppender<T> remove(T first, T... entries) {
+			remove(first);
+			Stream.of(entries).forEach(this::remove);
 			return this;
 		}
 

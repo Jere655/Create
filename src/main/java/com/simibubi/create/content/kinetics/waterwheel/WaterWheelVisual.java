@@ -10,9 +10,9 @@ import com.simibubi.create.foundation.render.AllInstanceTypes;
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import dev.engine_room.flywheel.lib.model.baked.BakedModelBuilder;
+import dev.engine_room.flywheel.lib.model.baked.BlockModelBuilder;
 import dev.engine_room.flywheel.lib.util.RendererReloadCache;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class WaterWheelVisual<T extends WaterWheelBlockEntity> extends KineticBlockEntityVisual<T> {
@@ -74,8 +74,8 @@ public class WaterWheelVisual<T extends WaterWheelBlockEntity> extends KineticBl
 	}
 
 	private static Model createModel(ModelKey key) {
-		BakedModel model = WaterWheelRenderer.generateModel(key.variant(), key.material());
-		return new BakedModelBuilder(model)
+		BlockStateModel model = WaterWheelRenderer.generateModel(key.variant(), key.material());
+		return new BlockModelBuilder(model)
 				.build();
 	}
 

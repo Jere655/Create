@@ -19,6 +19,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.material.Fluid;
 
 /**
  * A class containing some basic setup for other recipe generators to use.
@@ -49,6 +50,11 @@ public abstract class BaseRecipeProvider extends RecipeProvider.Runner {
 	/** Only valid while recipes are being built; tag ingredients and criteria resolve through it. */
 	protected HolderGetter<Item> items() {
 		return registries.lookupOrThrow(Registries.ITEM);
+	}
+
+	/** Only valid while recipes are being built; fluid tag ingredients resolve through it. */
+	protected HolderGetter<Fluid> fluids() {
+		return registries.lookupOrThrow(Registries.FLUID);
 	}
 
 	protected static Criterion<InventoryChangeTrigger.TriggerInstance> inventoryTrigger(ItemPredicate... predicates) {
