@@ -10,36 +10,42 @@ import net.createmod.ponder.render.VirtualRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.model.data.ModelProperty;
 
-public class BracketedKineticBlockModel extends BakedModelWrapper<BakedModel> {
+public class BracketedKineticBlockModel extends DelegateBlockStateModel {
 
 	private static final ModelProperty<BracketedModelData> BRACKET_PROPERTY = new ModelProperty<>();
 
-	public BracketedKineticBlockModel(BakedModel template) {
+	public BracketedKineticBlockModel(BlockStateModel template) {
 		super(template);
 	}
 
 	@Override
-	public ModelData getModelData(BlockAndTintGetter world, BlockPos pos, BlockState state, ModelData blockEntityData) {
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
+	}
+
+	@Override
+	protected ModelData.Builder gatherModelData(ModelData.Builder builder, BlockAndTintGetter world, BlockPos pos, BlockState state, ModelData blockEntityData) {
 		if (VirtualRenderHelper.isVirtual(blockEntityData))
-			return blockEntityData;
+			return builder;
 		BracketedModelData data = new BracketedModelData();
 		BracketedBlockEntityBehaviour attachmentBehaviour =
 			BlockEntityBehaviour.get(world, pos, BracketedBlockEntityBehaviour.TYPE);
 		if (attachmentBehaviour != null)
 			data.putBracket(attachmentBehaviour.getBracket());
-		return ModelData.builder().with(BRACKET_PROPERTY, data)
-			.build();
+		return builder.with(BRACKET_PROPERTY, data);
 	}
 
 	@Override
@@ -47,7 +53,7 @@ public class BracketedKineticBlockModel extends BakedModelWrapper<BakedModel> {
 		if (!VirtualRenderHelper.isVirtual(data)) {
 			if (data.has(BRACKET_PROPERTY)) {
 				BracketedModelData pipeData = data.get(BRACKET_PROPERTY);
-				BakedModel bracket = pipeData.getBracket();
+				BlockStateModel bracket = pipeData.getBracket();
 				if (bracket != null)
 					return bracket.getQuads(state, side, rand, data, renderType);
 			}
@@ -57,7 +63,7 @@ public class BracketedKineticBlockModel extends BakedModelWrapper<BakedModel> {
 	}
 
 	private static class BracketedModelData {
-		private BakedModel bracket;
+		private BlockStateModel bracket;
 
 		public void putBracket(BlockState state) {
 			if (state != null) {

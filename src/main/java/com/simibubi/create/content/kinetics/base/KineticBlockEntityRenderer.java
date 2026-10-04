@@ -18,7 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -60,7 +60,7 @@ public class KineticBlockEntityRenderer<T extends KineticBlockEntity> extends Sa
 
 	protected RenderType getRenderType(T be, BlockState state) {
 		// TODO: this is not very clean
-		BakedModel model = Minecraft.getInstance()
+		ItemModel model = Minecraft.getInstance()
 			.getBlockRenderer().getBlockModel(state);
 		ChunkRenderTypeSet typeSet = model.getRenderTypes(state, RandomSource.create(42L), ModelData.EMPTY);
 		for (RenderType type : REVERSED_CHUNK_BUFFER_LAYERS)

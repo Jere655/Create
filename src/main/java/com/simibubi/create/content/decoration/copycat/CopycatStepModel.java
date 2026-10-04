@@ -9,10 +9,12 @@ import com.simibubi.create.foundation.model.BakedQuadHelper;
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Half;
 import net.minecraft.world.phys.AABB;
@@ -27,8 +29,15 @@ public class CopycatStepModel extends CopycatModel {
 	protected static final Vec3 VEC_Y_N2 = new Vec3(0, -.5, 0);
 	protected static final AABB CUBE_AABB = new AABB(BlockPos.ZERO);
 
-	public CopycatStepModel(BakedModel originalModel) {
+	public CopycatStepModel(BlockStateModel originalModel) {
 		super(originalModel);
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override

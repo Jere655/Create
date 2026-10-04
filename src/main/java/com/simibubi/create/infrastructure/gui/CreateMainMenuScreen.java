@@ -1,6 +1,5 @@
 package com.simibubi.create.infrastructure.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
@@ -95,8 +94,7 @@ public class CreateMainMenuScreen extends AbstractSimiScreen {
 			PANORAMA.render(graphics, this.width, this.height, 1, elapsedPartials);
 
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-				GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.defaultBlendFunc();
 			graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, PANORAMA_OVERLAY_TEXTURES, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		}
 

@@ -133,7 +133,7 @@ public class RedstoneRequesterScreen extends AbstractSimiContainerScreen<Redston
 			ItemStack itemStack = menu.ghostInventory.getStackInSlot(i);
 			if (itemStack.isEmpty())
 				continue;
-			PoseStack ms = graphics.pose();
+			var ms = graphics.pose();
 			ms.pushPose();
 			ms.translate(0, 0, 100);
 			graphics.renderItemDecorations(font, itemStack, inputX, inputY, "" + amounts.get(i));

@@ -12,24 +12,33 @@ import net.createmod.catnip.render.SpriteShiftEntry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.model.data.ModelProperty;
 
-public class BeltModel extends BakedModelWrapper<BakedModel> {
+public class BeltModel extends DelegateBlockStateModel {
 
 	public static final ModelProperty<CasingType> CASING_PROPERTY = new ModelProperty<>();
 	public static final ModelProperty<Boolean> COVER_PROPERTY = new ModelProperty<>();
 
 	private static final SpriteShiftEntry SPRITE_SHIFT = AllSpriteShifts.ANDESIDE_BELT_CASING;
 
-	public BeltModel(BakedModel template) {
+	public BeltModel(BlockStateModel template) {
 		super(template);
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override
@@ -60,7 +69,7 @@ public class BeltModel extends BakedModelWrapper<BakedModel> {
 		if (cover) {
 			boolean alongX = state.getValue(BeltBlock.HORIZONTAL_FACING)
 				.getAxis() == Axis.X;
-			BakedModel coverModel =
+			BlockStateModel coverModel =
 				(brassCasing ? alongX ? AllPartialModels.BRASS_BELT_COVER_X : AllPartialModels.BRASS_BELT_COVER_Z
 					: alongX ? AllPartialModels.ANDESITE_BELT_COVER_X : AllPartialModels.ANDESITE_BELT_COVER_Z).get();
 			quads.addAll(coverModel.getQuads(state, side, rand, extraData, renderType));

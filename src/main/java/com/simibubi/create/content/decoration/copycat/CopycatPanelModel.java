@@ -12,10 +12,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -27,8 +29,15 @@ public class CopycatPanelModel extends CopycatModel {
 
 	protected static final AABB CUBE_AABB = new AABB(BlockPos.ZERO);
 
-	public CopycatPanelModel(BakedModel originalModel) {
+	public CopycatPanelModel(BlockStateModel originalModel) {
 		super(originalModel);
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override

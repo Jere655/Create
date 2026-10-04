@@ -9,7 +9,7 @@ import com.simibubi.create.foundation.item.render.PartialItemModelRenderer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.util.Mth;
@@ -35,7 +35,7 @@ public abstract class ZapperItemRenderer extends CustomRenderedItemModelRenderer
 		ms.pushPose();
 		ms.translate(-0.3F, -0.45F, -0.0F);
 		ms.scale(0.25F, 0.25F, 0.25F);
-		BakedModel modelForState = Minecraft.getInstance()
+		ItemModel modelForState = Minecraft.getInstance()
 			.getBlockRenderer()
 			.getBlockModel(state);
 

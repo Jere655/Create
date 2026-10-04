@@ -386,7 +386,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 	}
 
 	protected void renderSchedule(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		PoseStack matrixStack = graphics.pose();
+		var matrixStack = graphics.pose();
 
 		UIRenderHelper.drawStretched(graphics, leftPos + 33, topPos + 16, 3, 173, 200,
 			AllGuiTextures.SCHEDULE_STRIP_DARK);
@@ -500,7 +500,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 		boolean supportsConditions = entry.instruction.supportsConditions();
 		int cardHeight = cardHeader + (supportsConditions ? 24 + maxRows * 18 : 4);
 
-		PoseStack matrixStack = graphics.pose();
+		var matrixStack = graphics.pose();
 		matrixStack.pushPose();
 		matrixStack.translate(leftPos + 25, topPos + yOffset, 0);
 
@@ -541,7 +541,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 		int cardWidth = CARD_WIDTH;
 		int cardHeader = CARD_HEADER;
 
-		PoseStack matrixStack = graphics.pose();
+		var matrixStack = graphics.pose();
 		matrixStack.pushPose();
 		matrixStack.translate(leftPos + 25, topPos + yOffset, 0);
 		int xOffset = 26;
@@ -612,7 +612,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 		Component text = pair.getSecond();
 		boolean hasItem = !stack.isEmpty();
 		int fieldSize = Math.min(getFieldSize(minSize, pair), 150);
-		PoseStack matrixStack = graphics.pose();
+		var matrixStack = graphics.pose();
 		matrixStack.pushPose();
 
 		AllGuiTextures left =
@@ -974,7 +974,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 
 	@Override
 	protected void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		PoseStack matrixStack = graphics.pose();
+		var matrixStack = graphics.pose();
 		if (destinationSuggestions != null) {
 			matrixStack.pushPose();
 			matrixStack.translate(0, 0, 500);
@@ -1029,7 +1029,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 		if (editingCondition == null && editingDestination == null)
 			return;
 
-		PoseStack matrices = graphics.pose();
+		var matrices = graphics.pose();
 		matrices.pushPose();
 		matrices.translate(0, 0, 200);
 

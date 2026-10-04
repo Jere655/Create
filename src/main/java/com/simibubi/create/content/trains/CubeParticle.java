@@ -2,7 +2,6 @@ package com.simibubi.create.content.trains;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -52,7 +51,7 @@ public class CubeParticle extends Particle {
 			// transparent, additive blending
 			RenderSystem.depthMask(false);
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+			RenderSystem.blendFunc(com.mojang.blaze3d.systems.RenderSystem.SourceFactor.ONE, com.mojang.blaze3d.systems.RenderSystem.DestFactor.ONE);
 
 			// opaque
 //			RenderSystem.depthMask(true);
@@ -61,7 +60,7 @@ public class CubeParticle extends Particle {
 
 			BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
 
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.defaultBlendFunc();
 
 			return builder;
 		}

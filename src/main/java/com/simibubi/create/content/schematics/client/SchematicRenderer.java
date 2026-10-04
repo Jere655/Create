@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.RenderShape;
@@ -105,7 +105,7 @@ public class SchematicRenderer {
 			BlockState state = renderWorld.getBlockState(pos);
 
 			if (state.getRenderShape() == RenderShape.MODEL) {
-				BakedModel model = dispatcher.getBlockModel(state);
+				BlockStateModel model = dispatcher.getBlockModel(state);
 				BlockEntity blockEntity = renderWorld.getBlockEntity(localPos);
 				ModelData modelData = blockEntity != null ? blockEntity.getModelData() : ModelData.EMPTY;
 				modelData = model.getModelData(renderWorld, pos, state, modelData);

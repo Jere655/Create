@@ -18,7 +18,7 @@ import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -132,7 +132,7 @@ public class LinkedControllerItemRenderer extends CustomRenderedItemModelRendere
 			return;
 		}
 
-		BakedModel button = BUTTON.get();
+		ItemModel button = BUTTON.get();
 		float s = 1 / 16f;
 		float b = s * -.75f;
 		int index = 0;
@@ -163,7 +163,7 @@ public class LinkedControllerItemRenderer extends CustomRenderedItemModelRendere
 		ms.popPose();
 	}
 
-	protected static void renderButton(PartialItemModelRenderer renderer, PoseStack ms, int light, float pt, BakedModel button,
+	protected static void renderButton(PartialItemModelRenderer renderer, PoseStack ms, int light, float pt, ItemModel button,
 									   float b, int index, boolean renderDepression) {
 		ms.pushPose();
 		if (renderDepression) {

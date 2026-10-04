@@ -13,7 +13,7 @@ import com.simibubi.create.foundation.block.connected.CTSpriteShiftEntry;
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -27,17 +27,17 @@ public class FluidTankModel extends CTModel {
 
 	protected static final ModelProperty<CullData> CULL_PROPERTY = new ModelProperty<>();
 
-	public static FluidTankModel standard(BakedModel originalModel) {
+	public static FluidTankModel standard(BlockStateModel originalModel) {
 		return new FluidTankModel(originalModel, AllSpriteShifts.FLUID_TANK, AllSpriteShifts.FLUID_TANK_TOP,
 			AllSpriteShifts.FLUID_TANK_INNER);
 	}
 
-	public static FluidTankModel creative(BakedModel originalModel) {
+	public static FluidTankModel creative(BlockStateModel originalModel) {
 		return new FluidTankModel(originalModel, AllSpriteShifts.CREATIVE_FLUID_TANK, AllSpriteShifts.CREATIVE_CASING,
 			AllSpriteShifts.CREATIVE_CASING);
 	}
 
-	private FluidTankModel(BakedModel originalModel, CTSpriteShiftEntry side, CTSpriteShiftEntry top,
+	private FluidTankModel(BlockStateModel originalModel, CTSpriteShiftEntry side, CTSpriteShiftEntry top,
 		CTSpriteShiftEntry inner) {
 		super(originalModel, new FluidTankCTBehaviour(side, top, inner));
 	}

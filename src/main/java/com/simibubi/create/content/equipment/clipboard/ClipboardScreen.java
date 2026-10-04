@@ -10,7 +10,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
@@ -550,7 +549,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 		RenderSystem.setShaderColor(0.0F, 0.0F, 255.0F, 255.0F);
 //		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
-		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+		// RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE); // LogicOp API removed in 1.21.7
 
 		for (Rect2i rect2i : pSelected) {
 			int i = rect2i.getX();

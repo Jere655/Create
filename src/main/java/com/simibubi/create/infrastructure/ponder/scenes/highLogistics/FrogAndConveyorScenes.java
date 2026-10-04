@@ -34,7 +34,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -323,7 +323,7 @@ public class FrogAndConveyorScenes {
 		@Override
 		protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade,
 								  float pt) {
-			PoseStack poseStack = graphics.pose();
+			var poseStack = graphics.pose();
 			EntityRenderDispatcher entityrenderermanager = Minecraft.getInstance()
 				.getEntityRenderDispatcher();
 
@@ -357,7 +357,7 @@ public class FrogAndConveyorScenes {
 			poseStack.mulPose(Axis.ZP.rotationDegrees(90));
 			poseStack.scale(1.5f, 1.5f, 1.5f);
 			poseStack.translate(-0.1, 0.2, -0.6);
-			BakedModel bakedmodel = Minecraft.getInstance()
+			ItemModel bakedmodel = Minecraft.getInstance()
 				.getItemRenderer()
 				.getModel(wrench.getItem(), world, null, 0);
 			Minecraft.getInstance()

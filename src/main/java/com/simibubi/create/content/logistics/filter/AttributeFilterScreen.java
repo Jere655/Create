@@ -181,7 +181,7 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 	@Override
 	public void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		ItemStack stack = menu.ghostInventory.getStackInSlot(1);
-		PoseStack matrixStack = graphics.pose();
+		var matrixStack = graphics.pose();
 		matrixStack.pushPose();
 		matrixStack.translate(0, 0, 150);
 		graphics.renderItemDecorations(font, stack, leftPos + 16, topPos + 62,

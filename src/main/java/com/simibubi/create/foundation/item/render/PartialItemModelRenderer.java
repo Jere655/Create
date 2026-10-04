@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -41,23 +41,23 @@ public class PartialItemModelRenderer {
 		return instance;
 	}
 
-	public void render(BakedModel model, int light) {
+	public void render(ItemModel model, int light) {
 		render(model, Sheets.translucentCullBlockSheet(), light);
 	}
 
-	public void renderSolid(BakedModel model, int light) {
+	public void renderSolid(ItemModel model, int light) {
 		render(model, Sheets.solidBlockSheet(), light);
 	}
 
-	public void renderGlowing(BakedModel model, int light) {
+	public void renderGlowing(ItemModel model, int light) {
 		render(model, RenderTypes.itemGlowingTranslucent(), light);
 	}
 
-	public void renderSolidGlowing(BakedModel model, int light) {
+	public void renderSolidGlowing(ItemModel model, int light) {
 		render(model, RenderTypes.itemGlowingSolid(), light);
 	}
 
-	public void render(BakedModel model, RenderType type, int light) {
+	public void render(ItemModel model, RenderType type, int light) {
 		if (stack.isEmpty())
 			return;
 
@@ -77,7 +77,7 @@ public class PartialItemModelRenderer {
 		ms.popPose();
 	}
 
-	private void renderBakedItemModel(BakedModel model, int light, PoseStack ms, VertexConsumer buffer) {
+	private void renderBakedItemModel(ItemModel model, int light, PoseStack ms, VertexConsumer buffer) {
 		ItemRenderer ir = Minecraft.getInstance()
 			.getItemRenderer();
 		ModelData data = ModelData.EMPTY;

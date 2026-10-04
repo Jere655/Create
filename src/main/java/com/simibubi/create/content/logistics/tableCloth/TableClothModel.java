@@ -18,8 +18,9 @@ import net.createmod.catnip.render.SpriteShiftEntry;
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -37,8 +38,15 @@ public class TableClothModel extends BakedModelWrapperWithData {
 
 	private static final Map<TableClothBlock, List<List<BakedQuad>>> CORNERS = new HashMap<>();
 
-	public TableClothModel(BakedModel originalModel) {
+	public TableClothModel(BlockStateModel originalModel) {
 		super(originalModel);
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	public static void reload() {

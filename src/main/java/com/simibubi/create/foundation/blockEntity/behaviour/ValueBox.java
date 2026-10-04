@@ -15,7 +15,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -139,7 +139,7 @@ public class ValueBox extends ChasingAABBOutline {
 
 			ItemRenderer itemRenderer = Minecraft.getInstance()
 				.getItemRenderer();
-			BakedModel modelWithOverrides = itemRenderer.getModel(stack, null, null, 0);
+			ItemModel modelWithOverrides = itemRenderer.getModel(stack, null, null, 0);
 			boolean blockItem = modelWithOverrides.isGui3d();
 
 			float scale = 1.5f;

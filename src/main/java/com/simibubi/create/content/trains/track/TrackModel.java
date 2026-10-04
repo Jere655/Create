@@ -12,21 +12,30 @@ import com.simibubi.create.foundation.model.BakedQuadHelper;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.model.data.ModelData;
 
-public class TrackModel extends BakedModelWrapper<BakedModel> {
+public class TrackModel extends DelegateBlockStateModel {
 
-	public TrackModel(BakedModel originalModel) {
+	public TrackModel(BlockStateModel originalModel) {
 		super(originalModel);
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override

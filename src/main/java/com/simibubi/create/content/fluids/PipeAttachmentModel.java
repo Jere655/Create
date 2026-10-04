@@ -18,7 +18,8 @@ import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -36,17 +37,24 @@ public class PipeAttachmentModel extends BakedModelWrapperWithData {
 	private static final ModelProperty<PipeModelData> PIPE_PROPERTY = new ModelProperty<>();
 	private boolean ao;
 
-	public static PipeAttachmentModel withAO(BakedModel template) {
+	public static PipeAttachmentModel withAO(BlockStateModel template) {
 		return new PipeAttachmentModel(template, true);
 	}
 
-	public static PipeAttachmentModel withoutAO(BakedModel template) {
+	public static PipeAttachmentModel withoutAO(BlockStateModel template) {
 		return new PipeAttachmentModel(template, false);
 	}
 
-	public PipeAttachmentModel(BakedModel template, boolean ao) {
+	public PipeAttachmentModel(BlockStateModel template, boolean ao) {
 		super(template);
 		this.ao = ao;
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override

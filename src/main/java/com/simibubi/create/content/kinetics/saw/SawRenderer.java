@@ -27,7 +27,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -142,7 +142,7 @@ public class SawRenderer extends SafeBlockEntityRenderer<SawBlockEntity> {
 
 			ItemRenderer itemRenderer = Minecraft.getInstance()
 				.getItemRenderer();
-			BakedModel modelWithOverrides = itemRenderer.getModel(stack, be.getLevel(), null, 0);
+			ItemModel modelWithOverrides = itemRenderer.getModel(stack, be.getLevel(), null, 0);
 			boolean blockItem = modelWithOverrides.isGui3d();
 
 			ms.pushPose();

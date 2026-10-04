@@ -1,6 +1,5 @@
 package com.simibubi.create;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.ftb.FTBIntegration;
@@ -122,7 +121,7 @@ public class CreateClient {
 
 			//RenderSystem.setShaderTexture(0, CreateMainMenuScreen.PANORAMA_OVERLAY_TEXTURES);
 			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.defaultBlendFunc();
 			graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, CreateMainMenuScreen.PANORAMA_OVERLAY_TEXTURES, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 			graphics.fill(0, 0, screen.width, screen.height, 0x90_282c34);

@@ -33,7 +33,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.AxisDirection;
@@ -283,7 +283,7 @@ public class BeltRenderer extends SafeBlockEntityRenderer<BeltBlockEntity> {
 		}
 
 		boolean renderUpright = BeltHelper.isItemUpright(transported.stack);
-		BakedModel bakedModel = itemRenderer.getModel(transported.stack, be.getLevel(), null, 0);
+		ItemModel bakedModel = itemRenderer.getModel(transported.stack, be.getLevel(), null, 0);
 		boolean blockItem = bakedModel.isGui3d();
 
 		int count = 0;

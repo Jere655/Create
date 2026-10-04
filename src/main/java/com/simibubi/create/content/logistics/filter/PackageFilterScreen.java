@@ -56,7 +56,7 @@ public class PackageFilterScreen extends AbstractFilterScreen<PackageFilterMenu>
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		super.render(graphics, mouseX, mouseY, partialTicks);
 
-		PoseStack ms = graphics.pose();
+		var ms = graphics.pose();
 		ms.pushPose();
 		ms.translate(leftPos + 16, topPos + 23, 0);
 		GuiGameElement.of(PackageStyles.getDefaultBox())

@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -46,7 +46,7 @@ public class ArmRenderer extends KineticBlockEntityRenderer<ArmBlockEntity> {
 		ItemRenderer itemRenderer = Minecraft.getInstance()
 			.getItemRenderer();
 
-		BakedModel bakedModel = itemRenderer.getModel(item, be.getLevel(), null, 0);
+		ItemModel bakedModel = itemRenderer.getModel(item, be.getLevel(), null, 0);
 		boolean isBlockItem = hasItem && (item.getItem() instanceof BlockItem) && bakedModel.isGui3d();
 
 		VertexConsumer builder = buffer.getBuffer(be.goggles ? RenderType.cutout() : RenderType.solid());

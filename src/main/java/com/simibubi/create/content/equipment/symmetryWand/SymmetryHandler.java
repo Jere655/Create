@@ -16,7 +16,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -109,7 +109,7 @@ public class SymmetryHandler {
 			ms.translate(pos.getX() - view.x(), pos.getY() - view.y(), pos.getZ() - view.z());
 			ms.translate(0, yShift + .2f, 0);
 			mirror.applyModelTransform(ms);
-			BakedModel model = mirror.getModel()
+			BlockStateModel model = mirror.getModel()
 				.get();
 			VertexConsumer builder = buffer.getBuffer(RenderType.solid());
 

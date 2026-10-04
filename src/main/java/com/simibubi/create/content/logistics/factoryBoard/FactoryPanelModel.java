@@ -18,7 +18,8 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -34,8 +35,15 @@ public class FactoryPanelModel extends BakedModelWrapperWithData {
 
 	private static final ModelProperty<FactoryPanelModelData> PANEL_PROPERTY = new ModelProperty<>();
 
-	public FactoryPanelModel(BakedModel originalModel) {
+	public FactoryPanelModel(BlockStateModel originalModel) {
 		super(originalModel);
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override

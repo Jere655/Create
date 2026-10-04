@@ -11,7 +11,7 @@ import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.network.chat.Component;
 
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -91,7 +91,7 @@ public class AllCreativeModeTabs {
 				isItem3d.setValue(item -> {
 					ItemRenderer itemRenderer = Minecraft.getInstance()
 						.getItemRenderer();
-					BakedModel model = itemRenderer.getModel(new ItemStack(item), null, null, 0);
+					ItemModel model = itemRenderer.getModel(new ItemStack(item), null, null, 0);
 					return model.isGui3d();
 				});
 			IS_ITEM_3D_PREDICATE = isItem3d.getValue();
