@@ -172,8 +172,8 @@ public class GoggleOverlayRenderer {
 			return;
 		}
 
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		Matrix3x2fStack poseStack = guiGraphics.pose();
+		poseStack.pushMatrix();
 
 		int tooltipTextWidth = 0;
 		for (FormattedText textLine : tooltip) {

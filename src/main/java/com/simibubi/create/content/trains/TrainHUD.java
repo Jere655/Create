@@ -18,7 +18,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import com.mojang.blaze3d.systems.Matrix3x2fStack;
+import org.joml.Matrix3x2fStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.minecraft.core.BlockPos;
@@ -127,8 +127,8 @@ public class TrainHUD {
 		if (localPos == null)
 			return;
 
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		Matrix3x2fStack poseStack = guiGraphics.pose();
+		poseStack.pushMatrix();
 		poseStack.translate(guiGraphics.guiWidth() / 2 - 91, guiGraphics.guiHeight() - 29);
 
 		// Speed, Throttle

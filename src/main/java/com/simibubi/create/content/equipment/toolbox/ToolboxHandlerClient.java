@@ -176,8 +176,8 @@ public class ToolboxHandlerClient {
 		if (compound.isEmpty())
 			return;
 
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		Matrix3x2fStack poseStack = guiGraphics.pose();
+		poseStack.pushMatrix();
 		for (int slot = 0; slot < 9; slot++) {
 			String key = String.valueOf(slot);
 			if (!compound.contains(key))

@@ -34,12 +34,7 @@ public class PotatoCannonItemRenderer extends CustomRenderedItemModelRenderer {
 			return false;
 		}
 
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
-		poseStack.translate(xOffset, yOffset + 8, 100);
-		poseStack.scale(.5f, .5f, .5f);
-		guiGraphics.renderItem(ammo.stack(), 0, 0);
-		poseStack.popPose();
+		guiGraphics.renderItem(ammo.stack(), xOffset, yOffset + 8);
 		return false;
 	};
 

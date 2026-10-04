@@ -461,7 +461,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 
 	@Override
 	public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		PoseStack ms = guiGraphics.pose();
+		PoseStack ms = guiGraphics.pose3D();
 		ms.pushPose();
 		ms.translate(0, 0, -300);
 		super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
