@@ -68,8 +68,8 @@ public class FillingRecipe extends StandardProcessingRecipe<SingleRecipeInput> i
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public Component getDescriptionForAssembly() {
-		List<FluidStack> matchingFluidStacks = Arrays.asList(fluidIngredients.get(0)
-			.getFluids());
+		List<FluidStack> matchingFluidStacks = com.simibubi.create.foundation.fluid.FluidHelper
+			.getFluidStacks(fluidIngredients.getFirst());
 		if (matchingFluidStacks.size() == 0) {
             return Component.literal("Invalid");
         }

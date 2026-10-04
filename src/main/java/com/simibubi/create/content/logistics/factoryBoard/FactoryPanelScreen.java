@@ -25,7 +25,9 @@ import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
@@ -103,7 +105,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 	public static List<BigItemStack> convertRecipeToPackageOrderContext(CraftingRecipe availableCraftingRecipe, List<BigItemStack> inputs, boolean respectAmounts) {
 		List<BigItemStack> craftingIngredients = new ArrayList<>();
 		BigItemStack emptyIngredient = new BigItemStack(ItemStack.EMPTY, 1);
-		NonNullList<Ingredient> ingredients = availableCraftingRecipe.getIngredients();
+		List<Ingredient> ingredients = RecipeGenericsUtil.getIngredients(availableCraftingRecipe);
 		List<BigItemStack> mutableInputs = BigItemStack.duplicateWrappers(inputs);
 
 		int width = Math.min(3, ingredients.size());
@@ -219,7 +221,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 				craftingActive = !craftingActive;
 				init();
 				if (craftingActive) {
-					outputConfig.count = availableCraftingRecipe.getResultItem(minecraft.level.registryAccess())
+					outputConfig.count = RecipeGenericsUtil.getResultItem(availableCraftingRecipe, minecraft.level)
 						.getCount();
 				}
 			});
@@ -677,17 +679,16 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 
 		ClientLevel level = Minecraft.getInstance().level;
 
-		availableCraftingRecipe = level.getRecipeManager()
-			.getAllRecipesFor(RecipeType.CRAFTING)
+		availableCraftingRecipe = RecipeFinder.getRecipes(RecipeType.CRAFTING, level)
 			.parallelStream()
-			.filter(r -> output.getItem() == r.value().getResultItem(level.registryAccess())
+			.filter(r -> output.getItem() == RecipeGenericsUtil.getResultItem(r.value(), level)
 				.getItem())
 			.filter(r -> {
 				if (AllRecipeTypes.shouldIgnoreInAutomation(r))
 					return false;
 
 				Set<Item> itemsUsed = new HashSet<>();
-				for (Ingredient ingredient : r.value().getIngredients()) {
+				for (Ingredient ingredient : RecipeGenericsUtil.getIngredients(r.value())) {
 					if (ingredient.isEmpty())
 						continue;
 					boolean available = false;

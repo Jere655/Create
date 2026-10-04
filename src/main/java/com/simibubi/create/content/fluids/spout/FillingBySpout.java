@@ -8,6 +8,7 @@ import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.fluids.transfer.FillingRecipe;
 import com.simibubi.create.content.fluids.transfer.GenericItemFilling;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -46,7 +47,7 @@ public class FillingBySpout {
 				return requiredFluid.amount();
 		}
 
-		for (RecipeHolder<Recipe<SingleRecipeInput>> recipe : world.getRecipeManager()
+		for (RecipeHolder<Recipe<SingleRecipeInput>> recipe : RecipeFinder
 			.getRecipesFor(AllRecipeTypes.FILLING.getType(), input, world)) {
 			FillingRecipe fillingRecipe = (FillingRecipe) recipe.value();
 			SizedFluidIngredient requiredFluid = fillingRecipe.getRequiredFluid();
@@ -68,7 +69,7 @@ public class FillingBySpout {
 			.filter(fr -> fr.value().getRequiredFluid()
 					.test(toFill))
 				.orElseGet(() -> {
-					for (RecipeHolder<Recipe<SingleRecipeInput>> recipe : level.getRecipeManager()
+					for (RecipeHolder<Recipe<SingleRecipeInput>> recipe : RecipeFinder
 						.getRecipesFor(AllRecipeTypes.FILLING.getType(), input, level)) {
 						FillingRecipe fr = (FillingRecipe) recipe.value();
 						SizedFluidIngredient requiredFluid = fr.getRequiredFluid();

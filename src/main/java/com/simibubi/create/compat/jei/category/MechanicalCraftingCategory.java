@@ -2,6 +2,7 @@ package com.simibubi.create.compat.jei.category;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -57,14 +58,15 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 		IIngredientRenderer<ItemStack> renderer = new CrafterIngredientRenderer(recipe);
 		int i = 0;
 
-		for (Ingredient ingredient : recipe.getIngredients()) {
+		for (Optional<Ingredient> ingredient : getIngredientsWithSlots(recipe)) {
 			float f = 19 * scale;
 			int xPosition = (int) (x + 1 + (i % getWidth(recipe)) * f);
 			int yPosition = (int) (y + 1 + (i / getWidth(recipe)) * f);
 
-			builder.addSlot(RecipeIngredientRole.INPUT, xPosition, yPosition)
-				.setCustomRenderer(VanillaTypes.ITEM_STACK, renderer)
-				.addIngredients(ingredient);
+			if (ingredient.isPresent())
+				builder.addSlot(RecipeIngredientRole.INPUT, xPosition, yPosition)
+					.setCustomRenderer(VanillaTypes.ITEM_STACK, renderer)
+					.addIngredients(ingredient.get());
 
 			i++;
 		}
@@ -95,6 +97,12 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 		return recipe instanceof ShapedRecipe ? ((ShapedRecipe) recipe).getHeight() : 1;
 	}
 
+	private static List<Optional<Ingredient>> getIngredientsWithSlots(CraftingRecipe recipe) {
+		if (recipe instanceof ShapedRecipe shapedRecipe)
+			return shapedRecipe.getIngredients();
+		return recipe.placementInfo().ingredients().stream().map(Optional::of).toList();
+	}
+
 	@Override
 	public void draw(CraftingRecipe recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics graphics, double mouseX,
 		double mouseY) {
@@ -106,10 +114,10 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 		for (int row = 0; row < getHeight(recipe); row++)
 			for (int col = 0; col < getWidth(recipe); col++) {
 				int pIndex = row * getWidth(recipe) + col;
-				if (pIndex >= recipe.getIngredients()
+				if (pIndex >= getIngredientsWithSlots(recipe)
 					.size())
 					break;
-				if (recipe.getIngredients()
+				if (getIngredientsWithSlots(recipe)
 					.get(pIndex)
 					.isEmpty())
 					continue;
@@ -130,7 +138,7 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 		matrixStack.translate(0, 0, 300);
 
 		int amount = 0;
-		for (java.util.Optional<Ingredient> ingredient : recipe.getIngredients()) {
+		for (Optional<Ingredient> ingredient : getIngredientsWithSlots(recipe)) {
 			if (ingredient.isEmpty())
 				continue;
 			amount++;

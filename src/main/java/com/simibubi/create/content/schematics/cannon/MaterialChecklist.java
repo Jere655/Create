@@ -93,10 +93,10 @@ public class MaterialChecklist {
 		List<Item> keys = new ArrayList<>(Sets.union(required.keySet(), damageRequired.keySet()));
 		Collections.sort(keys, (item1, item2) -> {
 			Locale locale = Locale.ENGLISH;
-			String name1 = item1.getHoverName()
+			String name1 = item1.getName()
 				.getString()
 				.toLowerCase(locale);
-			String name2 = item2.getHoverName()
+			String name2 = item2.getName()
 				.getString()
 				.toLowerCase(locale);
 			return name1.compareTo(name2);
@@ -171,10 +171,10 @@ public class MaterialChecklist {
 		List<Item> keys = new ArrayList<>(Sets.union(required.keySet(), damageRequired.keySet()));
 		Collections.sort(keys, (item1, item2) -> {
 			Locale locale = Locale.ENGLISH;
-			String name1 = item1.getHoverName()
+			String name1 = item1.getName()
 				.getString()
 				.toLowerCase(locale);
-			String name2 = item2.getHoverName()
+			String name2 = item2.getName()
 				.getString()
 				.toLowerCase(locale);
 			return name1.compareTo(name2);

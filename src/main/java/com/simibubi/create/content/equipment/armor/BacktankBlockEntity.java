@@ -50,13 +50,10 @@ public class BacktankBlockEntity extends KineticBlockEntity implements Nameable 
 	}
 
 	public static Component getDefaultName(BlockState state) {
-		if (AllBlocks.NETHERITE_BACKTANK.has(state)) {
-			AllItems.NETHERITE_BACKTANK.get()
-				.getHoverName();
-		}
+		if (AllBlocks.NETHERITE_BACKTANK.has(state))
+			return AllItems.NETHERITE_BACKTANK.get().getName();
 
-		return AllItems.COPPER_BACKTANK.get()
-			.getHoverName();
+		return AllItems.COPPER_BACKTANK.get().getName();
 	}
 
 	@Override

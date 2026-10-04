@@ -155,7 +155,8 @@ public class PotionMixingRecipes {
 				.requiresHeat(HeatCondition.HEATED)
 				.build();
 
-		return new RecipeHolder<>(recipeId, recipe);
+		return new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(
+			net.minecraft.core.registries.Registries.RECIPE, recipeId), recipe);
 	}
 
 	private static Map<Item, List<MixingRecipe>> sortRecipesByItem(List<RecipeHolder<MixingRecipe>> all) {

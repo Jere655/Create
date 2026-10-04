@@ -28,6 +28,7 @@ import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.recipe.RecipeConditions;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.AbstractBlockBreakQueue;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.math.VecHelper;
@@ -370,7 +371,7 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity implements C
 			if (recipe instanceof CuttingRecipe)
 				results = ((CuttingRecipe) recipe).rollResults(level.random);
 			else if (recipe instanceof StonecutterRecipe || recipe.getType() == woodcuttingRecipeType.get())
-				results.add(recipe.getResultItem(level.registryAccess())
+				results.add(RecipeGenericsUtil.getResultItem(recipe, level)
 					.copy());
 
 			for (ItemStack stack : results) {

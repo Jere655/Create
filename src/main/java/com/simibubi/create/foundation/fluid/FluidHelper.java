@@ -1,5 +1,7 @@
 package com.simibubi.create.foundation.fluid;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.content.fluids.tank.CreativeFluidTankBlockEntity;
@@ -28,8 +30,14 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public class FluidHelper {
+	public static List<FluidStack> getFluidStacks(SizedFluidIngredient ingredient) {
+		return ingredient.ingredient().fluids().stream()
+			.map(fluid -> new FluidStack(fluid, ingredient.amount()))
+			.toList();
+	}
 
 	public static enum FluidExchange {
 		ITEM_TO_TANK, TANK_TO_ITEM;

@@ -84,10 +84,9 @@ public abstract class SequencedAssemblySubCategory {
 			ms.pushPose();
 			ms.translate(-7, 50, 0);
 			ms.scale(.75f, .75f, .75f);
-			spout.withFluids(Arrays.asList(recipe.getRecipe()
+			spout.withFluids(com.simibubi.create.foundation.fluid.FluidHelper.getFluidStacks(recipe.getRecipe()
 					.getFluidIngredients()
-					.get(0)
-					.getFluids()))
+					.getFirst()))
 				.draw(graphics, getWidth() / 2, 0);
 			ms.popPose();
 		}

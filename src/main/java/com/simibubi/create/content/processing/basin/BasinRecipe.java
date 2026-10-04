@@ -16,6 +16,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTank
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour.TankSegment;
 import com.simibubi.create.foundation.recipe.DummyCraftingContainer;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.Minecraft;
@@ -41,8 +42,7 @@ public class BasinRecipe extends StandardProcessingRecipe<RecipeInput> {
 		if (filter == null)
 			return false;
 
-		boolean filterTest = filter.test(recipe.getResultItem(basin.getLevel()
-			.registryAccess()));
+		boolean filterTest = filter.test(RecipeGenericsUtil.getResultItem(recipe, basin.getLevel()));
 		if (recipe instanceof BasinRecipe basinRecipe) {
 			if (basinRecipe.getRollableResults()
 				.isEmpty()
@@ -78,7 +78,7 @@ public class BasinRecipe extends StandardProcessingRecipe<RecipeInput> {
 		List<ItemStack> recipeOutputItems = new ArrayList<>();
 		List<FluidStack> recipeOutputFluids = new ArrayList<>();
 
-		List<Ingredient> ingredients = new LinkedList<>(recipe.getIngredients());
+		List<Ingredient> ingredients = new LinkedList<>(RecipeGenericsUtil.getIngredients(recipe));
 		List<SizedFluidIngredient> fluidIngredients =
 			isBasinRecipe ? ((BasinRecipe) recipe).getFluidIngredients() : Collections.emptyList();
 
@@ -158,8 +158,7 @@ public class BasinRecipe extends StandardProcessingRecipe<RecipeInput> {
 							recipeOutputItems.add(stack);
 
 				} else {
-					recipeOutputItems.add(recipe.getResultItem(basin.getLevel()
-						.registryAccess()));
+					recipeOutputItems.add(RecipeGenericsUtil.getResultItem(recipe, basin.getLevel()));
 
 					if (recipe instanceof CraftingRecipe craftingRecipe) {
 						for (ItemStack stack : craftingRecipe.getRemainingItems(remainderInput))
@@ -178,8 +177,9 @@ public class BasinRecipe extends StandardProcessingRecipe<RecipeInput> {
 
 	public static RecipeHolder<BasinRecipe> convertShapeless(RecipeHolder<?> recipe) {
 		BasinRecipe basinRecipe =
-			new Builder<>(BasinRecipe::new, recipe.id().location()).withItemIngredients(recipe.value().getIngredients())
-				.withSingleItemOutput(recipe.value().getResultItem(Minecraft.getInstance().level.registryAccess()))
+			new Builder<>(BasinRecipe::new, recipe.id().location())
+				.withItemIngredients(RecipeGenericsUtil.getIngredients(recipe.value()))
+				.withSingleItemOutput(RecipeGenericsUtil.getResultItem(recipe.value(), Minecraft.getInstance().level))
 				.build();
 		return new RecipeHolder<>(recipe.id(), basinRecipe);
 	}

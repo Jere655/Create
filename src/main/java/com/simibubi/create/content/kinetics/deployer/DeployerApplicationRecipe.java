@@ -10,6 +10,7 @@ import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -39,10 +40,9 @@ public class DeployerApplicationRecipe extends ItemApplicationRecipe implements 
 				sandpaperRecipe.id().location().getPath() + "_using_deployer"
 		);
 		DeployerApplicationRecipe recipe = new ItemApplicationRecipe.Builder<>(DeployerApplicationRecipe::new, id)
-				.require(sandpaperRecipe.value().getIngredients()
-						.get(0))
+				.require(RecipeGenericsUtil.getIngredients(sandpaperRecipe.value()).getFirst())
 						.require(AllItemTags.SANDPAPER.tag)
-						.output(sandpaperRecipe.value().getResultItem(Minecraft.getInstance().level.registryAccess()))
+						.output(RecipeGenericsUtil.getResultItem(sandpaperRecipe.value(), Minecraft.getInstance().level))
 						.build();
 
 		return new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id), recipe);

@@ -29,6 +29,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -154,7 +155,7 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 		ClientLevel level = Minecraft.getInstance().level;
 		if (level == null)
 			return ItemStack.EMPTY;
-		return recipe.getResultItem(level.registryAccess());
+		return RecipeGenericsUtil.getResultItem(recipe, level);
 	}
 
 	public static IRecipeSlotRichTooltipCallback addStochasticTooltip(ProcessingOutput output) {
@@ -171,7 +172,8 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 		int amount = ingredient.amount();
 		return builder.addSlot(RecipeIngredientRole.INPUT, x, y)
 			.setBackground(getRenderedSlot(), -1, -1)
-			.addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(ingredient.getFluids()))
+			.addIngredients(NeoForgeTypes.FLUID_STACK,
+				com.simibubi.create.foundation.fluid.FluidHelper.getFluidStacks(ingredient))
 			.setFluidRenderer(amount, false, 16, 16) // make fluid take up the full slot
 			.addTooltipCallback(CreateRecipeCategory::addPotionTooltip);
 	}

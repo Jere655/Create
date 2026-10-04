@@ -18,7 +18,7 @@ public record BlueprintAssignCompleteRecipePacket(ResourceLocation recipeId) imp
 	@Override
 	public void handle(ServerPlayer player) {
 		if (player.containerMenu instanceof BlueprintMenu c) {
-			player.level()
+			player.getServer()
 					.getRecipeManager()
 					.byKey(ResourceKey.create(Registries.RECIPE, recipeId))
 					.ifPresent(r -> BlueprintItem.assignCompleteRecipe(c.player.level(), c.ghostInventory, r.value()));

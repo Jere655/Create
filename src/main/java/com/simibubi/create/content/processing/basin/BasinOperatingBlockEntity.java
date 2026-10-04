@@ -14,6 +14,7 @@ import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.recipe.trie.AbstractVariant;
 import com.simibubi.create.foundation.recipe.trie.RecipeTrie;
 import com.simibubi.create.foundation.recipe.trie.RecipeTrieFinder;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.crafting.Recipe;
@@ -162,7 +163,8 @@ public abstract class BasinOperatingBlockEntity extends KineticBlockEntity {
 					list.add(r.value());
 		}
 
-		list.sort((r1, r2) -> r2.getIngredients().size() - r1.getIngredients().size());
+		list.sort((r1, r2) -> RecipeGenericsUtil.getIngredients(r2).size()
+			- RecipeGenericsUtil.getIngredients(r1).size());
 
 		return list;
 	}

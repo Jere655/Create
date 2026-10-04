@@ -35,6 +35,7 @@ import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe.Se
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipeSerializer;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import com.simibubi.create.foundation.recipe.ItemCopyingRecipe;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -154,8 +155,7 @@ public enum AllRecipeTypes implements IRecipeTypeInfo, StringRepresentable {
 	}
 
 	public <I extends RecipeInput, R extends Recipe<I>> Optional<RecipeHolder<R>> find(I inv, Level world) {
-		return world.getRecipeManager()
-			.getRecipeFor(getType(), inv, world);
+		return RecipeFinder.getRecipeFor(getType(), inv, world);
 	}
 
 	public static boolean shouldIgnoreInAutomation(RecipeHolder<?> recipe) {

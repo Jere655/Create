@@ -356,6 +356,16 @@ public class ClientEvents {
 	}
 
 	@SubscribeEvent
+	public static void recipesReceived(net.neoforged.neoforge.client.event.RecipesReceivedEvent event) {
+		com.simibubi.create.foundation.recipe.RecipeFinder.setClientRecipes(event.getRecipeMap());
+	}
+
+	@SubscribeEvent
+	public static void clientLogout(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+		com.simibubi.create.foundation.recipe.RecipeFinder.clearClientRecipes();
+	}
+
+	@SubscribeEvent
 	public static void registerClientCommands(RegisterClientCommandsEvent event) {
 		AllCommands.registerClient(event.getDispatcher());
 	}

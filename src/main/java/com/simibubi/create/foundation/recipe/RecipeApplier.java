@@ -7,6 +7,7 @@ import com.simibubi.create.content.kinetics.deployer.ManualApplicationRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +61,7 @@ public class RecipeApplier {
 
 			}
 		} else {
-			ItemStack out = recipe.getResultItem(level.registryAccess())
+			ItemStack out = RecipeGenericsUtil.getResultItem(recipe, level)
 				.copy();
 			stacks = ItemHelper.multipliedOutput(stackIn, out);
 		}

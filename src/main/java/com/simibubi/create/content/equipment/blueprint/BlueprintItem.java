@@ -11,6 +11,7 @@ import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute.ItemAttributeEntry;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.InTagAttribute;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -72,17 +73,21 @@ public class BlueprintItem extends Item {
 	}
 
 	public static void assignCompleteRecipe(Level level, ItemStackHandler inv, Recipe<?> recipe) {
-		NonNullList<Ingredient> ingredients = recipe.getIngredients();
+		List<Ingredient> ingredients = RecipeGenericsUtil.getIngredients(recipe);
 
 		for (int i = 0; i < 9; i++)
 			inv.setStackInSlot(i, ItemStack.EMPTY);
-		inv.setStackInSlot(9, recipe.getResultItem(level.registryAccess()));
+		inv.setStackInSlot(9, RecipeGenericsUtil.getResultItem(recipe, level));
 
 		if (recipe instanceof ShapedRecipe shapedRecipe) {
+			List<java.util.Optional<Ingredient>> shapedIngredients = shapedRecipe.getIngredients();
 			for (int row = 0; row < shapedRecipe.getHeight(); row++)
-				for (int col = 0; col < shapedRecipe.getWidth(); col++)
-					inv.setStackInSlot(row * 3 + col,
-						convertIngredientToFilter(ingredients.get(row * shapedRecipe.getWidth() + col)));
+				for (int col = 0; col < shapedRecipe.getWidth(); col++) {
+					java.util.Optional<Ingredient> ingredient =
+						shapedIngredients.get(row * shapedRecipe.getWidth() + col);
+					if (ingredient.isPresent())
+						inv.setStackInSlot(row * 3 + col, convertIngredientToFilter(ingredient.get()));
+				}
 		} else {
 			for (int i = 0; i < ingredients.size(); i++)
 				inv.setStackInSlot(i, convertIngredientToFilter(ingredients.get(i)));

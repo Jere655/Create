@@ -3,6 +3,7 @@ package com.simibubi.create.foundation.recipe;
 import java.util.function.Predicate;
 
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -28,11 +29,12 @@ public class RecipeConditions {
 	}
 
 	public static Predicate<RecipeHolder<? extends Recipe<?>>> firstIngredientMatches(ItemStack stack) {
-		return r -> !r.value().getIngredients().isEmpty() && r.value().getIngredients().get(0).test(stack);
+		return r -> !RecipeGenericsUtil.getIngredients(r.value()).isEmpty()
+			&& RecipeGenericsUtil.getIngredients(r.value()).getFirst().test(stack);
 	}
 
 	public static Predicate<RecipeHolder<? extends Recipe<?>>> outputMatchesFilter(FilteringBehaviour filtering) {
-		return r -> filtering.test(r.value().getResultItem(filtering.getWorld().registryAccess()));
+		return r -> filtering.test(RecipeGenericsUtil.getResultItem(r.value(), filtering.getWorld()));
 
 	}
 

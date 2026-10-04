@@ -16,6 +16,7 @@ import com.google.common.base.Predicates;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.infrastructure.config.AllConfigs;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.data.Iterate;
@@ -146,8 +147,7 @@ public class RecipeGridHandler {
 		ItemStack result = null;
 		RegistryAccess registryAccess = world.registryAccess();
 		if (AllConfigs.server().recipes.allowRegularCraftingInCrafter.get())
-			result = world.getRecipeManager()
-				.getRecipeFor(RecipeType.CRAFTING, craftingInput, world)
+			result = RecipeFinder.getRecipeFor(RecipeType.CRAFTING, craftingInput, world)
 				.filter(r -> isRecipeAllowed(r, craftingInput))
 				.map(r -> r.value().assemble(craftingInput, registryAccess))
 				.orElse(null);

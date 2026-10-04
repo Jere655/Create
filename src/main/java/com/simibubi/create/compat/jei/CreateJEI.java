@@ -67,6 +67,7 @@ import com.simibubi.create.content.trains.schedule.ScheduleScreen;
 import com.simibubi.create.foundation.data.recipe.LogStrippingFakeRecipes;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
@@ -190,7 +191,7 @@ public class CreateJEI implements IModPlugin {
 			autoShapeless = builder(BasinRecipe.class)
 				.enableWhen(AllConfigs.server().recipes.allowShapelessInMixer)
 				.addAllRecipesIf(r -> r.value() instanceof CraftingRecipe && !(r.value() instanceof ShapedRecipe)
-						&& r.value().getIngredients()
+						&& RecipeGenericsUtil.getIngredients(r.value())
 						.size() > 1
 						&& !MechanicalPressBlockEntity.canCompress(r.value()) && !AllRecipeTypes.shouldIgnoreInAutomation(r),
 					BasinRecipe::convertShapeless)
@@ -290,7 +291,7 @@ public class CreateJEI implements IModPlugin {
 			autoShaped = builder(CraftingRecipe.class)
 				.enableWhen(AllConfigs.server().recipes.allowRegularCraftingInCrafter)
 				.addAllRecipesIf(r -> r.value() instanceof CraftingRecipe && !(r.value() instanceof ShapedRecipe)
-					&& r.value().getIngredients()
+					&& RecipeGenericsUtil.getIngredients(r.value())
 					.size() == 1
 					&& !AllRecipeTypes.shouldIgnoreInAutomation(r))
 				.addTypedRecipesIf(() -> RecipeType.CRAFTING,
@@ -426,18 +427,16 @@ public class CreateJEI implements IModPlugin {
 	}
 
 	public static void consumeAllRecipes(Consumer<? super RecipeHolder<?>> consumer) {
-		Minecraft.getInstance()
-			.getConnection()
-			.getRecipeManager()
-			.getRecipes()
-			.forEach(consumer);
+		if (Minecraft.getInstance().level != null)
+			RecipeFinder.getRecipes(Minecraft.getInstance().level).forEach(consumer);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static <T extends Recipe<?>> void consumeTypedRecipes(Consumer<RecipeHolder<?>> consumer, RecipeType<?> type) {
-		List<? extends RecipeHolder<?>> map = Minecraft.getInstance()
-			.getConnection()
-			.getRecipeManager().getAllRecipesFor((RecipeType) type);
+		if (Minecraft.getInstance().level == null)
+			return;
+		Collection<? extends RecipeHolder<?>> map = RecipeFinder.getRecipes((RecipeType) type,
+			Minecraft.getInstance().level);
 		if (!map.isEmpty())
 			map.forEach(consumer);
 	}
@@ -455,13 +454,13 @@ public class CreateJEI implements IModPlugin {
 	}
 
 	public static boolean doInputsMatch(Recipe<?> recipe1, Recipe<?> recipe2) {
-		if (recipe1.getIngredients()
+		if (RecipeGenericsUtil.getIngredients(recipe1)
 			.isEmpty()
-			|| recipe2.getIngredients()
+			|| RecipeGenericsUtil.getIngredients(recipe2)
 			.isEmpty()) {
 			return false;
 		}
-		ItemStack[] matchingStacks = recipe1.getIngredients()
+		ItemStack[] matchingStacks = RecipeGenericsUtil.getIngredients(recipe1)
 			.getFirst()
 			.items()
 			.map(holder -> new ItemStack(holder.value()))
@@ -469,14 +468,14 @@ public class CreateJEI implements IModPlugin {
 		if (matchingStacks.length == 0) {
 			return false;
 		}
-		return recipe2.getIngredients()
+		return RecipeGenericsUtil.getIngredients(recipe2)
 			.getFirst()
 			.test(matchingStacks[0]);
 	}
 
 	public static boolean doOutputsMatch(Recipe<?> recipe1, Recipe<?> recipe2) {
-		RegistryAccess registryAccess = Minecraft.getInstance().level.registryAccess();
-		return ItemHelper.sameItem(recipe1.getResultItem(registryAccess), recipe2.getResultItem(registryAccess));
+		return ItemHelper.sameItem(RecipeGenericsUtil.getResultItem(recipe1, Minecraft.getInstance().level),
+			RecipeGenericsUtil.getResultItem(recipe2, Minecraft.getInstance().level));
 	}
 
 	@Override

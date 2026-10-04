@@ -17,6 +17,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour.TankSegment;
 import com.simibubi.create.foundation.item.SmartInventory;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
@@ -262,7 +263,7 @@ public class MechanicalMixerBlockEntity extends BasinOperatingBlockEntity {
 	protected boolean matchStaticFilters(RecipeHolder<? extends Recipe<?>> recipe) {
 		Recipe<?> r = recipe.value();
 		return ((r instanceof CraftingRecipe && !(r instanceof ShapedRecipe)
-			&& AllConfigs.server().recipes.allowShapelessInMixer.get() && r.getIngredients()
+			&& AllConfigs.server().recipes.allowShapelessInMixer.get() && RecipeGenericsUtil.getIngredients(r)
 			.size() > 1
 			&& !MechanicalPressBlockEntity.canCompress(r)) && !AllRecipeTypes.shouldIgnoreInAutomation(recipe)
 			|| r.getType() == AllRecipeTypes.MIXING.getType());

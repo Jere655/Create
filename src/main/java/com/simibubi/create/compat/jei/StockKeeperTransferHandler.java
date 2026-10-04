@@ -19,6 +19,7 @@ import com.simibubi.create.content.logistics.stockTicker.StockKeeperRequestMenu;
 import com.simibubi.create.content.logistics.stockTicker.StockKeeperRequestScreen;
 import com.simibubi.create.foundation.blockEntity.ItemHandlerContainer;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -83,7 +84,7 @@ public class StockKeeperTransferHandler implements IUniversalRecipeTransferHandl
 
 		Recipe<?> recipe = recipeHolder.value();
 
-		if (recipe.getIngredients().size() > 9)
+		if (RecipeGenericsUtil.getIngredients(recipe).size() > 9)
 			return RecipeTransferErrorInternal.INSTANCE;
 
 		for (CraftableBigItemStack cbis : screen.recipesToOrder)
@@ -124,7 +125,7 @@ public class StockKeeperTransferHandler implements IUniversalRecipeTransferHandl
 		if (!doTransfer)
 			return null;
 
-		ItemStack result = recipe.getResultItem(player.level().registryAccess());
+		ItemStack result = RecipeGenericsUtil.getResultItem(recipe, player.level());
 		if (result.isEmpty())
 			return new RecipeTransferErrorTooltip(CreateLang.translate("gui.stock_keeper.recipe_result_empty").component());
 

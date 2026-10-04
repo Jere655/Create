@@ -89,7 +89,8 @@ public class SequencedAssemblyCategory extends CreateRecipeCategory<SequencedAss
 				for (SizedFluidIngredient fluidIngredient : sequencedRecipe.getRecipe()
 					.getFluidIngredients())
 					builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
-						.addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(fluidIngredient.getFluids()));
+						.addIngredients(NeoForgeTypes.FLUID_STACK,
+							com.simibubi.create.foundation.fluid.FluidHelper.getFluidStacks(fluidIngredient));
 			}
 		}
 	}

@@ -77,7 +77,7 @@ public class ItemThroughputDisplaySource extends AccumulatedItemCountDisplaySour
 		float rate = 0;
 		int validIntervals = 0;
 		for (int i = 0; i < POOL_SIZE; i++) {
-			float pooledRate = rates.getFloat(i);
+			float pooledRate = rates.getFloat(i).orElse(-1);
 			if (pooledRate >= 0) {
 				rate += pooledRate;
 				validIntervals++;

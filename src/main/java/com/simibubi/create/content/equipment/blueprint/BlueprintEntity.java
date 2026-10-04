@@ -15,6 +15,7 @@ import com.simibubi.create.content.logistics.filter.FilterItemStack;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUseType;
 import com.simibubi.create.foundation.networking.ISyncPersistentData;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.IInteractionChecker;
 
 import net.createmod.catnip.data.Couple;
@@ -341,9 +342,9 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	public void readSpawnData(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
 		CompoundTag compound = registryFriendlyByteBuf.readNbt();
-		setDirection(Direction.from3DDataValue(compound.getByte("Facing")));
-		this.verticalOrientation = Direction.from3DDataValue(compound.getByte("Orientation"));
-		this.size = compound.getInt("Size");
+		setDirection(Direction.from3DDataValue(compound.getByte("Facing").orElse((byte) 0)));
+		this.verticalOrientation = Direction.from3DDataValue(compound.getByte("Orientation").orElse((byte) 0));
+		this.size = compound.getInt("Size").orElse(0);
 		this.updateFacingWithBoundingBox(getDirection(), this.verticalOrientation);
 		getPersistentData().merge(registryFriendlyByteBuf.readNbt());
 	}
@@ -400,8 +401,8 @@ public class BlueprintEntity extends HangingEntity
 					CraftingContainer craftingInventory = new BlueprintCraftingInventory(craftingGrid);
 
 					if (!recipe.isPresent())
-						recipe = level().getRecipeManager()
-							.getRecipeFor(RecipeType.CRAFTING, craftingInventory.asCraftInput(), level());
+						recipe = RecipeFinder.getRecipeFor(RecipeType.CRAFTING,
+							craftingInventory.asCraftInput(), level());
 					ItemStack result = recipe.filter(r -> r.value().matches(craftingInventory.asCraftInput(), level()))
 						.map(r -> r.value().assemble(craftingInventory.asCraftInput(), registryAccess()))
 						.orElse(ItemStack.EMPTY);
@@ -414,8 +415,8 @@ public class BlueprintEntity extends HangingEntity
 						amountCrafted += result.getCount();
 						result.onCraftedBy(player, 1);
 						EventHooks.firePlayerCraftingEvent(player, result, craftingInventory);
-						NonNullList<ItemStack> nonnulllist = level().getRecipeManager()
-							.getRemainingItemsFor(RecipeType.CRAFTING, craftingInventory.asCraftInput(), level());
+						NonNullList<ItemStack> nonnulllist = recipe.get().value()
+							.getRemainingItems(craftingInventory.asCraftInput());
 
 						if (firstPass)
 							level().playSound(null, player.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS,
@@ -556,8 +557,7 @@ public class BlueprintEntity extends HangingEntity
 
 		@Override
 		public Component getDisplayName() {
-			return AllItems.CRAFTING_BLUEPRINT.get()
-				.getHoverName();
+			return AllItems.CRAFTING_BLUEPRINT.get().getName();
 		}
 
 		@Override

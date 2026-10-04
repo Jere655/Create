@@ -44,7 +44,7 @@ public abstract class ProcessingViaFanCategory<T extends Recipe<?>> extends Crea
 		builder
 				.addSlot(RecipeIngredientRole.INPUT, 21, 48)
 				.setBackground(getRenderedSlot(), -1, -1)
-				.addIngredients(recipe.getIngredients().get(0));
+				.addIngredients(recipe.placementInfo().ingredients().getFirst());
 		builder
 				.addSlot(RecipeIngredientRole.OUTPUT, 141, 48)
 				.setBackground(getRenderedSlot(), -1, -1)
@@ -107,7 +107,7 @@ public abstract class ProcessingViaFanCategory<T extends Recipe<?>> extends Crea
 			builder
 					.addSlot(RecipeIngredientRole.INPUT, 5 * xOffsetAmount + 21, 48)
 					.setBackground(getRenderedSlot(), -1, -1)
-					.addIngredients(recipe.getIngredients().get(0));
+					.addIngredients(recipe.placementInfo().ingredients().getFirst());
 
 			int i = 0;
 			boolean excessive = results.size() > 9;

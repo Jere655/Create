@@ -20,6 +20,7 @@ import com.simibubi.create.content.logistics.tableCloth.ShoppingListItem.Shoppin
 import com.simibubi.create.content.logistics.tableCloth.TableClothBlockEntity;
 import com.simibubi.create.content.trains.track.TrackPlacement.PlacementInfo;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Couple;
@@ -259,8 +260,8 @@ public class BlueprintOverlayRenderer {
 			if (success) {
 				CraftingContainer craftingInventory = new BlueprintCraftingInventory(craftingGrid);
 				if (!recipe.isPresent())
-					recipe = mc.level.getRecipeManager()
-						.getRecipeFor(RecipeType.CRAFTING, craftingInventory.asCraftInput(), mc.level);
+					recipe = RecipeFinder.getRecipeFor(RecipeType.CRAFTING,
+						craftingInventory.asCraftInput(), mc.level);
 				ItemStack resultFromRecipe = recipe.filter(r -> r.value().matches(craftingInventory.asCraftInput(), mc.level))
 					.map(r -> r.value().assemble(craftingInventory.asCraftInput(), mc.level.registryAccess()))
 					.orElse(ItemStack.EMPTY);

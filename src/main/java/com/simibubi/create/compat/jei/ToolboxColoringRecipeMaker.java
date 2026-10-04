@@ -3,6 +3,8 @@ package com.simibubi.create.compat.jei;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -12,6 +14,7 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
@@ -42,7 +45,8 @@ public final class ToolboxColoringRecipeMaker {
 					.get();
 				ItemStack output = new ItemStack(coloredShulkerBox);
 				ShapelessRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
-				return new RecipeHolder<>(Create.asResource(group + "/" + color), recipe);
+				return new RecipeHolder<>(ResourceKey.create(Registries.RECIPE,
+					Create.asResource(group + "/" + color)), recipe);
 			});
 	}
 

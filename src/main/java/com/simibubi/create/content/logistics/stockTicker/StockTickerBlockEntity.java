@@ -168,7 +168,7 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 		tag.put("HiddenCategories", NBTHelper.writeCompoundList(hiddenCategoriesByPlayer.entrySet(), e -> {
 			CompoundTag c = new CompoundTag();
 			c.put("Id", com.simibubi.create.foundation.utility.CreateNbt.writeUUID(e.getKey()));
-			c.putIntArray("Indices", e.getValue());
+			c.putIntArray("Indices", e.getValue().stream().mapToInt(Integer::intValue).toArray());
 			return c;
 		}));
 

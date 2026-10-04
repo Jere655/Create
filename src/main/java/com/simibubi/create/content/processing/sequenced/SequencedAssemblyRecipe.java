@@ -11,6 +11,7 @@ import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import io.netty.buffer.ByteBuf;
@@ -75,8 +76,8 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 
 	public static <R extends ProcessingRecipe<?, ?>> Optional<RecipeHolder<R>> getRecipe(Level level, ItemStack item,
 																						 RecipeType<R> type, Class<R> recipeClass) {
-		List<RecipeHolder<SequencedAssemblyRecipe>> all = level.getRecipeManager()
-			.getAllRecipesFor(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType());
+		List<RecipeHolder<SequencedAssemblyRecipe>> all = List.copyOf(
+			RecipeFinder.getRecipes(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType(), level));
 		for (RecipeHolder<SequencedAssemblyRecipe> sequencedAssemblyRecipe : all) {
 			if (!sequencedAssemblyRecipe.value().appliesTo(sequencedAssemblyRecipe.id().location(), item))
 				continue;
@@ -91,8 +92,8 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 	}
 
 	public static <R extends ProcessingRecipe<?, ?>> List<RecipeHolder<R>> getRecipes(Level level, ItemStack item, RecipeType<R> type, Class<R> recipeClass, Predicate<? super RecipeHolder<R>> recipeFilter) {
-		List<RecipeHolder<SequencedAssemblyRecipe>> all = level.getRecipeManager()
-			.getAllRecipesFor(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType());
+		List<RecipeHolder<SequencedAssemblyRecipe>> all = List.copyOf(
+			RecipeFinder.getRecipes(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType(), level));
 
 		List<RecipeHolder<R>> result = new ArrayList<>();
 
@@ -229,8 +230,9 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 		SequencedAssembly sequencedAssembly = stack.get(AllDataComponents.SEQUENCED_ASSEMBLY);
 		@SuppressWarnings({"RedundantCast", "DataFlowIssue"}) // The java compiler thinks `byKey` returns an Optional<RecipeHolder<?>>
 		Optional<RecipeHolder<? extends Recipe<?>>> optionalRecipe =
-			(Optional<RecipeHolder<?>>) Minecraft.getInstance().level.getRecipeManager()
-				.byKey(sequencedAssembly.id());
+			(Optional<RecipeHolder<?>>) RecipeFinder.byKey(Minecraft.getInstance().level,
+				net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE,
+					sequencedAssembly.id()));
 		if (optionalRecipe.isEmpty())
 			return;
 		Recipe<?> recipe = optionalRecipe.get().value();

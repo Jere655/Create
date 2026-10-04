@@ -2,7 +2,9 @@ package com.simibubi.create.foundation.recipe;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
@@ -13,8 +15,13 @@ import com.google.common.cache.CacheBuilder;
 import com.simibubi.create.Create;
 
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 /**
@@ -25,8 +32,45 @@ import net.minecraft.world.level.Level;
  */
 public class RecipeFinder {
 	private static final Cache<Object, List<RecipeHolder<? extends Recipe<?>>>> CACHED_SEARCHES = CacheBuilder.newBuilder().build();
+	private static RecipeMap clientRecipes = RecipeMap.EMPTY;
 
 	public static final ResourceManagerReloadListener LISTENER = resourceManager -> CACHED_SEARCHES.invalidateAll();
+
+	public static void setClientRecipes(RecipeMap recipes) {
+		clientRecipes = recipes;
+		CACHED_SEARCHES.invalidateAll();
+	}
+
+	public static void clearClientRecipes() {
+		setClientRecipes(RecipeMap.EMPTY);
+	}
+
+	public static RecipeMap recipeMap(Level level) {
+		return level instanceof ServerLevel serverLevel ? serverLevel.recipeAccess().recipeMap() : clientRecipes;
+	}
+
+	public static <I extends RecipeInput, T extends Recipe<I>> Optional<RecipeHolder<T>> getRecipeFor(
+		RecipeType<T> type, I input, Level level) {
+		return recipeMap(level).getRecipesFor(type, input, level).findFirst();
+	}
+
+	public static <I extends RecipeInput, T extends Recipe<I>> List<RecipeHolder<T>> getRecipesFor(
+		RecipeType<T> type, I input, Level level) {
+		return recipeMap(level).getRecipesFor(type, input, level).toList();
+	}
+
+	public static <I extends RecipeInput, T extends Recipe<I>> Collection<RecipeHolder<T>> getRecipes(
+		RecipeType<T> type, Level level) {
+		return recipeMap(level).byType(type);
+	}
+
+	public static Collection<RecipeHolder<?>> getRecipes(Level level) {
+		return recipeMap(level).values();
+	}
+
+	public static Optional<RecipeHolder<?>> byKey(Level level, ResourceKey<Recipe<?>> key) {
+		return Optional.ofNullable(recipeMap(level).byKey(key));
+	}
 
 	/**
 	 * Find all recipes matching the condition predicate.
@@ -51,7 +95,7 @@ public class RecipeFinder {
 
 	private static List<RecipeHolder<? extends Recipe<?>>> startSearch(Level level, Predicate<? super RecipeHolder<? extends Recipe<?>>> conditions) {
 		List<RecipeHolder<? extends Recipe<?>>> recipes = new ArrayList<>();
-		for (RecipeHolder<? extends Recipe<?>> r : level.getRecipeManager().getRecipes())
+		for (RecipeHolder<? extends Recipe<?>> r : getRecipes(level))
 			if (conditions.test(r))
 				recipes.add(r);
 		return recipes;

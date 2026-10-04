@@ -35,7 +35,8 @@ public class BlockCuttingCategory extends CreateRecipeCategory<CondensedBlockCut
 		builder
 				.addSlot(RecipeIngredientRole.INPUT, 5, 5)
 				.setBackground(getRenderedSlot(), -1 , -1)
-				.addItemStacks(Arrays.asList(com.simibubi.create.foundation.item.ItemHelper.getItemStacks(recipe.getIngredients().get(0))));
+				.addItemStacks(Arrays.asList(com.simibubi.create.foundation.item.ItemHelper.getItemStacks(
+					recipe.placementInfo().ingredients().getFirst())));
 
 		int i = 0;
 		for (List<ItemStack> itemStacks : results) {
@@ -100,9 +101,9 @@ public class BlockCuttingCategory extends CreateRecipeCategory<CondensedBlockCut
 	public static List<RecipeHolder<CondensedBlockCuttingRecipe>> condenseRecipes(List<RecipeHolder<?>> stoneCuttingRecipes) {
 		List<RecipeHolder<CondensedBlockCuttingRecipe>> condensed = new ArrayList<>();
 		Recipes: for (RecipeHolder<?> recipe : stoneCuttingRecipes) {
-			Ingredient i1 = recipe.value().getIngredients().get(0);
+			Ingredient i1 = recipe.value().placementInfo().ingredients().getFirst();
 			for (RecipeHolder<CondensedBlockCuttingRecipe> condensedRecipe : condensed) {
-				if (ItemHelper.matchIngredients(i1, condensedRecipe.value().getIngredients().get(0))) {
+				if (ItemHelper.matchIngredients(i1, condensedRecipe.value().placementInfo().ingredients().getFirst())) {
 					condensedRecipe.value().addOutput(getResultItem(recipe.value()));
 					continue Recipes;
 				}

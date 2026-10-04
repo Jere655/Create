@@ -17,6 +17,7 @@ import com.simibubi.create.content.logistics.item.filter.attribute.attributes.In
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.InTagAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ItemNameAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ShulkerFillLevelAttribute;
+import com.simibubi.create.foundation.recipe.RecipeFinder;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
@@ -75,8 +76,7 @@ public class AllItemAttributeTypes {
 		BOOK_COPY = register("book_copy", new BookCopyAttribute.Type());
 
 	private static <T extends Recipe<SingleRecipeInput>> boolean testRecipe(ItemStack s, Level w, RecipeType<T> type) {
-		return w.getRecipeManager()
-				.getRecipeFor(type, new SingleRecipeInput(s.copy()), w)
+		return RecipeFinder.getRecipeFor(type, new SingleRecipeInput(s.copy()), w)
 				.isPresent();
 	}
 
