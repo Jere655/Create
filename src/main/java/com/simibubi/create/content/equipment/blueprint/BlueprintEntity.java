@@ -115,21 +115,21 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	public void readAdditionalSaveData(ValueInput input) {
 		if (input.getByteOr("Facing", (byte) -1) != -1) {
-			this.getDirection() = Direction.from3DDataValue(input.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
+			setDirection(Direction.from3DDataValue(input.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue())));
 			this.verticalOrientation = Direction.from3DDataValue(input.getByteOr("Orientation", (byte) Direction.DOWN.get3DDataValue()));
 			this.size = input.getIntOr("Size", 1);
 		} else {
-			this.getDirection() = Direction.SOUTH;
+			setDirection(Direction.SOUTH);
 			this.verticalOrientation = Direction.DOWN;
 			this.size = 1;
 		}
 		super.readAdditionalSaveData(input);
-		this.updateFacingWithBoundingBox(this.getDirection(), this.verticalOrientation);
+		this.updateFacingWithBoundingBox(getDirection(), this.verticalOrientation);
 	}
 
 	protected void updateFacingWithBoundingBox(Direction facing, Direction verticalOrientation) {
 		Objects.requireNonNull(facing);
-		this.getDirection() = facing;
+		setDirection(facing);
 		this.verticalOrientation = verticalOrientation;
 		if (facing.getAxis()
 			.isHorizontal()) {
@@ -341,10 +341,10 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	public void readSpawnData(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
 		CompoundTag compound = registryFriendlyByteBuf.readNbt();
-		this.getDirection() = Direction.from3DDataValue(compound.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
-		this.verticalOrientation = Direction.from3DDataValue(compound.getByteOr("Orientation", (byte) Direction.DOWN.get3DDataValue()));
-		this.size = compound.getIntOr("Size", 1);
-		this.updateFacingWithBoundingBox(this.getDirection(), this.verticalOrientation);
+		setDirection(Direction.from3DDataValue(compound.getByte("Facing")));
+		this.verticalOrientation = Direction.from3DDataValue(compound.getByte("Orientation"));
+		this.size = compound.getInt("Size");
+		this.updateFacingWithBoundingBox(getDirection(), this.verticalOrientation);
 		getPersistentData().merge(registryFriendlyByteBuf.readNbt());
 	}
 

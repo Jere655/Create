@@ -17,10 +17,6 @@ public class LogisticsNetworkSavedData extends SavedData {
 
 	private Map<UUID, LogisticsNetwork> logisticsNetworks = new HashMap<>();
 
-	public static SavedData.Factory<LogisticsNetworkSavedData> factory() {
-		return new SavedData.Factory<>(LogisticsNetworkSavedData::new, LogisticsNetworkSavedData::load);
-	}
-
 	@Override
 	public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
 		GlobalLogisticsManager logistics = Create.LOGISTICS;
@@ -48,7 +44,7 @@ public class LogisticsNetworkSavedData extends SavedData {
 	public static LogisticsNetworkSavedData load(MinecraftServer server) {
 		return server.overworld()
 			.getDataStorage()
-			.computeIfAbsent(factory(), "create_logistics");
+			.computeIfAbsent(LogisticsNetworkSavedData::new, LogisticsNetworkSavedData::load, "create_logistics");
 	}
 
 }

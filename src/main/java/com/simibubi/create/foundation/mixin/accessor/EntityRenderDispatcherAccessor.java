@@ -13,5 +13,5 @@ import java.util.Map;
 @Mixin(EntityRenderDispatcher.class)
 public interface EntityRenderDispatcherAccessor {
 	@Accessor("renderers")
-	Map<EntityType<?>, EntityRenderer<?>> create$getRenderers();
+	Map<EntityType<?>, EntityRenderer<?, ?>> create$getRenderers();
 }
