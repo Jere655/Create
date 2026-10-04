@@ -323,7 +323,7 @@ public class FrogAndConveyorScenes {
 		@Override
 		protected void renderLast(PonderLevel world, MultiBufferSource buffer, GuiGraphics graphics, float fade,
 								  float pt) {
-			var poseStack = graphics.pose();
+			PoseStack poseStack = graphics.pose();
 			EntityRenderDispatcher entityrenderermanager = Minecraft.getInstance()
 				.getEntityRenderDispatcher();
 
@@ -343,8 +343,8 @@ public class FrogAndConveyorScenes {
 			float angle = AngleHelper.angleLerp(pt, entity.yRotO, entity.getYRot());
 
 			poseStack.pushPose();
-			poseStack.translate(location.x, location.y, location.z);
-			poseStack.translate(lx, ly, lz);
+			poseStack.translate((float)location.x, (float)location.y, (float)location.z);
+			poseStack.translate((float)lx, (float)ly, (float)lz);
 			poseStack.mulPose(Axis.YP.rotationDegrees(angle));
 
 			poseStack.translate(0, 1.5f, 0);
@@ -356,7 +356,7 @@ public class FrogAndConveyorScenes {
 			poseStack.mulPose(Axis.XP.rotationDegrees(90));
 			poseStack.mulPose(Axis.ZP.rotationDegrees(90));
 			poseStack.scale(1.5f, 1.5f, 1.5f);
-			poseStack.translate(-0.1, 0.2, -0.6);
+			poseStack.translate(-0.1f, 0.2f, -0.6f);
 			ItemModel bakedmodel = Minecraft.getInstance()
 				.getItemRenderer()
 				.getModel(wrench.getItem(), world, null, 0);

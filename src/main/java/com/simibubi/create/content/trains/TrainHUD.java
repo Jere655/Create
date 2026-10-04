@@ -18,6 +18,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.systems.Matrix3x2fStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.minecraft.core.BlockPos;
@@ -128,7 +129,7 @@ public class TrainHUD {
 
 		PoseStack poseStack = guiGraphics.pose();
 		poseStack.pushPose();
-		poseStack.translate(guiGraphics.guiWidth() / 2 - 91, guiGraphics.guiHeight() - 29, 0);
+		poseStack.translate(guiGraphics.guiWidth() / 2 - 91, guiGraphics.guiHeight() - 29);
 
 		// Speed, Throttle
 
@@ -145,7 +146,7 @@ public class TrainHUD {
 		if (promptSize > 1) {
 
 			poseStack.pushPose();
-			poseStack.translate(promptSize / -2f + 91, -27, 0);
+			poseStack.translate(promptSize / -2f + 91, -27);
 
 			AllGuiTextures.TRAIN_PROMPT_L.render(guiGraphics, -3, 0);
 			AllGuiTextures.TRAIN_PROMPT_R.render(guiGraphics, promptSize, 0);
@@ -202,7 +203,7 @@ public class TrainHUD {
 		float angle = diff + angleOffset;
 		float snappedAngle = (snapSize * Math.round(angle / snapSize)) % 360f;
 
-		poseStack.translate(91, -9, 0);
+		poseStack.translate(91, -9);
 		poseStack.scale(0.925f, 0.925f, 1);
 		PlacementClient.textured(poseStack, 0, 0, 1, snappedAngle);
 

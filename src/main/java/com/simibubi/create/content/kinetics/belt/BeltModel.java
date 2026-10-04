@@ -6,6 +6,7 @@ import java.util.List;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.AllSpriteShifts;
 import com.simibubi.create.content.kinetics.belt.BeltBlockEntity.CasingType;
+import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.simibubi.create.foundation.model.BakedQuadHelper;
 
 import net.createmod.catnip.render.SpriteShiftEntry;
@@ -23,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.model.data.ModelProperty;
 
-public class BeltModel extends DelegateBlockStateModel {
+public class BeltModel extends BakedModelWrapperWithData {
 
 	public static final ModelProperty<CasingType> CASING_PROPERTY = new ModelProperty<>();
 	public static final ModelProperty<Boolean> COVER_PROPERTY = new ModelProperty<>();
@@ -32,6 +33,12 @@ public class BeltModel extends DelegateBlockStateModel {
 
 	public BeltModel(BlockStateModel template) {
 		super(template);
+	}
+
+	@Override
+	protected ModelData.Builder gatherModelData(ModelData.Builder builder, BlockAndTintGetter world, BlockPos pos, BlockState state, ModelData blockEntityData) {
+		// Belt model doesn't need custom model data gathering
+		return builder;
 	}
 
 	@Override

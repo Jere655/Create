@@ -7,6 +7,7 @@ import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.simibubi.create.foundation.model.BakedQuadHelper;
 
 import net.createmod.catnip.math.VecHelper;
@@ -25,10 +26,16 @@ import net.minecraft.world.phys.Vec3;
 
 import net.neoforged.neoforge.model.data.ModelData;
 
-public class TrackModel extends DelegateBlockStateModel {
+public class TrackModel extends BakedModelWrapperWithData {
 
 	public TrackModel(BlockStateModel originalModel) {
 		super(originalModel);
+	}
+
+	@Override
+	protected ModelData.Builder gatherModelData(ModelData.Builder builder, BlockAndTintGetter world, BlockPos pos, BlockState state, ModelData blockEntityData) {
+		// Track model doesn't need custom model data gathering
+		return builder;
 	}
 
 	@Override

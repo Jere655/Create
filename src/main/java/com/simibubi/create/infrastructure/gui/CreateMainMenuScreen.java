@@ -1,5 +1,6 @@
 package com.simibubi.create.infrastructure.gui;
 
+import com.mojang.blaze3d.systems.Matrix3x2fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
@@ -95,7 +96,7 @@ public class CreateMainMenuScreen extends AbstractSimiScreen {
 
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, PANORAMA_OVERLAY_TEXTURES, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+			graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, PANORAMA_OVERLAY_TEXTURES, 0, 0, this.width, this.height, 0, 0, 16, 128, 16, 128);
 		}
 
 		RenderSystem.enableDepthTest();
@@ -240,7 +241,7 @@ public class CreateMainMenuScreen extends AbstractSimiScreen {
 			super.renderWidget(graphics, pMouseX, pMouseY, pt);
 			PoseStack pPoseStack = graphics.pose();
 			pPoseStack.pushPose();
-			pPoseStack.translate(getX() + width / 2 - (icon.getWidth() * scale) / 2, getY() + height / 2 - (icon.getHeight() * scale) / 2, 0);
+			pPoseStack.translate(getX() + width / 2 - (icon.getWidth() * scale) / 2, getY() + height / 2 - (icon.getHeight() * scale) / 2);
 			pPoseStack.scale(scale, scale, 1);
 			icon.render(graphics, 0, 0);
 			pPoseStack.popPose();

@@ -2,6 +2,7 @@ package com.simibubi.create.content.logistics.filter;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.mojang.blaze3d.systems.Matrix3x2fStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.logistics.AddressEditBox;
 import com.simibubi.create.content.logistics.box.PackageStyles;
@@ -56,7 +57,7 @@ public class PackageFilterScreen extends AbstractFilterScreen<PackageFilterMenu>
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		super.render(graphics, mouseX, mouseY, partialTicks);
 
-		var ms = graphics.pose();
+		Matrix3x2fStack ms = graphics.pose();
 		ms.pushPose();
 		ms.translate(leftPos + 16, topPos + 23, 0);
 		GuiGameElement.of(PackageStyles.getDefaultBox())

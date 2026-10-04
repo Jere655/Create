@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.Matrix3x2fStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.Create;
@@ -403,14 +404,14 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 				matrixStack.pushPose();
 				float expectedY = scrollOffset + topPos + yOffset + 4;
 				float actualY = Mth.clamp(expectedY, topPos + 18, topPos + 170);
-				matrixStack.translate(0, actualY, 0);
+				matrixStack.translate(0, actualY);
 				(expectedY == actualY ? AllGuiTextures.SCHEDULE_POINTER : AllGuiTextures.SCHEDULE_POINTER_OFFSCREEN)
 					.render(graphics, leftPos, 0);
 				matrixStack.popPose();
 			}
 
 			matrixStack.pushPose();
-			matrixStack.translate(0, scrollOffset, 0);
+			matrixStack.translate(0, scrollOffset);
 			if (i == 0 || entries.size() == 0)
 				UIRenderHelper.drawStretched(graphics, leftPos + 33, topPos + 16, 3, 10, -100,
 					AllGuiTextures.SCHEDULE_STRIP_LIGHT);
@@ -456,14 +457,14 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 			// graphics.fill(leftPos + 43, 0, leftPos + 204, 300, 0xFFFFFFFF);
 			graphics.enableScissor(leftPos + 43, 0, leftPos + 204, 400);
 			matrixStack.pushPose();
-			matrixStack.translate(0, scrollOffset, 0);
+			matrixStack.translate(0, scrollOffset);
 			renderScheduleConditions(graphics, scheduleEntry, cardY, mouseX, mouseY, partialTicks, cardHeight, i);
 			matrixStack.popPose();
 			graphics.disableScissor();
 
 			if (isConditionAreaScrollable(scheduleEntry)) {
 				matrixStack.pushPose();
-				matrixStack.translate(0, scrollOffset, 0);
+				matrixStack.translate(0, scrollOffset);
 				int center = (cardHeight - 8 + CARD_HEADER) / 2;
 				float chaseTarget = horizontalScrolls.get(i)
 					.getChaseTarget();
@@ -502,7 +503,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 
 		var matrixStack = graphics.pose();
 		matrixStack.pushPose();
-		matrixStack.translate(leftPos + 25, topPos + yOffset, 0);
+		matrixStack.translate(leftPos + 25, topPos + yOffset);
 
 		UIRenderHelper.drawStretched(graphics, 0, 1, cardWidth, cardHeight - 2, zLevel, light);
 		UIRenderHelper.drawStretched(graphics, 1, 0, cardWidth - 2, cardHeight, zLevel, light);
@@ -543,12 +544,12 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 
 		var matrixStack = graphics.pose();
 		matrixStack.pushPose();
-		matrixStack.translate(leftPos + 25, topPos + yOffset, 0);
+		matrixStack.translate(leftPos + 25, topPos + yOffset);
 		int xOffset = 26;
 		float scrollOffset = getConditionScroll(entry, partialTicks, entryIndex);
 
 		matrixStack.pushPose();
-		matrixStack.translate(-scrollOffset, 0, 0);
+		matrixStack.translate(-scrollOffset, 0);
 
 		for (List<ScheduleWaitCondition> list : entry.conditions) {
 			int maxWidth = getConditionColumnWidth(list);
@@ -621,7 +622,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 		AllGuiTextures item = AllGuiTextures.SCHEDULE_CONDITION_ITEM;
 		AllGuiTextures right = AllGuiTextures.SCHEDULE_CONDITION_RIGHT;
 
-		matrixStack.translate(x, y, 0);
+		matrixStack.translate(x, y);
 		UIRenderHelper.drawStretched(graphics, 0, 0, fieldSize, 16, 0, middle);
 		left.render(graphics, clean ? 0 : -3, 0);
 		right.render(graphics, fieldSize - 2, 0);
@@ -974,12 +975,8 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 
 	@Override
 	protected void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		var matrixStack = graphics.pose();
 		if (destinationSuggestions != null) {
-			matrixStack.pushPose();
-			matrixStack.translate(0, 0, 500);
 			destinationSuggestions.render(graphics, mouseX, mouseY);
-			matrixStack.popPose();
 		}
 
 		super.renderForeground(graphics, mouseX, mouseY, partialTicks);
@@ -1064,7 +1061,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> {
 		}
 
 		matrices.pushPose();
-		matrices.translate(0, getGuiTop() + 87, 0);
+		matrices.translate(0, getGuiTop() + 87);
 		editorSubWidgets.renderBg(getGuiLeft() + 77, graphics);
 		matrices.popPose();
 

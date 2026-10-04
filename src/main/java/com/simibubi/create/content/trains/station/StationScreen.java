@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.Matrix3x2fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
@@ -298,7 +299,7 @@ public class StationScreen extends AbstractStationScreen {
 		PoseStack ms = graphics.pose();
 		ms.pushPose();
 		RenderSystem.enableBlend();
-		ms.translate(position, 0, 0);
+		ms.translate(position, 0);
 		TrainIconType icon = train.icon;
 		int offset = 0;
 

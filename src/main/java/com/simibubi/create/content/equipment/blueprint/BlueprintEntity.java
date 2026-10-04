@@ -106,7 +106,7 @@ public class BlueprintEntity extends HangingEntity
 
 	@Override
 	public void addAdditionalSaveData(ValueOutput output) {
-		output.putByte("Facing", (byte) this.direction.get3DDataValue());
+		output.putByte("Facing", (byte) this.getDirection().get3DDataValue());
 		output.putByte("Orientation", (byte) this.verticalOrientation.get3DDataValue());
 		output.putInt("Size", size);
 		super.addAdditionalSaveData(output);
@@ -115,26 +115,26 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	public void readAdditionalSaveData(ValueInput input) {
 		if (input.getByteOr("Facing", (byte) -1) != -1) {
-			this.direction = Direction.from3DDataValue(input.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
+			this.getDirection() = Direction.from3DDataValue(input.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
 			this.verticalOrientation = Direction.from3DDataValue(input.getByteOr("Orientation", (byte) Direction.DOWN.get3DDataValue()));
 			this.size = input.getIntOr("Size", 1);
 		} else {
-			this.direction = Direction.SOUTH;
+			this.getDirection() = Direction.SOUTH;
 			this.verticalOrientation = Direction.DOWN;
 			this.size = 1;
 		}
 		super.readAdditionalSaveData(input);
-		this.updateFacingWithBoundingBox(this.direction, this.verticalOrientation);
+		this.updateFacingWithBoundingBox(this.getDirection(), this.verticalOrientation);
 	}
 
 	protected void updateFacingWithBoundingBox(Direction facing, Direction verticalOrientation) {
 		Objects.requireNonNull(facing);
-		this.direction = facing;
+		this.getDirection() = facing;
 		this.verticalOrientation = verticalOrientation;
 		if (facing.getAxis()
 			.isHorizontal()) {
 			setXRot(0.0F);
-			setYRot(this.direction.get2DDataValue() * 90);
+			setYRot(this.getDirection().get2DDataValue() * 90);
 		} else {
 			setXRot(-90 * facing.getAxisDirection()
 				.getStep());
@@ -182,7 +182,7 @@ public class BlueprintEntity extends HangingEntity
 		double d4 = (double) this.getWidth();
 		double d5 = (double) this.getHeight();
 		double d6 = (double) this.getWidth();
-		Direction.Axis direction$axis = this.direction.getAxis();
+		Direction.Axis direction$axis = this.getDirection().getAxis();
 		switch (direction$axis) {
 			case X:
 				d4 = 1.0D;
@@ -203,7 +203,7 @@ public class BlueprintEntity extends HangingEntity
 
 	@Override
 	protected void recalculateBoundingBox() {
-		if (this.direction != null && this.verticalOrientation != null) {
+		if (this.getDirection() != null && this.verticalOrientation != null) {
 			setBoundingBox(calculateBoundingBox(pos, direction));
 		}
 	}
@@ -220,7 +220,7 @@ public class BlueprintEntity extends HangingEntity
 
 		int i = Math.max(1, this.getWidth() / 16);
 		int j = Math.max(1, this.getHeight() / 16);
-		BlockPos blockpos = this.pos.relative(this.direction.getOpposite());
+		BlockPos blockpos = this.pos.relative(this.getDirection().getOpposite());
 		Direction upDirection = direction.getAxis()
 			.isHorizontal() ? Direction.UP
 			: direction == Direction.UP ? verticalOrientation : verticalOrientation.getOpposite();
@@ -236,7 +236,7 @@ public class BlueprintEntity extends HangingEntity
 					.move(newDirection, k + i1)
 					.move(upDirection, l + j1);
 				BlockState blockstate = this.level().getBlockState(blockpos$mutable);
-				if (Block.canSupportCenter(this.level(), blockpos$mutable, this.direction))
+				if (Block.canSupportCenter(this.level(), blockpos$mutable, this.getDirection()))
 					continue;
 				if (!blockstate.isSolid() && !DiodeBlock.isDiode(blockstate)) {
 					return false;
@@ -331,7 +331,7 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	public void writeSpawnData(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
 		CompoundTag compound = new CompoundTag();
-		compound.putByte("Facing", (byte) this.direction.get3DDataValue());
+		compound.putByte("Facing", (byte) this.getDirection().get3DDataValue());
 		compound.putByte("Orientation", (byte) this.verticalOrientation.get3DDataValue());
 		compound.putInt("Size", size);
 		registryFriendlyByteBuf.writeNbt(compound);
@@ -341,10 +341,10 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	public void readSpawnData(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
 		CompoundTag compound = registryFriendlyByteBuf.readNbt();
-		this.direction = Direction.from3DDataValue(compound.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
+		this.getDirection() = Direction.from3DDataValue(compound.getByteOr("Facing", (byte) Direction.SOUTH.get3DDataValue()));
 		this.verticalOrientation = Direction.from3DDataValue(compound.getByteOr("Orientation", (byte) Direction.DOWN.get3DDataValue()));
 		this.size = compound.getIntOr("Size", 1);
-		this.updateFacingWithBoundingBox(this.direction, this.verticalOrientation);
+		this.updateFacingWithBoundingBox(this.getDirection(), this.verticalOrientation);
 		getPersistentData().merge(registryFriendlyByteBuf.readNbt());
 	}
 

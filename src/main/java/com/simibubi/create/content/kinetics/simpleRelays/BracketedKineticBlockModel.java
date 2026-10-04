@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.simibubi.create.content.decoration.bracket.BracketedBlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 
 import net.createmod.ponder.render.VirtualRenderHelper;
 import net.minecraft.client.Minecraft;
@@ -21,19 +22,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.model.data.ModelProperty;
 
-public class BracketedKineticBlockModel extends DelegateBlockStateModel {
+public class BracketedKineticBlockModel extends BakedModelWrapperWithData {
 
 	private static final ModelProperty<BracketedModelData> BRACKET_PROPERTY = new ModelProperty<>();
 
 	public BracketedKineticBlockModel(BlockStateModel template) {
 		super(template);
-	}
-
-	@Override
-	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
-		ModelData data, List<BlockModelPart> parts) {
-		// Delegate to the original model's collectParts
-		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override
@@ -46,6 +40,13 @@ public class BracketedKineticBlockModel extends DelegateBlockStateModel {
 		if (attachmentBehaviour != null)
 			data.putBracket(attachmentBehaviour.getBracket());
 		return builder.with(BRACKET_PROPERTY, data);
+	}
+
+	@Override
+	protected void collectParts(BlockAndTintGetter world, BlockPos pos, BlockState state, RandomSource random,
+		ModelData data, List<BlockModelPart> parts) {
+		// Delegate to the original model's collectParts
+		collectOriginalParts(world, pos, state, random, parts);
 	}
 
 	@Override

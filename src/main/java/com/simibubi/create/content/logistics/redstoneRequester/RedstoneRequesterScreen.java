@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.systems.Matrix3x2fStack;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.logistics.AddressEditBox;
 import com.simibubi.create.content.logistics.BigItemStack;
@@ -133,11 +133,7 @@ public class RedstoneRequesterScreen extends AbstractSimiContainerScreen<Redston
 			ItemStack itemStack = menu.ghostInventory.getStackInSlot(i);
 			if (itemStack.isEmpty())
 				continue;
-			var ms = graphics.pose();
-			ms.pushPose();
-			ms.translate(0, 0, 100);
 			graphics.renderItemDecorations(font, itemStack, inputX, inputY, "" + amounts.get(i));
-			ms.popPose();
 		}
 
 		if (addressBox.isHovered() && !addressBox.isFocused()) {
