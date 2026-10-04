@@ -759,7 +759,7 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 			.style(ChatFormatting.YELLOW)
 			.forGoggles(tooltip);
 		if (!item.isEmpty())
-			CreateLang.translate("tooltip.chute.contains", Component.translatable(item.getDescriptionId())
+			CreateLang.translate("tooltip.chute.contains", Component.translatable(item.getItem().getDescriptionId())
 					.getString(), item.getCount())
 				.style(ChatFormatting.GREEN)
 				.forGoggles(tooltip);

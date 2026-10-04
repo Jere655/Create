@@ -145,7 +145,7 @@ public class TrainHUD {
 		int promptSize = (int) displayedPromptSize.getValue(partialTicks);
 		if (promptSize > 1) {
 
-			poseStack.pushPose();
+			poseStack.pushMatrix();
 			poseStack.translate(promptSize / -2f + 91, -27);
 
 			AllGuiTextures.TRAIN_PROMPT_L.render(guiGraphics, -3, 0);
@@ -153,17 +153,17 @@ public class TrainHUD {
 			guiGraphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, AllGuiTextures.TRAIN_PROMPT.location, 0, 0, 0, AllGuiTextures.TRAIN_PROMPT.getStartX() + (128 - promptSize / 2f),
 				AllGuiTextures.TRAIN_PROMPT.getStartY(), promptSize, AllGuiTextures.TRAIN_PROMPT.getHeight(), 256, 256);
 
-			poseStack.popPose();
+			poseStack.popMatrix();
 
 			Font font = mc.font;
 			if (currentPrompt != null && font.width(currentPrompt) < promptSize - 10) {
-				poseStack.pushPose();
-				poseStack.translate(font.width(currentPrompt) / -2f + 82, -27, 100);
+				poseStack.pushMatrix();
+				poseStack.translate(font.width(currentPrompt) / -2f + 82, -27);
 				if (currentPromptShadow)
 					guiGraphics.drawString(font, currentPrompt, 9, 4, 0x544D45);
 				else
 					guiGraphics.drawString(font, currentPrompt, 9, 4, 0x544D45, false);
-				poseStack.popPose();
+				poseStack.popMatrix();
 			}
 		}
 
@@ -203,11 +203,14 @@ public class TrainHUD {
 		float angle = diff + angleOffset;
 		float snappedAngle = (snapSize * Math.round(angle / snapSize)) % 360f;
 
-		poseStack.translate(91, -9);
-		poseStack.scale(0.925f, 0.925f, 1);
-		PlacementClient.textured(poseStack, 0, 0, 1, snappedAngle);
+		com.mojang.blaze3d.vertex.PoseStack compassPose = guiGraphics.pose3D();
+		compassPose.pushPose();
+		compassPose.translate(guiGraphics.guiWidth() / 2f, guiGraphics.guiHeight() - 38f, 0);
+		compassPose.scale(0.925f, 0.925f, 1);
+		PlacementClient.textured(compassPose, 0, 0, 1, snappedAngle);
+		compassPose.popPose();
 
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 
 	public static boolean onScroll(double delta) {

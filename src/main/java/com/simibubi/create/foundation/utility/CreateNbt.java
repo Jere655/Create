@@ -3,6 +3,7 @@ package com.simibubi.create.foundation.utility;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.minecraft.core.HolderLookup;
@@ -21,6 +22,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Optional;
@@ -106,6 +109,26 @@ public final class CreateNbt {
 		return UUIDUtil.CODEC.parse(NbtOps.INSTANCE, tag).getOrThrow();
 	}
 
+	/**
+	 * Materializes a value input as a compound for legacy Create serialization
+	 * hooks that have not yet been migrated field-by-field.
+	 */
+	@SuppressWarnings("deprecation")
+	public static CompoundTag readCompound(ValueInput input) {
+		return input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC))
+			.orElseGet(CompoundTag::new);
+	}
+
+	public static CompoundTag writeValue(HolderLookup.Provider registries, ValueIOSerializable value) {
+		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+		value.serialize(output);
+		return output.buildResult();
+	}
+
+	public static void readValue(HolderLookup.Provider registries, ValueIOSerializable value, CompoundTag tag) {
+		value.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, registries, tag));
+	}
+
 	public static boolean saveAsPassenger(Entity entity, CompoundTag destination) {
 		TagValueOutput output = output(entity.registryAccess(), destination);
 		boolean saved = entity.saveAsPassenger(output);
@@ -135,6 +158,16 @@ public final class CreateNbt {
 		TagValueOutput output = output(registries, destination);
 		BlockEntity.addEntityType(output, type);
 		destination.merge(output.buildResult());
+	}
+
+	public static void loadBlockEntityWithComponents(BlockEntity blockEntity, CompoundTag source,
+										 HolderLookup.Provider registries) {
+		blockEntity.loadWithComponents(TagValueInput.create(ProblemReporter.DISCARDING, registries, source));
+	}
+
+	public static void handleBlockEntityUpdate(BlockEntity blockEntity, CompoundTag source,
+										 HolderLookup.Provider registries) {
+		blockEntity.handleUpdateTag(TagValueInput.create(ProblemReporter.DISCARDING, registries, source));
 	}
 
 	private static TagValueOutput output(HolderLookup.Provider registries, CompoundTag initial) {

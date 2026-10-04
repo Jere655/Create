@@ -60,7 +60,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 					.withFluidIngredients(fluidIngredient)
 						.withSingleItemOutput(stack)
 						.build();
-				consumer.accept(new RecipeHolder<>(id, recipe));
+				consumer.accept(new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id), recipe));
 				continue;
 			}
 
@@ -91,7 +91,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 					if (container.isEmpty())
 						continue;
 
-					Ingredient bucket = Ingredient.of(stack);
+					Ingredient bucket = net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, stack);
 					ResourceLocation itemName = RegisteredObjectsHelper.getKeyOrThrow(stack.getItem());
 					ResourceLocation fluidName = RegisteredObjectsHelper.getKeyOrThrow(fluidCopy.getFluid());
 					ResourceLocation id = Create.asResource("fill_" + itemName.getNamespace() + "_" + itemName.getPath()
@@ -103,7 +103,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 						.withFluidIngredients(fluidIngredient)
 							.withSingleItemOutput(container)
 							.build();
-					consumer.accept(new RecipeHolder<>(id, recipe));
+					consumer.accept(new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id), recipe));
 				}
 			}
 		}

@@ -44,9 +44,9 @@ public class MetalScaffoldingBlockItem extends ScaffoldingBlockItem {
 		while (i < 7) {
 			if (!level.isClientSide && !level.isInWorldBounds(blockpos$mutableblockpos)) {
 				Player player = pContext.getPlayer();
-				int j = level.getMaxBuildHeight();
-				if (player instanceof ServerPlayer sp && blockpos$mutableblockpos.getY() >= j)
-					sp.sendSystemMessage(Component.translatable("build.tooHigh", j - 1)
+				int j = level.getMaxY();
+				if (player instanceof ServerPlayer sp && blockpos$mutableblockpos.getY() > j)
+					sp.sendSystemMessage(Component.translatable("build.tooHigh", j)
 						.withStyle(ChatFormatting.RED), true);
 				break;
 			}

@@ -183,11 +183,10 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 	public void renderForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		ItemStack stack = menu.ghostInventory.getStackInSlot(1);
 		var matrixStack = graphics.pose();
-		matrixStack.pushPose();
-		matrixStack.translate(0, 0, 150);
+		matrixStack.pushMatrix();
 		graphics.renderItemDecorations(font, stack, leftPos + 16, topPos + 62,
 			String.valueOf(selectedAttributes.size() - 1));
-		matrixStack.popPose();
+		matrixStack.popMatrix();
 
 		super.renderForeground(graphics, mouseX, mouseY, partialTicks);
 	}

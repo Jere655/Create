@@ -51,7 +51,9 @@ public class PolishingCategory extends CreateRecipeCategory<SandPaperPolishingRe
 
 		NonNullList<Ingredient> ingredients = recipe.getIngredients();
 		ItemStack[] matchingStacks = ingredients.get(0)
-			.getItems();
+			.items()
+			.map(holder -> new ItemStack(holder.value()))
+			.toArray(ItemStack[]::new);
 		if (matchingStacks.length == 0)
 			return;
 

@@ -148,7 +148,7 @@ public class ClientContraption {
 		BlockEntity be = entityBlock.newBlockEntity(pos, state);
 		postprocessReadBlockEntity(level, be, state);
 		if (be != null && nbt != null) {
-			be.handleUpdateTag(nbt, level.registryAccess());
+			com.simibubi.create.foundation.utility.CreateNbt.handleBlockEntityUpdate(be, nbt, level.registryAccess());
 		}
 
 		return be;

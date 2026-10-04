@@ -19,7 +19,8 @@ public class BasinMovementBehaviour implements MovementBehaviour {
 		Map<String, ItemStackHandler> map = new HashMap<>();
 		map.put("InputItems", new ItemStackHandler(9));
 		map.put("OutputItems", new ItemStackHandler(8));
-		map.forEach((s, h) -> h.deserializeNBT(context.world.registryAccess(), context.blockEntityData.getCompound(s)));
+		map.forEach((s, h) -> com.simibubi.create.foundation.utility.CreateNbt.readValue(context.world.registryAccess(), h,
+			context.blockEntityData.getCompound(s).orElseGet(net.minecraft.nbt.CompoundTag::new)));
 		return map;
 	}
 
@@ -46,7 +47,8 @@ public class BasinMovementBehaviour implements MovementBehaviour {
 				context.world.addFreshEntity(itemEntity);
 				itemStackHandler.setStackInSlot(i, ItemStack.EMPTY);
 			}
-			context.blockEntityData.put(key, itemStackHandler.serializeNBT(context.world.registryAccess()));
+			context.blockEntityData.put(key,
+				com.simibubi.create.foundation.utility.CreateNbt.writeValue(context.world.registryAccess(), itemStackHandler));
 		});
 		// FIXME: Why are we setting client-side data here?
 		if (context.contraption.entity.level().isClientSide) {

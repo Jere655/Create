@@ -131,7 +131,7 @@ public class ManualApplicationRecipe extends ItemApplicationRecipe {
 	public static RecipeHolder<DeployerApplicationRecipe> asDeploying(RecipeHolder<?> recipe) {
 		ManualApplicationRecipe mar = (ManualApplicationRecipe) recipe.value();
 		ResourceLocation id = AllRecipeTypes.CAN_BE_AUTOMATED.test(recipe) ?
-			recipe.id().withSuffix("_using_deployer") : recipe.id();
+			recipe.id().location().withSuffix("_using_deployer") : recipe.id().location();
 		ItemApplicationRecipe.Builder<DeployerApplicationRecipe> builder =
 			new ItemApplicationRecipe.Builder<>(DeployerApplicationRecipe::new, id)
 					.require(mar.ingredients.get(0))
@@ -140,7 +140,7 @@ public class ManualApplicationRecipe extends ItemApplicationRecipe {
 			builder.output(output);
 		if (mar.shouldKeepHeldItem())
 			builder.toolNotConsumed();
-		return new RecipeHolder<>(id, builder.build());
+		return new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id), builder.build());
 	}
 
 	public boolean testBlock(BlockState in) {

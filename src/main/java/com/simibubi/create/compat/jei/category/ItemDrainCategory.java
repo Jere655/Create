@@ -48,14 +48,14 @@ public class ItemDrainCategory extends CreateRecipeCategory<EmptyingRecipe> {
 		for (ItemStack stack : ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK)) {
 			if (PotionFluidHandler.isPotionItem(stack)) {
 				FluidStack fluidFromPotionItem = PotionFluidHandler.getFluidFromPotionItem(stack);
-				Ingredient potion = Ingredient.of(stack);
+				Ingredient potion = net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, stack);
 				ResourceLocation id = Create.asResource("potions");
 				EmptyingRecipe recipe = new StandardProcessingRecipe.Builder<>(EmptyingRecipe::new, id)
 						.withItemIngredients(potion)
 						.withFluidOutputs(fluidFromPotionItem)
 						.withSingleItemOutput(new ItemStack(Items.GLASS_BOTTLE))
 						.build();
-				consumer.accept(new RecipeHolder<>(id, recipe));
+				consumer.accept(new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id), recipe));
 				continue;
 			}
 
@@ -77,7 +77,7 @@ public class ItemDrainCategory extends CreateRecipeCategory<EmptyingRecipe> {
 			// instead of the copy.
 			result = ItemHelper.sameItem(stack, result) ? stack : emptiedItems.addOrGet(result);
 
-			Ingredient ingredient = Ingredient.of(stack);
+			Ingredient ingredient = net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, stack);
 			ResourceLocation itemName = RegisteredObjectsHelper.getKeyOrThrow(stack.getItem());
 			ResourceLocation fluidName = RegisteredObjectsHelper.getKeyOrThrow(extracted.getFluid());
 
@@ -88,7 +88,7 @@ public class ItemDrainCategory extends CreateRecipeCategory<EmptyingRecipe> {
 					.withFluidOutputs(extracted)
 					.withSingleItemOutput(result)
 					.build();
-			consumer.accept(new RecipeHolder<>(id, recipe));
+			consumer.accept(new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id), recipe));
 		}
 	}
 

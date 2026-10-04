@@ -39,7 +39,7 @@ public interface ISyncPersistentData {
 		public void handle(LocalPlayer player) {
 			Entity entityByID = player.clientLevel.getEntity(entityId);
 			CompoundTag data = entityByID.getPersistentData();
-			new HashSet<>(data.getAllKeys()).forEach(data::remove);
+			new HashSet<>(data.keySet()).forEach(data::remove);
 			data.merge(readData);
 			if (!(entityByID instanceof ISyncPersistentData))
 				return;

@@ -45,7 +45,7 @@ public class BlueprintTransferHandler implements IRecipeTransferHandler<Blueprin
 		if (!doTransfer)
 			return null;
 
-		CatnipServices.NETWORK.sendToServer(new BlueprintAssignCompleteRecipePacket(craftingRecipe.id()));
+		CatnipServices.NETWORK.sendToServer(new BlueprintAssignCompleteRecipePacket(craftingRecipe.id().location()));
 		return null;
 	}
 

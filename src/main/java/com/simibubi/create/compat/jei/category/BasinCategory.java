@@ -50,7 +50,7 @@ public class BasinCategory extends CreateRecipeCategory<BasinRecipe> {
 
 		for (Pair<Ingredient, MutableInt> pair : condensedIngredients) {
 			List<ItemStack> stacks = new ArrayList<>();
-			for (ItemStack itemStack : pair.getFirst().getItems()) {
+			for (ItemStack itemStack : com.simibubi.create.foundation.item.ItemHelper.getItemStacks(pair.getFirst())) {
 				ItemStack copy = itemStack.copy();
 				copy.setCount(pair.getSecond().getValue());
 				stacks.add(copy);

@@ -191,16 +191,18 @@ public class MillstoneBlockEntity extends KineticBlockEntity implements Clearabl
 	@Override
 	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		compound.putInt("Timer", timer);
-		compound.put("InputInventory", inputInv.serializeNBT(registries));
-		compound.put("OutputInventory", outputInv.serializeNBT(registries));
+		compound.put("InputInventory", com.simibubi.create.foundation.utility.CreateNbt.writeValue(registries, inputInv));
+		compound.put("OutputInventory", com.simibubi.create.foundation.utility.CreateNbt.writeValue(registries, outputInv));
 		super.write(compound, registries, clientPacket);
 	}
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		timer = compound.getInt("Timer").orElse(0);
-		inputInv.deserializeNBT(registries, compound.getCompound("InputInventory").orElseGet(CompoundTag::new));
-		outputInv.deserializeNBT(registries, compound.getCompound("OutputInventory").orElseGet(CompoundTag::new));
+		com.simibubi.create.foundation.utility.CreateNbt.readValue(registries, inputInv,
+			compound.getCompound("InputInventory").orElseGet(CompoundTag::new));
+		com.simibubi.create.foundation.utility.CreateNbt.readValue(registries, outputInv,
+			compound.getCompound("OutputInventory").orElseGet(CompoundTag::new));
 		super.read(compound, registries, clientPacket);
 	}
 

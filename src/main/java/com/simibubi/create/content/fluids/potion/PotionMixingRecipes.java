@@ -127,7 +127,7 @@ public class PotionMixingRecipes {
 				FluidStack outputFluid = null;
 				for (ItemStack stack : supportedContainerStacks) {
 					if (input.test(stack)) {
-						ItemStack[] stacks = input.getItems();
+						ItemStack[] stacks = com.simibubi.create.foundation.item.ItemHelper.getItemStacks(input);
 						if (stacks.length == 0){
 							continue;
 						}
@@ -163,7 +163,7 @@ public class PotionMixingRecipes {
 		Set<Item> processedItems = new HashSet<>();
 		for (RecipeHolder<MixingRecipe> recipe : all) {
 			for (Ingredient ingredient : recipe.value().getIngredients()) {
-				for (ItemStack itemStack : ingredient.getItems()) {
+				for (ItemStack itemStack : com.simibubi.create.foundation.item.ItemHelper.getItemStacks(ingredient)) {
 					Item item = itemStack.getItem();
 					if (processedItems.add(item)) {
 						byItem.computeIfAbsent(item, i -> new ArrayList<>())

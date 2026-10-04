@@ -73,14 +73,14 @@ public class AllSoundEvents {
 
 		MECHANICAL_PRESS_ACTIVATION = create("mechanical_press_activation").subtitle("Mechanical Press clangs")
 			.playExisting(SoundEvents.ANVIL_LAND, .125f, 1f)
-			.playExisting(SoundEvents.ITEM_BREAK, .5f, 1f)
+			.playExisting(SoundEvents.ITEM_BREAK.value(), .5f, 1f)
 			.category(SoundSource.BLOCKS)
 			.build(),
 
 		MECHANICAL_PRESS_ACTIVATION_ON_BELT =
 			create("mechanical_press_activation_belt").subtitle("Mechanical Press bonks")
 				.playExisting(SoundEvents.WOOL_HIT, .75f, 1f)
-				.playExisting(SoundEvents.ITEM_BREAK, .15f, .75f)
+				.playExisting(SoundEvents.ITEM_BREAK.value(), .15f, .75f)
 				.category(SoundSource.BLOCKS)
 				.build(),
 
@@ -205,7 +205,7 @@ public class AllSoundEvents {
 			.build(),
 
 		CRAFTER_CRAFT = create("crafter_craft").subtitle("Crafter crafts")
-			.playExisting(SoundEvents.ITEM_BREAK, .125f, .75f)
+			.playExisting(SoundEvents.ITEM_BREAK.value(), .125f, .75f)
 			.category(SoundSource.BLOCKS)
 			.build(),
 
@@ -249,7 +249,7 @@ public class AllSoundEvents {
 			.build(),
 
 		BLAZE_MUNCH = create("blaze_munch").subtitle("Blaze Burner munches")
-			.playExisting(SoundEvents.GENERIC_EAT, .5f, 1f)
+			.playExisting(SoundEvents.GENERIC_EAT.value(), .5f, 1f)
 			.category(SoundSource.BLOCKS)
 			.build(),
 			
@@ -663,7 +663,7 @@ public class AllSoundEvents {
 				JsonObject s = new JsonObject();
 				s.addProperty("name", event.event()
 					.get()
-					.getLocation()
+					.location()
 					.toString());
 				s.addProperty("type", "event");
 				if (attenuationDistance != 0)

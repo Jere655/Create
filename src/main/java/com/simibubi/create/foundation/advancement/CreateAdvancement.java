@@ -17,6 +17,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -199,7 +200,7 @@ public class CreateAdvancement {
 
 		Builder whenItemCollected(TagKey<Item> tag) {
 			return externalTrigger(InventoryChangeTrigger.TriggerInstance
-				.hasItems(ItemPredicate.Builder.item().of(tag).build()));
+				.hasItems(ItemPredicate.Builder.item().of(BuiltInRegistries.ITEM, tag).build()));
 		}
 
 		Builder awardedForFree() {

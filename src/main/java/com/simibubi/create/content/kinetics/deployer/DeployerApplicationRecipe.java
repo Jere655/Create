@@ -35,8 +35,8 @@ public class DeployerApplicationRecipe extends ItemApplicationRecipe implements 
 
 	public static RecipeHolder<DeployerApplicationRecipe> convert(RecipeHolder<?> sandpaperRecipe) {
 		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(
-				sandpaperRecipe.id().getNamespace(),
-				sandpaperRecipe.id().getPath() + "_using_deployer"
+				sandpaperRecipe.id().location().getNamespace(),
+				sandpaperRecipe.id().location().getPath() + "_using_deployer"
 		);
 		DeployerApplicationRecipe recipe = new ItemApplicationRecipe.Builder<>(DeployerApplicationRecipe::new, id)
 				.require(sandpaperRecipe.value().getIngredients()
@@ -45,7 +45,7 @@ public class DeployerApplicationRecipe extends ItemApplicationRecipe implements 
 						.output(sandpaperRecipe.value().getResultItem(Minecraft.getInstance().level.registryAccess()))
 						.build();
 
-		return new RecipeHolder<>(id, recipe);
+		return new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, id), recipe);
 	}
 
 	@Override
@@ -57,12 +57,14 @@ public class DeployerApplicationRecipe extends ItemApplicationRecipe implements 
 	@OnlyIn(Dist.CLIENT)
 	public Component getDescriptionForAssembly() {
 		ItemStack[] matchingStacks = ingredients.get(1)
-			.getItems();
+			.items()
+			.map(holder -> new ItemStack(holder.value()))
+			.toArray(ItemStack[]::new);
 		if (matchingStacks.length == 0) {
             return Component.literal("Invalid");
         }
 		return CreateLang.translateDirect("recipe.assembly.deploying_item",
-			Component.translatable(matchingStacks[0].getDescriptionId()).getString());
+			Component.translatable(matchingStacks[0].getItem().getDescriptionId()).getString());
 	}
 
 	@Override

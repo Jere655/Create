@@ -456,7 +456,7 @@ public class MountedStorageManager {
 			} else {
 				// we can create a fallback storage safely, it will be validated before unmounting
 				ItemStackHandler handler = new ItemStackHandler();
-				handler.deserializeNBT(registries, data);
+				CreateNbt.readValue(registries, handler, data);
 				this.addStorage(new FallbackMountedStorage(handler), pos);
 			}
 		});

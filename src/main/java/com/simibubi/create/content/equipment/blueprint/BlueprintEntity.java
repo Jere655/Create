@@ -528,13 +528,13 @@ public class BlueprintEntity extends HangingEntity
 			CompoundTag invNBT = list.getCompoundOrEmpty(index + "");
 			inferredIcon = list.getBoolean("InferredIcon").orElse(false);
 			if (!invNBT.isEmpty())
-				newInv.deserializeNBT(registryAccess(), invNBT);
+				com.simibubi.create.foundation.utility.CreateNbt.readValue(registryAccess(), newInv, invNBT);
 			return newInv;
 		}
 
 		public void save(ItemStackHandler inventory) {
 			CompoundTag list = getOrCreateRecipeCompound();
-			list.put(index + "", inventory.serializeNBT(registryAccess()));
+			list.put(index + "", com.simibubi.create.foundation.utility.CreateNbt.writeValue(registryAccess(), inventory));
 			list.putBoolean("InferredIcon", inferredIcon);
 			cachedDisplayItems = null;
 			if (!level().isClientSide)
@@ -557,7 +557,7 @@ public class BlueprintEntity extends HangingEntity
 		@Override
 		public Component getDisplayName() {
 			return AllItems.CRAFTING_BLUEPRINT.get()
-				.getDescription();
+				.getHoverName();
 		}
 
 		@Override

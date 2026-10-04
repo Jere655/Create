@@ -196,7 +196,7 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 		String _knockback = "potato_cannon.ammo.knockback";
 
 		tooltip.add(CommonComponents.EMPTY);
-		tooltip.add(Component.translatable(ammoStack.getDescriptionId()).append(Component.literal(":"))
+		tooltip.add(Component.translatable(ammoStack.getItem().getDescriptionId()).append(Component.literal(":"))
 			.withStyle(ChatFormatting.GRAY));
 		MutableComponent spacing = CommonComponents.space();
 		ChatFormatting green = ChatFormatting.GREEN;

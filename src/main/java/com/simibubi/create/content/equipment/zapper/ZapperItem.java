@@ -218,7 +218,8 @@ public abstract class ZapperItem extends Item implements CustomArmPoseItem {
 				data.putInt("x", pos.getX());
 				data.putInt("y", pos.getY());
 				data.putInt("z", pos.getZ());
-				blockEntity.loadWithComponents(data, world.registryAccess());
+				com.simibubi.create.foundation.utility.CreateNbt.loadBlockEntityWithComponents(blockEntity, data,
+					world.registryAccess());
 			}
 		}
 	}

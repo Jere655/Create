@@ -255,7 +255,7 @@ public class KineticBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 
 		source = null;
 		if (compound.contains("Source"))
-			source = compound.getLong("Source").orElse(0L)
+			source = compound.getLong("Source")
 				.map(BlockPos::of)
 				.orElseGet(() -> NBTHelper.readBlockPos(compound, "Source"));
 

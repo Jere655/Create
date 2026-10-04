@@ -263,13 +263,14 @@ public class SmartFluidTankBehaviour extends BlockEntityBehaviour {
 
 		public CompoundTag writeNBT(HolderLookup.Provider registries) {
 			CompoundTag compound = new CompoundTag();
-			compound.put("TankContent", tank.writeToNBT(registries, new CompoundTag()));
+			compound.put("TankContent", com.simibubi.create.foundation.utility.CreateNbt.writeValue(registries, tank));
 			compound.put("Level", fluidLevel.writeNBT());
 			return compound;
 		}
 
 		public void readNBT(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
-			tank.readFromNBT(registries, compound.getCompound("TankContent").orElseGet(CompoundTag::new));
+			com.simibubi.create.foundation.utility.CreateNbt.readValue(registries, tank,
+				compound.getCompound("TankContent").orElseGet(CompoundTag::new));
 			fluidLevel.readNBT(compound.getCompound("Level").orElseGet(CompoundTag::new), clientPacket);
 			if (!tank.getFluid()
 				.isEmpty())

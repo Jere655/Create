@@ -1131,7 +1131,7 @@ public abstract class Contraption {
 					.isEmpty()
 					&& !blockState.getCollisionShape(world, targetPos)
 					.isEmpty())) {
-					if (targetPos.getY() == world.getMinBuildHeight())
+					if (targetPos.getY() == world.getMinY())
 						targetPos = targetPos.above();
 					world.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, targetPos, Block.getId(state));
 					if (shouldDropBlocks) {
@@ -1194,7 +1194,8 @@ public abstract class Contraption {
 						}
 					}
 
-					blockEntity.loadWithComponents(tag, world.registryAccess());
+					com.simibubi.create.foundation.utility.CreateNbt.loadBlockEntityWithComponents(blockEntity, tag,
+						world.registryAccess());
 				}
 
 				storage.unmount(world, block, targetPos, blockEntity);

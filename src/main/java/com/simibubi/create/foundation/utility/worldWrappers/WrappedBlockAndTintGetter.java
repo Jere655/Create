@@ -38,8 +38,8 @@ public class WrappedBlockAndTintGetter implements BlockAndTintGetter {
 	}
 
 	@Override
-	public int getMinBuildHeight() {
-		return wrapped.getMinBuildHeight();
+	public int getMinY() {
+		return wrapped.getMinY();
 	}
 
 	@Override

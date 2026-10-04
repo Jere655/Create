@@ -79,6 +79,7 @@ public enum AllRecipeTypes implements IRecipeTypeInfo, StringRepresentable {
 	ITEM_COPYING(() -> new CustomRecipe.Serializer<>(ItemCopyingRecipe::new), () -> RecipeType.CRAFTING, false);
 
 	public static final Predicate<RecipeHolder<?>> CAN_BE_AUTOMATED = r -> !r.id()
+			.location()
 			.getPath()
 			.endsWith("_manual_only");
 

@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.simibubi.create.AllEntityTypes;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.registry.RegisteredObjectsHelper;

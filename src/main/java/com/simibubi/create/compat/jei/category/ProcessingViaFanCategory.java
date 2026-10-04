@@ -55,7 +55,7 @@ public abstract class ProcessingViaFanCategory<T extends Recipe<?>> extends Crea
 	public void draw(T recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
 		renderWidgets(graphics, recipe, mouseX, mouseY);
 
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 
 		matrixStack.pushPose();
 		translateFan(matrixStack);

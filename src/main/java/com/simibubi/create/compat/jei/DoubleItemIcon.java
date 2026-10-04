@@ -33,7 +33,7 @@ public class DoubleItemIcon implements IDrawable {
 
 	@Override
 	public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 		if (primaryStack == null) {
 			primaryStack = primarySupplier.get();
 			secondaryStack = secondarySupplier.get();

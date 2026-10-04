@@ -26,10 +26,10 @@ public class ConversionRecipe extends StandardProcessingRecipe<RecipeWrapper> {
 	public static RecipeHolder<ConversionRecipe> create(ItemStack from, ItemStack to) {
 		ResourceLocation recipeId = Create.asResource("conversion_" + counter++);
 		ConversionRecipe recipe = new Builder<>(ConversionRecipe::new, recipeId)
-			.withItemIngredients(Ingredient.of(from))
+			.withItemIngredients(net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, from))
 			.withSingleItemOutput(to)
 			.build();
-		return new RecipeHolder<>(recipeId, recipe);
+		return new RecipeHolder<>(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.RECIPE, recipeId), recipe);
 	}
 
 	public ConversionRecipe(ProcessingRecipeParams params) {

@@ -48,7 +48,7 @@ public abstract class SequencedAssemblySubCategory {
 
 		@Override
 		public void draw(SequencedRecipe<?> recipe, GuiGraphics graphics, double mouseX, double mouseY, int index) {
-			PoseStack ms = graphics.pose();
+			PoseStack ms = graphics.pose3D();
 			press.offset = index;
 			ms.pushPose();
 			ms.translate(-5, 50, 0);
@@ -79,7 +79,7 @@ public abstract class SequencedAssemblySubCategory {
 
 		@Override
 		public void draw(SequencedRecipe<?> recipe, GuiGraphics graphics, double mouseX, double mouseY, int index) {
-			PoseStack ms = graphics.pose();
+			PoseStack ms = graphics.pose3D();
 			spout.offset = index;
 			ms.pushPose();
 			ms.translate(-7, 50, 0);
@@ -119,7 +119,7 @@ public abstract class SequencedAssemblySubCategory {
 
 		@Override
 		public void draw(SequencedRecipe<?> recipe, GuiGraphics graphics, double mouseX, double mouseY, int index) {
-			PoseStack ms = graphics.pose();
+			PoseStack ms = graphics.pose3D();
 			deployer.offset = index;
 			ms.pushPose();
 			ms.translate(-7, 50, 0);
@@ -141,7 +141,7 @@ public abstract class SequencedAssemblySubCategory {
 
 		@Override
 		public void draw(SequencedRecipe<?> recipe, GuiGraphics graphics, double mouseX, double mouseY, int index) {
-			PoseStack ms = graphics.pose();
+			PoseStack ms = graphics.pose3D();
 			ms.pushPose();
 			ms.translate(0, 51.5f, 0);
 			ms.scale(.6f, .6f, .6f);

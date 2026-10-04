@@ -35,7 +35,7 @@ public class BlockCuttingCategory extends CreateRecipeCategory<CondensedBlockCut
 		builder
 				.addSlot(RecipeIngredientRole.INPUT, 5, 5)
 				.setBackground(getRenderedSlot(), -1 , -1)
-				.addItemStacks(Arrays.asList(recipe.getIngredients().get(0).getItems()));
+				.addItemStacks(Arrays.asList(com.simibubi.create.foundation.item.ItemHelper.getItemStacks(recipe.getIngredients().get(0))));
 
 		int i = 0;
 		for (List<ItemStack> itemStacks : results) {

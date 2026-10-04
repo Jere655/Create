@@ -27,7 +27,7 @@ public final class ToolboxColoringRecipeMaker {
 		String group = "create.toolbox.color";
 		ItemStack baseShulkerStack = AllBlocks.TOOLBOXES.get(DyeColor.BROWN)
 			.asStack();
-		Ingredient baseShulkerIngredient = Ingredient.of(baseShulkerStack);
+		Ingredient baseShulkerIngredient = net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(true, baseShulkerStack);
 
 		return Arrays.stream(DyeColor.values())
 			.filter(dc -> dc != DyeColor.BROWN)

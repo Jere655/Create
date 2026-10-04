@@ -433,7 +433,8 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 			height = compound.getInt("Height").orElse(0);
 			tankInventory.setCapacity(getTotalTankSize() * getCapacityMultiplier());
 
-			tankInventory.readFromNBT(registries, compound.getCompound("TankContent").orElseGet(CompoundTag::new));
+			com.simibubi.create.foundation.utility.CreateNbt.readValue(registries, tankInventory,
+				compound.getCompound("TankContent").orElseGet(CompoundTag::new));
 			if (tankInventory.getSpace() < 0)
 				tankInventory.drain(-tankInventory.getSpace(), FluidAction.EXECUTE);
 		}
@@ -488,7 +489,7 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 			compound.put("Controller", com.simibubi.create.foundation.utility.CreateNbt.writeBlockPos(controller));
 		if (isController()) {
 			compound.putBoolean("Window", window);
-			compound.put("TankContent", tankInventory.writeToNBT(registries, new CompoundTag()));
+			compound.put("TankContent", com.simibubi.create.foundation.utility.CreateNbt.writeValue(registries, tankInventory));
 			compound.putInt("Size", width);
 			compound.putInt("Height", height);
 		}

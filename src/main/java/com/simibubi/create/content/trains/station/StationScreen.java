@@ -296,8 +296,8 @@ public class StationScreen extends AbstractStationScreen {
 
 		float position = trainPosition.getValue(partialTicks);
 
-		PoseStack ms = graphics.pose();
-		ms.pushPose();
+		Matrix3x2fStack ms = graphics.pose();
+		ms.pushMatrix();
 		RenderSystem.enableBlend();
 		ms.translate(position, 0);
 		TrainIconType icon = train.icon;
@@ -315,7 +315,7 @@ public class StationScreen extends AbstractStationScreen {
 			Math.min(1f, Math.min((position + offset - 10) / 30f, (background.getWidth() - 40 - position - offset) / 30f)));
 		offset += icon.render(TrainIconType.ENGINE, graphics, x + offset, y + 20);
 		RenderSystem.disableBlend();
-		ms.popPose();
+		ms.popMatrix();
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -323,10 +323,10 @@ public class StationScreen extends AbstractStationScreen {
 		UIRenderHelper.drawStretched(graphics, x + 21, y + 60, 150, 26, 0, AllGuiTextures.STATION_TEXTBOX_MIDDLE);
 		AllGuiTextures.STATION_TEXTBOX_BOTTOM.render(graphics, x + 21, y + 86);
 
-		ms.pushPose();
-		ms.translate(Mth.clamp(position + offset - 13, 25, 159), 0, 0);
+		ms.pushMatrix();
+		ms.translate(Mth.clamp(position + offset - 13, 25, 159), 0);
 		AllGuiTextures.STATION_TEXTBOX_SPEECH.render(graphics, x, y + 38);
-		ms.popPose();
+		ms.popMatrix();
 
 		text = trainNameBox.getValue();
 		if (!trainNameBox.isFocused()) {

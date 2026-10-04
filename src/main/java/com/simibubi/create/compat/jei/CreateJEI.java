@@ -463,7 +463,9 @@ public class CreateJEI implements IModPlugin {
 		}
 		ItemStack[] matchingStacks = recipe1.getIngredients()
 			.getFirst()
-			.getItems();
+			.items()
+			.map(holder -> new ItemStack(holder.value()))
+			.toArray(ItemStack[]::new);
 		if (matchingStacks.length == 0) {
 			return false;
 		}

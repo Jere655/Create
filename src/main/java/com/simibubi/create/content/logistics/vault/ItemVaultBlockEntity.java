@@ -283,7 +283,8 @@ public class ItemVaultBlockEntity extends SmartBlockEntity implements IMultiBloc
 		}
 
 		if (!clientPacket) {
-			inventory.deserializeNBT(registries, compound.getCompound("Inventory").orElseGet(CompoundTag::new));
+			com.simibubi.create.foundation.utility.CreateNbt.readValue(registries, inventory,
+				compound.getCompound("Inventory").orElseGet(CompoundTag::new));
 			return;
 		}
 
@@ -311,7 +312,7 @@ public class ItemVaultBlockEntity extends SmartBlockEntity implements IMultiBloc
 
 		if (!clientPacket) {
 			compound.putString("StorageType", "CombinedInv");
-			compound.put("Inventory", inventory.serializeNBT(registries));
+			compound.put("Inventory", com.simibubi.create.foundation.utility.CreateNbt.writeValue(registries, inventory));
 		}
 	}
 

@@ -292,7 +292,7 @@ public class VirtualRenderWorld extends Level implements VisualizationLevel {
 	}
 
 	@Override
-	public int getMinBuildHeight() {
+	public int getMinY() {
 		return minBuildHeight;
 	}
 
@@ -481,23 +481,23 @@ public class VirtualRenderWorld extends Level implements VisualizationLevel {
 	// Intentionally copied from LevelHeightAccessor. Lithium overrides these methods so we need to, too.
 
 	@Override
-	public int getMaxBuildHeight() {
-		return this.getMinBuildHeight() + this.getHeight();
+	public int getMaxY() {
+		return this.getMinY() + this.getHeight() - 1;
 	}
 
 	@Override
 	public int getSectionsCount() {
-		return this.getMaxSection() - this.getMinSection();
+		return this.getMaxSectionY() - this.getMinSectionY() + 1;
 	}
 
 	@Override
-	public int getMinSection() {
-		return SectionPos.blockToSectionCoord(this.getMinBuildHeight());
+	public int getMinSectionY() {
+		return SectionPos.blockToSectionCoord(this.getMinY());
 	}
 
 	@Override
-	public int getMaxSection() {
-		return SectionPos.blockToSectionCoord(this.getMaxBuildHeight() - 1) + 1;
+	public int getMaxSectionY() {
+		return SectionPos.blockToSectionCoord(this.getMaxY());
 	}
 
 	@Override
@@ -507,7 +507,7 @@ public class VirtualRenderWorld extends Level implements VisualizationLevel {
 
 	@Override
 	public boolean isOutsideBuildHeight(int y) {
-		return y < this.getMinBuildHeight() || y >= this.getMaxBuildHeight();
+		return y < this.getMinY() || y > this.getMaxY();
 	}
 
 	@Override
@@ -517,11 +517,11 @@ public class VirtualRenderWorld extends Level implements VisualizationLevel {
 
 	@Override
 	public int getSectionIndexFromSectionY(int sectionY) {
-		return sectionY - this.getMinSection();
+		return sectionY - this.getMinSectionY();
 	}
 
 	@Override
 	public int getSectionYFromSectionIndex(int sectionIndex) {
-		return sectionIndex + this.getMinSection();
+		return sectionIndex + this.getMinSectionY();
 	}
 }

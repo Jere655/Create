@@ -98,7 +98,7 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 	@Override
 	public void draw(CraftingRecipe recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics graphics, double mouseX,
 		double mouseY) {
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 		matrixStack.pushPose();
 		float scale = getScale(recipe);
 		matrixStack.translate(getXPadding(recipe), getYPadding(recipe), 0);
@@ -152,7 +152,7 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 
 		@Override
 		public void render(GuiGraphics graphics, @NotNull ItemStack ingredient) {
-			PoseStack matrixStack = graphics.pose();
+			PoseStack matrixStack = graphics.pose3D();
 			matrixStack.pushPose();
 			float scale = getScale(recipe);
 			matrixStack.scale(scale, scale, scale);

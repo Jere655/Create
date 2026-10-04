@@ -53,7 +53,7 @@ public class SequencedAssemblyCategory extends CreateRecipeCategory<SequencedAss
 		builder
 				.addSlot(RecipeIngredientRole.INPUT, 27 + xOffset, 91)
 				.setBackground(getRenderedSlot(), -1, -1)
-				.addItemStacks(List.of(recipe.getIngredient().getItems()));
+				.addItemStacks(List.of(com.simibubi.create.foundation.item.ItemHelper.getItemStacks(recipe.getIngredient())));
 		builder
 				.addSlot(RecipeIngredientRole.OUTPUT, 132 + xOffset, 91)
 				.setBackground(getRenderedSlot(recipe.getOutputChance()), -1 , -1)
@@ -110,7 +110,7 @@ public class SequencedAssemblyCategory extends CreateRecipeCategory<SequencedAss
 	public void draw(SequencedAssemblyRecipe recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
 		Font font = Minecraft.getInstance().font;
 
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 		matrixStack.pushPose();
 
 		matrixStack.pushPose();

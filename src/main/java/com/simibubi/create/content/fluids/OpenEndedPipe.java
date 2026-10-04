@@ -92,8 +92,7 @@ public class OpenEndedPipe extends FlowSource {
 	}
 
 	public CompoundTag serializeNBT(HolderLookup.Provider registries) {
-		CompoundTag compound = new CompoundTag();
-		fluidHandler.writeToNBT(registries, compound);
+		CompoundTag compound = com.simibubi.create.foundation.utility.CreateNbt.writeValue(registries, fluidHandler);
 		compound.putBoolean("Pulling", wasPulling);
 		compound.put("Location", location.serializeNBT());
 		return compound;
@@ -103,7 +102,7 @@ public class OpenEndedPipe extends FlowSource {
 		BlockFace fromNBT = BlockFace.fromNBT(compound.getCompound("Location").orElseGet(CompoundTag::new));
 		OpenEndedPipe oep = new OpenEndedPipe(new BlockFace(blockEntityPos, fromNBT.getFace()));
 
-		oep.fluidHandler.readFromNBT(registries, compound);
+		com.simibubi.create.foundation.utility.CreateNbt.readValue(registries, oep.fluidHandler, compound);
 		oep.wasPulling = compound.getBoolean("Pulling").orElse(false);
 		return oep;
 	}

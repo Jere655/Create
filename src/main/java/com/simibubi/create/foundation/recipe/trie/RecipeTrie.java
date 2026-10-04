@@ -194,7 +194,7 @@ public class RecipeTrie<R extends Recipe<?>> {
 				}
 
 				Set<AbstractVariant> variants = new HashSet<>();
-				for (ItemStack stack : ingredient.getItems()) {
+				for (ItemStack stack : com.simibubi.create.foundation.item.ItemHelper.getItemStacks(ingredient)) {
 					variants.add(getOrAssignVariant(stack.getItem()));
 				}
 

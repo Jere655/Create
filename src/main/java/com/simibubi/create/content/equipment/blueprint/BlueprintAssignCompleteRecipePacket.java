@@ -6,6 +6,8 @@ import io.netty.buffer.ByteBuf;
 
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 
 public record BlueprintAssignCompleteRecipePacket(ResourceLocation recipeId) implements ServerboundPacketPayload {
@@ -18,7 +20,7 @@ public record BlueprintAssignCompleteRecipePacket(ResourceLocation recipeId) imp
 		if (player.containerMenu instanceof BlueprintMenu c) {
 			player.level()
 					.getRecipeManager()
-					.byKey(recipeId)
+					.byKey(ResourceKey.create(Registries.RECIPE, recipeId))
 					.ifPresent(r -> BlueprintItem.assignCompleteRecipe(c.player.level(), c.ghostInventory, r.value()));
 		}
 	}

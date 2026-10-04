@@ -71,7 +71,7 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 		ticksUntilNextProgress = compound.getIntOr("NextTick", 0);
 		breakingPos = null;
 		if (compound.contains("Breaking"))
-			breakingPos = compound.getLong("Breaking").orElse(0L)
+			breakingPos = compound.getLong("Breaking")
 				.map(BlockPos::of)
 				.orElseGet(() -> NBTHelper.readBlockPos(compound, "Breaking"));
 		super.read(compound, registries, clientPacket);

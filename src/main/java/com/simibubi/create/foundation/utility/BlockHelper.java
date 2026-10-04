@@ -390,7 +390,7 @@ public class BlockHelper {
 				if (blockEntity instanceof IMultiBlockEntityContainer imbe)
 					if (!imbe.isController())
 						data.put("Controller", CreateNbt.writeBlockPos(imbe.getController()));
-				blockEntity.loadWithComponents(data, world.registryAccess());
+				CreateNbt.loadBlockEntityWithComponents(blockEntity, data, world.registryAccess());
 			}
 		}
 

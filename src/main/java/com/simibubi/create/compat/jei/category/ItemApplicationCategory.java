@@ -79,7 +79,7 @@ public class ItemApplicationCategory extends CreateRecipeCategory<ItemApplicatio
 		BlockState state = blockItem.getBlock()
 			.defaultBlockState();
 
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 		matrixStack.pushPose();
 		matrixStack.translate(74, 51, 100);
 		matrixStack.mulPose(Axis.XP.rotationDegrees(-15.5f));

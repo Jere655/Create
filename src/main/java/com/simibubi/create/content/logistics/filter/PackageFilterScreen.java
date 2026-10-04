@@ -58,11 +58,11 @@ public class PackageFilterScreen extends AbstractFilterScreen<PackageFilterMenu>
 		super.render(graphics, mouseX, mouseY, partialTicks);
 
 		Matrix3x2fStack ms = graphics.pose();
-		ms.pushPose();
-		ms.translate(leftPos + 16, topPos + 23, 0);
+		ms.pushMatrix();
+		ms.translate(leftPos + 16, topPos + 23);
 		GuiGameElement.of(PackageStyles.getDefaultBox())
 			.render(graphics);
-		ms.popPose();
+		ms.popMatrix();
 	}
 
 	public void onAddressEdited(String s) {

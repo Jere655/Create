@@ -30,7 +30,7 @@ public class ItemIcon implements IDrawable {
 
 	@Override
 	public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 		if (stack == null) {
 			stack = supplier.get();
 		}

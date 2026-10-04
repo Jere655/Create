@@ -19,7 +19,7 @@ public class AnimatedPress extends AnimatedKinetics {
 
 	@Override
 	public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 		matrixStack.pushPose();
 		matrixStack.translate(xOffset, yOffset, 200);
 		matrixStack.mulPose(Axis.XP.rotationDegrees(-15.5f));

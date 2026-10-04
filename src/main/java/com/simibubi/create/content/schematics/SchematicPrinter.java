@@ -255,7 +255,8 @@ public class SchematicPrinter {
 			blockEntity = ((EntityBlock) blockState.getBlock()).newBlockEntity(target, blockState);
 			CompoundTag data = BlockHelper.prepareBlockEntityData(blockReader, blockState, blockReader.getBlockEntity(target));
 			if (blockEntity != null && data != null)
-				blockEntity.loadWithComponents(data, blockReader.registryAccess());
+				com.simibubi.create.foundation.utility.CreateNbt.loadBlockEntityWithComponents(blockEntity, data,
+					blockReader.registryAccess());
 		}
 		return ItemRequirement.of(blockState, blockEntity);
 	}

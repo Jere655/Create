@@ -79,7 +79,7 @@ public class ToolSelectionScreen extends Screen {
 
 		float toolTipAlpha = yOffset / 10;
 		List<Component> toolTip = tools.get(selection)
-			.getDescription();
+			.getHoverName();
 		int stringAlphaComponent = ((int) (toolTipAlpha * 0xFF)) << 24;
 
 		if (toolTipAlpha > 0.25f) {

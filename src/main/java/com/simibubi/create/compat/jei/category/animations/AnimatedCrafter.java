@@ -11,7 +11,7 @@ public class AnimatedCrafter extends AnimatedKinetics {
 
 	@Override
 	public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
-		PoseStack matrixStack = graphics.pose();
+		PoseStack matrixStack = graphics.pose3D();
 		matrixStack.pushPose();
 		matrixStack.translate(xOffset, yOffset, 0);
 		AllGuiTextures.JEI_SHADOW.render(graphics, -16, 13);

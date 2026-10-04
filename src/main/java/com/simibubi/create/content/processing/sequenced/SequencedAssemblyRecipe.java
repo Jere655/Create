@@ -78,13 +78,13 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 		List<RecipeHolder<SequencedAssemblyRecipe>> all = level.getRecipeManager()
 			.getAllRecipesFor(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType());
 		for (RecipeHolder<SequencedAssemblyRecipe> sequencedAssemblyRecipe : all) {
-			if (!sequencedAssemblyRecipe.value().appliesTo(sequencedAssemblyRecipe.id(), item))
+			if (!sequencedAssemblyRecipe.value().appliesTo(sequencedAssemblyRecipe.id().location(), item))
 				continue;
 			SequencedRecipe<?> nextRecipe = sequencedAssemblyRecipe.value().getNextRecipe(item);
 			ProcessingRecipe<?, ?> recipe = nextRecipe.getRecipe();
 			if (recipe.getType() != type || !recipeClass.isInstance(recipe))
 				continue;
-			recipe.enforceNextResult(() -> sequencedAssemblyRecipe.value().advance(sequencedAssemblyRecipe.id(), item, level.random));
+			recipe.enforceNextResult(() -> sequencedAssemblyRecipe.value().advance(sequencedAssemblyRecipe.id().location(), item, level.random));
 			return Optional.of(new RecipeHolder<>(sequencedAssemblyRecipe.id(), recipeClass.cast(recipe)));
 		}
 		return Optional.empty();
@@ -97,11 +97,11 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 		List<RecipeHolder<R>> result = new ArrayList<>();
 
 		for (RecipeHolder<SequencedAssemblyRecipe> holder : all) {
-			if (holder.value().appliesTo(holder.id(), item)) {
+			if (holder.value().appliesTo(holder.id().location(), item)) {
 				ProcessingRecipe<?, ?> recipe = holder.value().getNextRecipe(item).getRecipe();
 
 				if (recipe.getType() == type && recipeClass.isInstance(recipe)) {
-					recipe.enforceNextResult(() -> holder.value().advance(holder.id(), item, level.random));
+					recipe.enforceNextResult(() -> holder.value().advance(holder.id().location(), item, level.random));
 					R castedRecipe = recipeClass.cast(recipe);
 					RecipeHolder<R> h = new RecipeHolder<>(holder.id(), castedRecipe);
 					if (recipeFilter.test(h))
