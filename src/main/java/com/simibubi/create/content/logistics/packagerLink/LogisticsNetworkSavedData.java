@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.mojang.serialization.Codec;
 import com.simibubi.create.Create;
 
 import net.createmod.catnip.nbt.NBTHelper;
@@ -11,13 +12,20 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 public class LogisticsNetworkSavedData extends SavedData {
+	public static final SavedDataType<LogisticsNetworkSavedData> TYPE = new SavedDataType<>(
+		"create_logistics",
+		context -> new LogisticsNetworkSavedData(),
+		context -> codec(context.levelOrThrow().registryAccess()),
+		DataFixTypes.SAVED_DATA_COMMAND_STORAGE
+	);
 
 	private Map<UUID, LogisticsNetwork> logisticsNetworks = new HashMap<>();
 
-	@Override
 	public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registries) {
 		GlobalLogisticsManager logistics = Create.LOGISTICS;
 		nbt.put("LogisticsNetworks",
@@ -35,6 +43,10 @@ public class LogisticsNetworkSavedData extends SavedData {
 		return sd;
 	}
 
+	private static Codec<LogisticsNetworkSavedData> codec(HolderLookup.Provider registries) {
+		return CompoundTag.CODEC.xmap(tag -> load(tag, registries), data -> data.save(new CompoundTag(), registries));
+	}
+
 	public Map<UUID, LogisticsNetwork> getLogisticsNetworks() {
 		return logisticsNetworks;
 	}
@@ -44,7 +56,7 @@ public class LogisticsNetworkSavedData extends SavedData {
 	public static LogisticsNetworkSavedData load(MinecraftServer server) {
 		return server.overworld()
 			.getDataStorage()
-			.computeIfAbsent(LogisticsNetworkSavedData::new, LogisticsNetworkSavedData::load, "create_logistics");
+			.computeIfAbsent(TYPE);
 	}
 
 }

@@ -23,7 +23,7 @@ public class PotionFluidSubtypeInterpreter implements ISubtypeInterpreter<FluidS
 			return null;
 
 		PotionContents contents = ingredient.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-		String potionTypeString = ingredient.getItem().getDescriptionId();
+		String potionTypeString = ingredient.getDescriptionId();
 		String bottleType = ingredient.getOrDefault(AllDataComponents.POTION_FLUID_BOTTLE_TYPE, BottleType.REGULAR).name();
 
 		StringBuilder stringBuilder = new StringBuilder(potionTypeString);

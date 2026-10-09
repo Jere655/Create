@@ -23,7 +23,8 @@ import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.SmallFireball;
-import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.ThrownLingeringPotion;
+import net.minecraft.world.entity.projectile.ThrownSplashPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
@@ -47,7 +48,7 @@ public class AllMountedDispenseItemBehaviors {
 				return super.execute(stack, context, pos, facing);
 
 			if (context.world instanceof ServerLevel serverLevel) {
-				EntityType<?> type = egg.getType(stack);
+				EntityType<?> type = egg.getType(serverLevel.registryAccess(), stack);
 				BlockPos offset = BlockPos.containing(facing.x + .7, facing.y + .7, facing.z + .7);
 				Entity entity = type.spawn(serverLevel, stack, null, pos.offset(offset), EntitySpawnReason.DISPENSER, facing.y < .5, false);
 				if (entity != null) {
@@ -134,9 +135,8 @@ public class AllMountedDispenseItemBehaviors {
 	private static final MountedDispenseBehavior POTIONS = new MountedProjectileDispenseBehavior() {
 		@Override
 		protected Projectile getProjectile(Level level, double x, double y, double z, ItemStack stack, Direction facing) {
-			ThrownPotion potion = new ThrownPotion(level, x, y, z);
-			potion.setItem(stack); // copies item
-			return potion;
+			return stack.is(Items.LINGERING_POTION) ? new ThrownLingeringPotion(level, x, y, z, stack)
+				: new ThrownSplashPotion(level, x, y, z, stack);
 		}
 
 		@Override

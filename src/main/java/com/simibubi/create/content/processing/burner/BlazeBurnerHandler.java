@@ -11,8 +11,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.AbstractThrownPotion;
 import net.minecraft.world.entity.projectile.ThrownEgg;
-import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -78,7 +78,7 @@ public class BlazeBurnerHandler {
 		Projectile projectile = event.getProjectile();
 		if (projectile.level().isClientSide)
 			return;
-		if (!(projectile instanceof ThrownPotion entity))
+		if (!(projectile instanceof AbstractThrownPotion entity))
 			return;
 
 		if (event.getRayTraceResult()

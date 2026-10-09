@@ -21,6 +21,7 @@ import com.simibubi.create.foundation.mixin.accessor.ItemFrameAccessor;
 import net.createmod.catnip.components.ComponentProcessors;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.Item;
@@ -154,9 +155,11 @@ public class ItemRequirement {
 		if (entity instanceof ArmorStand armorStand) {
 			List<StackRequirement> requirements = new ArrayList<>();
 			requirements.add(new StackRequirement(new ItemStack(Items.ARMOR_STAND), ItemUseType.CONSUME));
-			armorStand.getAllSlots()
-				.forEach(s -> requirements
-					.add(new StrictNbtStackRequirement(ComponentProcessors.withUnsafeComponentsDiscarded(s), ItemUseType.CONSUME)));
+			for (EquipmentSlot slot : EquipmentSlot.values()) {
+				ItemStack stack = armorStand.getItemBySlot(slot);
+				requirements.add(new StrictNbtStackRequirement(ComponentProcessors.withUnsafeComponentsDiscarded(stack),
+					ItemUseType.CONSUME));
+			}
 			return new ItemRequirement(requirements);
 		}
 

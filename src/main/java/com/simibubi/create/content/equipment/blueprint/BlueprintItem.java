@@ -15,6 +15,7 @@ import com.simibubi.create.foundation.utility.RecipeGenericsUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.ItemTags;
@@ -27,9 +28,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Ingredient.ItemValue;
-import net.minecraft.world.item.crafting.Ingredient.TagValue;
-import net.minecraft.world.item.crafting.Ingredient.Value;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
@@ -96,54 +94,35 @@ public class BlueprintItem extends Item {
 
 	private static ItemStack convertIngredientToFilter(Ingredient ingredient) {
 		boolean isCompoundIngredient = ingredient.getCustomIngredient() instanceof CompoundIngredient;
-		Value[] acceptedItems = ingredient.values;
-		if (acceptedItems == null || acceptedItems.length > 18)
+		if (!ingredient.isCustom()) {
+			var tag = ingredient.getValues().unwrapKey();
+			if (tag.isPresent())
+				return tagFilter(tag.get());
+		}
+		List<Holder<Item>> acceptedItems = ingredient.items().toList();
+		if (acceptedItems.isEmpty() || acceptedItems.size() > 18)
 			return ItemStack.EMPTY;
-		if (acceptedItems.length == 0)
-			return ItemStack.EMPTY;
-		if (acceptedItems.length == 1)
-			return convertIItemListToFilter(acceptedItems[0], isCompoundIngredient);
+		if (acceptedItems.size() == 1)
+			return new ItemStack(acceptedItems.getFirst());
 
 		ItemStack result = AllItems.FILTER.asStack();
 		ItemStackHandler filterItems = AllItems.FILTER.get().getFilterItemHandler(result);
-		for (int i = 0; i < acceptedItems.length; i++)
-			filterItems.setStackInSlot(i, convertIItemListToFilter(acceptedItems[i], isCompoundIngredient));
+		for (int i = 0; i < acceptedItems.size(); i++)
+			filterItems.setStackInSlot(i, new ItemStack(acceptedItems.get(i)));
 		result.set(AllDataComponents.FILTER_ITEMS, ItemHelper.containerContentsFromHandler(filterItems));
+		if (isCompoundIngredient)
+			result.set(AllDataComponents.FILTER_ITEMS_RESPECT_NBT, true);
 		return result;
 	}
 
-	private static ItemStack convertIItemListToFilter(Value itemList, boolean isCompoundIngredient) {
-		Collection<ItemStack> stacks = itemList.getItems();
-		if (itemList instanceof ItemValue) {
-			for (ItemStack itemStack : stacks)
-				return itemStack;
-		}
-
-		if (itemList instanceof TagValue tagValue) {
-			ItemStack filterItem = AllItems.ATTRIBUTE_FILTER.asStack();
-			filterItem.set(AllDataComponents.ATTRIBUTE_FILTER_WHITELIST_MODE, AttributeFilterWhitelistMode.WHITELIST_DISJ);
-			List<ItemAttributeEntry> attributes = new ArrayList<>();
-			ItemAttribute at = new InTagAttribute(ItemTags.create(tagValue.tag().location()));
-			attributes.add(new ItemAttribute.ItemAttributeEntry(at, false));
-			filterItem.set(AllDataComponents.ATTRIBUTE_FILTER_MATCHED_ATTRIBUTES, attributes);
-			return filterItem;
-		}
-
-		if (isCompoundIngredient) {
-			ItemStack result = AllItems.FILTER.asStack();
-			ItemStackHandler filterItems = AllItems.FILTER.get().getFilterItemHandler(result);
-			int i = 0;
-			for (ItemStack itemStack : stacks) {
-				if (i >= 18)
-					break;
-				filterItems.setStackInSlot(i++, itemStack);
-			}
-			result.set(AllDataComponents.FILTER_ITEMS, ItemHelper.containerContentsFromHandler(filterItems));
-			result.set(AllDataComponents.FILTER_ITEMS_RESPECT_NBT, true);
-			return result;
-		}
-
-		return ItemStack.EMPTY;
+	private static ItemStack tagFilter(net.minecraft.tags.TagKey<Item> tag) {
+		ItemStack filterItem = AllItems.ATTRIBUTE_FILTER.asStack();
+		filterItem.set(AllDataComponents.ATTRIBUTE_FILTER_WHITELIST_MODE, AttributeFilterWhitelistMode.WHITELIST_DISJ);
+		List<ItemAttributeEntry> attributes = new ArrayList<>();
+		ItemAttribute at = new InTagAttribute(ItemTags.create(tag.location()));
+		attributes.add(new ItemAttribute.ItemAttributeEntry(at, false));
+		filterItem.set(AllDataComponents.ATTRIBUTE_FILTER_MATCHED_ATTRIBUTES, attributes);
+		return filterItem;
 	}
 
 }

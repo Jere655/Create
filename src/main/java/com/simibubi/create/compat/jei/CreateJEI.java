@@ -388,7 +388,7 @@ public class CreateJEI implements IModPlugin {
 
 			if (potionContents.hasEffects()) {
 				Set<Holder<MobEffect>> effectSet = new HashSet<>();
-				potionContents.forEachEffect(mei -> effectSet.add(mei.getEffect()));
+				potionContents.forEachEffect(mei -> effectSet.add(mei.getEffect()), 1.0f);
 				if (!visitedEffects.add(effectSet))
 					continue;
 }
