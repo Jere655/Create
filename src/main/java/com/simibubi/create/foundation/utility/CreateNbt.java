@@ -119,6 +119,10 @@ public final class CreateNbt {
 			.orElseGet(CompoundTag::new);
 	}
 
+	public static ValueInput valueInput(HolderLookup.Provider registries, CompoundTag tag) {
+		return TagValueInput.create(ProblemReporter.DISCARDING, registries, tag);
+	}
+
 	public static CompoundTag writeValue(HolderLookup.Provider registries, ValueIOSerializable value) {
 		TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
 		value.serialize(output);

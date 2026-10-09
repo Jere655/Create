@@ -39,7 +39,7 @@ public class ClipboardBlockItem extends BlockItem implements SupportsItemCopying
 			return InteractionResult.PASS;
 		if (player.isShiftKeyDown())
 			return super.useOn(context);
-		return use(context.getLevel(), player, context.getHand()).getResult();
+		return use(context.getLevel(), player, context.getHand());
 	}
 
 	@Override

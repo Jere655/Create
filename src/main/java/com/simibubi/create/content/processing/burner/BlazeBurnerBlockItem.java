@@ -93,7 +93,8 @@ public class BlazeBurnerBlockItem extends BlockItem {
 		}
 
 		for (SpawnData e : possibleSpawns) {
-			Optional<EntityType<?>> optionalEntity = EntityType.by(e.entityToSpawn());
+			Optional<EntityType<?>> optionalEntity = EntityType.by(
+				com.simibubi.create.foundation.utility.CreateNbt.valueInput(world.registryAccess(), e.entityToSpawn()));
 			if (optionalEntity.isEmpty() || !AllEntityTags.BLAZE_BURNER_CAPTURABLE.matches(optionalEntity.get()))
 				continue;
 

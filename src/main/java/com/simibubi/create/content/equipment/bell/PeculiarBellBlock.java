@@ -11,6 +11,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -50,9 +52,10 @@ public class PeculiarBellBlock extends AbstractBellBlock<PeculiarBellBlockEntity
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor world,
-										  BlockPos currentPos, BlockPos facingPos) {
-		BlockState newState = super.updateShape(state, facing, facingState, world, currentPos, facingPos);
+	public BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess scheduledTicks,
+		BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
+		BlockState newState = super.updateShape(state, world, scheduledTicks, currentPos, facing, facingPos, facingState,
+			random);
 		if (facing != Direction.DOWN)
 			return newState;
 

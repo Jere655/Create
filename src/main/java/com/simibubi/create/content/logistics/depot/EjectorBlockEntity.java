@@ -256,7 +256,8 @@ public class EjectorBlockEntity extends KineticBlockEntity {
 					continue;
 				if (blockState.getValue(ObserverBlock.FACING) != d.getOpposite())
 					continue;
-				blockState.updateShape(d.getOpposite(), blockState, level, worldPosition.relative(d), worldPosition);
+				blockState.updateShape(level, level, worldPosition.relative(d), d.getOpposite(), worldPosition, blockState,
+					level.getRandom());
 			}
 
 		if (depotBehaviour.heldItem != null) {

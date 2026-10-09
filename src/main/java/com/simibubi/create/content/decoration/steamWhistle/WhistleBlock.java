@@ -29,6 +29,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
@@ -202,8 +203,8 @@ public class WhistleBlock extends Block implements IBE<WhistleBlockEntity>, IWre
 			worldIn.setBlock(pos, state.cycle(POWERED), Block.UPDATE_CLIENTS);
 	}
 
-	public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel,
-		BlockPos pCurrentPos, BlockPos pFacingPos) {
+	public BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess scheduledTicks,
+		BlockPos pCurrentPos, Direction pFacing, BlockPos pFacingPos, BlockState pFacingState, RandomSource random) {
 		return getAttachedDirection(pState) == pFacing && !pState.canSurvive(pLevel, pCurrentPos)
 			? Blocks.AIR.defaultBlockState()
 			: pState;

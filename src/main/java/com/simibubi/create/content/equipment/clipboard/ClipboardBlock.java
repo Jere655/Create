@@ -27,6 +27,7 @@ import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Inventory;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
@@ -185,10 +187,10 @@ public class ClipboardBlock extends FaceAttachedHorizontalDirectionalBlock
 	}
 
 	@Override
-	public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel,
-		BlockPos pCurrentPos, BlockPos pFacingPos) {
-		updateWater(pLevel, pState, pCurrentPos);
-		return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+	public BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess scheduledTicks,
+		BlockPos pCurrentPos, Direction pFacing, BlockPos pFacingPos, BlockState pFacingState, RandomSource random) {
+		updateWater(pLevel, scheduledTicks, pState, pCurrentPos);
+		return super.updateShape(pState, pLevel, scheduledTicks, pCurrentPos, pFacing, pFacingPos, pFacingState, random);
 	}
 
 	@Override

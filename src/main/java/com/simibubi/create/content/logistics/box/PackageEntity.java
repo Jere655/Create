@@ -44,6 +44,8 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -376,7 +378,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 			ItemStack itemstack = contents.getStackInSlot(i);
 
 			if (itemstack.getItem() instanceof SpawnEggItem sei) {
-				EntityType<?> entitytype = sei.getType(itemstack);
+				EntityType<?> entitytype = sei.getType(level.registryAccess(), itemstack);
 				Entity entity =
 					entitytype.spawn(level, itemstack, null, blockPosition(), EntitySpawnReason.SPAWN_ITEM_USE, false, false);
 				if (entity != null)
@@ -391,16 +393,16 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	}
 
 	@Override
-	public void readAdditionalSaveData(CompoundTag compound) {
-		super.readAdditionalSaveData(compound);
-		box = CreateNbt.readItemStack(level().registryAccess(), compound.getCompound("Box").orElseGet(CompoundTag::new));
+	protected void readAdditionalSaveData(ValueInput input) {
+		super.readAdditionalSaveData(input);
+		box = input.read("Box", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
 		refreshDimensions();
 	}
 
 	@Override
-	public void addAdditionalSaveData(CompoundTag compound) {
-		super.addAdditionalSaveData(compound);
-		compound.put("Box", CreateNbt.writeItemStack(level().registryAccess(), box));
+	protected void addAdditionalSaveData(ValueOutput output) {
+		super.addAdditionalSaveData(output);
+		output.store("Box", ItemStack.OPTIONAL_CODEC, box);
 	}
 
 	@Override

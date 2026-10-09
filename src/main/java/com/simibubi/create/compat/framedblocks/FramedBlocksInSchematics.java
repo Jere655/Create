@@ -37,11 +37,11 @@ public class FramedBlocksInSchematics {
 		for (String key : keysToRemove)
 			data.remove(key);
 
-		if (data.getCompound("camo")
+		if (data.getCompoundOrEmpty("camo")
 			.contains("fluid"))
 			data.remove("camo");
 
-		if (data.getCompound("camo_two")
+		if (data.getCompoundOrEmpty("camo_two")
 			.contains("fluid"))
 			data.remove("camo_two");
 

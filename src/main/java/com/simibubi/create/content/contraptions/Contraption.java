@@ -983,10 +983,8 @@ public abstract class Contraption {
 
 			this.blocks.put(info.pos(), info);
 
-			c.getCompound("UpdateTag").orElseGet(CompoundTag::new).ifPresent(updateTag -> {
-				// it's very important that empty tags are read here. see writeBlocksCompound
-				this.updateTags.put(info.pos(), updateTag);
-			});
+			// It's very important that empty tags are read here. See writeBlocksCompound.
+			this.updateTags.put(info.pos(), c.getCompound("UpdateTag").orElseGet(CompoundTag::new));
 
 			// Mark the pos if it has the legacy marker.
 			// This will be used when creating BlockEntities for the ClientContraption.
@@ -1123,8 +1121,8 @@ public abstract class Contraption {
 
 				if (nonBrittles)
 					for (Direction face : Iterate.directions)
-						state = state.updateShape(face, world.getBlockState(targetPos.relative(face)), world, targetPos,
-							targetPos.relative(face));
+						state = state.updateShape(world, world, targetPos, face, targetPos.relative(face),
+							world.getBlockState(targetPos.relative(face)), world.getRandom());
 
 				BlockState blockState = world.getBlockState(targetPos);
 				if (blockState.getDestroySpeed(world, targetPos) == -1 || (state.getCollisionShape(world, targetPos)

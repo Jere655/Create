@@ -14,11 +14,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.SignalGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
@@ -81,8 +83,8 @@ public class ChainDriveBlock extends RotatedPillarKineticBlock
 	}
 
 	@Override
-	public BlockState updateShape(BlockState stateIn, Direction face, BlockState neighbour, LevelAccessor worldIn,
-		BlockPos currentPos, BlockPos facingPos) {
+	public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess scheduledTicks,
+		BlockPos currentPos, Direction face, BlockPos facingPos, BlockState neighbour, RandomSource random) {
 		Part part = stateIn.getValue(PART);
 		Axis axis = stateIn.getValue(AXIS);
 		boolean connectionAlongFirst = stateIn.getValue(CONNECTED_ALONG_FIRST_COORDINATE);

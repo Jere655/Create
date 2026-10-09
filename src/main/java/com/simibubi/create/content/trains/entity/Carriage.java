@@ -47,6 +47,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -533,7 +534,7 @@ public class Carriage {
 		CompoundTag passengersTag = tag.getCompound("Passengers").orElseGet(CompoundTag::new);
 		passengersTag.keySet()
 			.forEach(key -> carriage.serialisedPassengers.put(Integer.valueOf(key.substring(4)),
-				passengersTag.getCompound(key)));
+				passengersTag.getCompound(key).orElseGet(CompoundTag::new)));
 
 		return carriage;
 	}
@@ -729,8 +730,8 @@ public class Carriage {
 						.getPlayer(com.simibubi.create.foundation.utility.CreateNbt.readUUID(NBTHelper.getINBT(tag, "PlayerPassenger")));
 
 				} else {
-					passenger = EntityType.loadEntityRecursive(tag, entity.level(), e -> {
-						e.moveTo(positionAnchor);
+					passenger = EntityType.loadEntityRecursive(tag, entity.level(), EntitySpawnReason.LOAD, e -> {
+						e.setPos(positionAnchor);
 						return e;
 					});
 					if (passenger != null)
@@ -831,7 +832,9 @@ public class Carriage {
 		private void createEntity(Level level, boolean loadPassengers) {
 			if (positionAnchor != null)
 				serialisedEntity.put("Pos", VecHelper.writeNBT(positionAnchor));
-			Entity entity = EntityType.create(serialisedEntity, level)
+			Entity entity = EntityType.create(
+				com.simibubi.create.foundation.utility.CreateNbt.valueInput(level.registryAccess(), serialisedEntity),
+				level, EntitySpawnReason.LOAD)
 				.orElse(null);
 
 			if (!(entity instanceof CarriageContraptionEntity cce)) {
@@ -839,7 +842,7 @@ public class Carriage {
 				return;
 			}
 
-			entity.moveTo(positionAnchor);
+			entity.setPos(positionAnchor);
 			this.entity = new WeakReference<>(cce);
 
 			cce.setCarriage(Carriage.this);

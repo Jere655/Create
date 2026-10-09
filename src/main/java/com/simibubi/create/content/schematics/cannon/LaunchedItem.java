@@ -24,6 +24,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -121,7 +122,7 @@ public abstract class LaunchedItem {
 		void readNBT(CompoundTag nbt, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
 			super.readNBT(nbt, registries, holderGetter);
 			state = NbtUtils.readBlockState(holderGetter, nbt.getCompoundOrEmpty("BlockState"));
-			nbt.getCompound("Data").orElseGet(CompoundTag::new).ifPresent(value -> data = value);
+			data = nbt.getCompound("Data").orElseGet(CompoundTag::new);
 		}
 
 		@Override
@@ -205,7 +206,9 @@ public abstract class LaunchedItem {
 		public boolean update(Level world) {
 			if (deferredTag != null && entity == null) {
 				try {
-					Optional<Entity> loadEntityUnchecked = EntityType.create(deferredTag, world);
+					Optional<Entity> loadEntityUnchecked = EntityType.create(
+						com.simibubi.create.foundation.utility.CreateNbt.valueInput(world.registryAccess(), deferredTag),
+						world, EntitySpawnReason.LOAD);
 					if (!loadEntityUnchecked.isPresent())
 						return true;
 					entity = loadEntityUnchecked.get();
@@ -220,8 +223,11 @@ public abstract class LaunchedItem {
 		@Override
 		public CompoundTag serializeNBT(HolderLookup.Provider registries) {
 			CompoundTag serializeNBT = super.serializeNBT(registries);
-			if (entity != null)
-				serializeNBT.put("Entity", entity.serializeNBT(registries));
+			if (entity != null) {
+				CompoundTag entityTag = new CompoundTag();
+				com.simibubi.create.foundation.utility.CreateNbt.saveEntity(entity, entityTag);
+				serializeNBT.put("Entity", entityTag);
+			}
 			return serializeNBT;
 		}
 

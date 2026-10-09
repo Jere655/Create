@@ -20,6 +20,7 @@ import net.createmod.catnip.placement.PlacementOffset;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -32,6 +33,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -91,8 +93,8 @@ public class GantryShaftBlock extends DirectionalKineticBlock implements IBE<Gan
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction direction, BlockState neighbour, LevelAccessor world,
-		BlockPos pos, BlockPos neighbourPos) {
+	public BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess scheduledTicks, BlockPos pos,
+		Direction direction, BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
 		Direction facing = state.getValue(FACING);
 		Axis axis = facing.getAxis();
 		if (direction.getAxis() != axis)

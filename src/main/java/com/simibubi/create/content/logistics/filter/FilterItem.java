@@ -53,7 +53,7 @@ public abstract class FilterItem extends Item implements MenuProvider, SupportsI
 	public InteractionResult useOn(UseOnContext context) {
 		if (context.getPlayer() == null)
 			return InteractionResult.PASS;
-		return use(context.getLevel(), context.getPlayer(), context.getHand()).getResult();
+		return use(context.getLevel(), context.getPlayer(), context.getHand());
 	}
 
 	@Override

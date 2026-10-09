@@ -22,6 +22,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -89,8 +90,9 @@ public class LargeWaterWheelBlock extends RotatedPillarKineticBlock implements I
 	}
 
 	@Override
-	public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState,
-		LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+	public BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess scheduledTicks,
+		BlockPos pCurrentPos, Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState,
+		RandomSource random) {
 		if (pDirection != Direction.fromAxisAndDirection(pState.getValue(AXIS), AxisDirection.NEGATIVE))
 			return pState;
 		return pState.setValue(EXTENSION, pNeighborState.is(this));

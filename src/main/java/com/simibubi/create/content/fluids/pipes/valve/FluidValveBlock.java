@@ -23,6 +23,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -153,9 +154,9 @@ public class FluidValveBlock extends DirectionalAxisKineticBlock
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world,
-		BlockPos pos, BlockPos neighbourPos) {
-		updateWater(world, state, pos);
+	public BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess scheduledTicks, BlockPos pos,
+		Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+		updateWater(world, scheduledTicks, state, pos);
 		return state;
 	}
 

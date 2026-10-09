@@ -49,7 +49,7 @@ public class ScheduleItem extends Item implements MenuProvider, SupportsItemCopy
 	public InteractionResult useOn(UseOnContext context) {
 		if (context.getPlayer() == null)
 			return InteractionResult.PASS;
-		return use(context.getLevel(), context.getPlayer(), context.getHand()).getResult();
+		return use(context.getLevel(), context.getPlayer(), context.getHand());
 	}
 
 	@Override

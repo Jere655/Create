@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
@@ -128,9 +130,10 @@ public class SlidingDoorBlock extends DoorBlock implements IWrenchable, IBE<Slid
 	}
 
 	@Override
-	public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, LevelAccessor pLevel,
-								  BlockPos pCurrentPos, BlockPos pFacingPos) {
-		BlockState blockState = super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+	public BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess scheduledTicks,
+		BlockPos pCurrentPos, Direction pFacing, BlockPos pFacingPos, BlockState pFacingState, RandomSource random) {
+		BlockState blockState = super.updateShape(pState, pLevel, scheduledTicks, pCurrentPos, pFacing, pFacingPos,
+			pFacingState, random);
 		if (blockState.isAir())
 			return blockState;
 		DoubleBlockHalf doubleblockhalf = blockState.getValue(HALF);
@@ -244,7 +247,7 @@ public class SlidingDoorBlock extends DoorBlock implements IWrenchable, IBE<Slid
 			level.gameEvent(player, GameEvent.BLOCK_OPEN, pos);
 		}
 
-		return InteractionResult.sidedSuccess(level.isClientSide);
+		return level.isClientSide ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
 	}
 
 	public void deferUpdate(LevelAccessor level, BlockPos pos) {

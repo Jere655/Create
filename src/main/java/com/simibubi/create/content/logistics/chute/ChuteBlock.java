@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.Mirror;
@@ -130,10 +132,10 @@ public class ChuteBlock extends AbstractChuteBlock implements ProperWaterloggedB
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction direction, BlockState above, LevelAccessor world,
-		BlockPos pos, BlockPos p_196271_6_) {
-		updateWater(world, state, pos);
-		return super.updateShape(state, direction, above, world, pos, p_196271_6_);
+	public BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess scheduledTicks, BlockPos pos,
+		Direction direction, BlockPos neighbourPos, BlockState above, RandomSource random) {
+		updateWater(world, scheduledTicks, state, pos);
+		return super.updateShape(state, world, scheduledTicks, pos, direction, neighbourPos, above, random);
 	}
 
 	@Override

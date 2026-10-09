@@ -69,7 +69,7 @@ public class BlueprintItem extends Item {
 		}
 
 		stack.shrink(1);
-		return InteractionResult.sidedSuccess(world.isClientSide);
+		return world.isClientSide ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
 	}
 
 	public static void assignCompleteRecipe(Level level, ItemStackHandler inv, Recipe<?> recipe) {
