@@ -78,6 +78,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
@@ -307,9 +308,10 @@ public class TrackBlock extends Block
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction pDirection, BlockState pNeighborState,
-								  LevelAccessor level, BlockPos pCurrentPos, BlockPos pNeighborPos) {
-		updateWater(level, state, pCurrentPos);
+	public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess scheduledTicks,
+		BlockPos pCurrentPos, Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState,
+		RandomSource random) {
+		updateWater(level, scheduledTicks, state, pCurrentPos);
 		TrackShape shape = state.getValue(SHAPE);
 		if (!shape.isPortal())
 			return state;

@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
+import com.simibubi.create.foundation.utility.CreateNbt;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,7 +17,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Clearable;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -132,8 +132,6 @@ public class CloneCommand {
 		List<StructureTemplate.StructureBlockInfo> reverse = Lists.reverse(allBlocks);
 
 		for (StructureTemplate.StructureBlockInfo info : reverse) {
-			BlockEntity be = world.getBlockEntity(info.pos());
-			Clearable.tryClear(be);
 			world.setBlock(info.pos(), Blocks.BARRIER.defaultBlockState(), Block.UPDATE_CLIENTS);
 		}
 
@@ -148,7 +146,7 @@ public class CloneCommand {
 				info.nbt().putInt("x", info.pos().getX());
 				info.nbt().putInt("y", info.pos().getY());
 				info.nbt().putInt("z", info.pos().getZ());
-				be.loadWithComponents(info.nbt(), world.registryAccess());
+				be.loadWithComponents(CreateNbt.valueInput(world.registryAccess(), info.nbt()));
 				be.setChanged();
 			}
 

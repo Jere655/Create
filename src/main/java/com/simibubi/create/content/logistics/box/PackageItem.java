@@ -3,6 +3,7 @@ package com.simibubi.create.content.logistics.box;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +45,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -221,12 +223,12 @@ public class PackageItem extends Item {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> tooltipComponents,
-								TooltipFlag tooltipFlag) {
-		super.appendHoverText(stack, tooltipContext, tooltipComponents, tooltipFlag);
+	public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, TooltipDisplay tooltipDisplay,
+		Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag) {
+		super.appendHoverText(stack, tooltipContext, tooltipDisplay, tooltipAdder, tooltipFlag);
 
 		if (stack.has(AllDataComponents.PACKAGE_ADDRESS))
-			tooltipComponents.add(Component.literal("\u2192 " + stack.get(AllDataComponents.PACKAGE_ADDRESS))
+			tooltipAdder.accept(Component.literal("\u2192 " + stack.get(AllDataComponents.PACKAGE_ADDRESS))
 				.withStyle(ChatFormatting.GOLD));
 
 		/*
@@ -261,7 +263,7 @@ public class PackageItem extends Item {
 			}
 
 			visibleNames++;
-			tooltipComponents.add(itemstack.getHoverName()
+			tooltipAdder.accept(itemstack.getHoverName()
 				.copy()
 				.append(" x")
 				.append(String.valueOf(itemstack.getCount()))
@@ -269,7 +271,7 @@ public class PackageItem extends Item {
 		}
 
 		if (skippedNames > 0)
-			tooltipComponents.add(Component.translatable("container.shulkerBox.more", skippedNames)
+			tooltipAdder.accept(Component.translatable("container.shulkerBox.more", skippedNames)
 				.withStyle(ChatFormatting.ITALIC));
 	}
 
@@ -299,7 +301,7 @@ public class PackageItem extends Item {
 					continue;
 
 				if (itemstack.getItem() instanceof SpawnEggItem sei && worldIn instanceof ServerLevel sl) {
-					EntityType<?> entitytype = sei.getType(itemstack);
+					EntityType<?> entitytype = sei.getType(worldIn.registryAccess(), itemstack);
 					Entity entity = entitytype.spawn(sl, itemstack, null, BlockPos.containing(playerIn.position()
 							.add(playerIn.getLookAngle()
 								.multiply(1, 0, 1)

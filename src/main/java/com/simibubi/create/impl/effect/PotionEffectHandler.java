@@ -6,6 +6,7 @@ import com.simibubi.create.api.effect.OpenPipeEffectHandler;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,6 +21,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 public class PotionEffectHandler implements OpenPipeEffectHandler {
 	@Override
 	public void apply(Level level, AABB area, FluidStack fluid) {
+		if (!(level instanceof ServerLevel serverLevel))
+			return;
 		PotionContents contents = getContents(fluid);
 		if (contents == PotionContents.EMPTY)
 			return;
@@ -29,11 +32,11 @@ public class PotionEffectHandler implements OpenPipeEffectHandler {
 			contents.forEachEffect(effectInstance -> {
 				MobEffect effect = effectInstance.getEffect().value();
 				if (effect.isInstantenous()) {
-					effect.applyInstantenousEffect(null, null, entity, effectInstance.getAmplifier(), 0.5D);
+					effect.applyInstantenousEffect(serverLevel, null, null, entity, effectInstance.getAmplifier(), 0.5D);
 				} else {
 					entity.addEffect(new MobEffectInstance(effectInstance));
 				}
-			});
+			}, 1.0f);
 		}
 	}
 

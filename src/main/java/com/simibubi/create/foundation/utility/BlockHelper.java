@@ -228,7 +228,7 @@ public class BlockHelper {
 			player.awardStat(Stats.BLOCK_MINED.get(state.getBlock()));
 		}
 
-		if (level instanceof ServerLevel serverLevel && level.getGameRules()
+		if (level instanceof ServerLevel serverLevel && serverLevel.getGameRules()
 			.getBoolean(GameRules.RULE_DOBLOCKDROPS) && !level.restoringBlockSnapshots
 			&& (player == null || !player.isCreative())) {
 			List<ItemStack> drops = Block.getDrops(state, serverLevel, pos, blockEntity, player, usedTool);
@@ -246,8 +246,9 @@ public class BlockHelper {
 
 			// Simulating IceBlock#playerDestroy. Not calling method directly as it would drop item
 			// entities as a side-effect
-			Registry<Enchantment> enchantmentRegistry = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
-			if (state.getBlock() instanceof IceBlock && usedTool.getEnchantmentLevel(enchantmentRegistry.getHolderOrThrow(Enchantments.SILK_TOUCH)) == 0) {
+			var enchantmentRegistry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+			if (state.getBlock() instanceof IceBlock
+				&& usedTool.getEnchantmentLevel(enchantmentRegistry.getOrThrow(Enchantments.SILK_TOUCH)) == 0) {
 				if (!level.dimensionType().ultraWarm()) {
 					BlockState below = level.getBlockState(pos.below());
 					if (below.blocksMotion() || below.liquid()) {
@@ -284,12 +285,12 @@ public class BlockHelper {
 		}
 		BlockState old = chunksection.setBlockState(SectionPos.sectionRelative(target.getX()),
 			SectionPos.sectionRelative(target.getY()), SectionPos.sectionRelative(target.getZ()), state);
-		chunk.setUnsaved(true);
+		chunk.markUnsaved();
 		world.markAndNotifyBlock(target, chunk, old, state, 82, 512);
 
 		world.setBlock(target, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_MOVE_BY_PISTON);
 		world.neighborChanged(target, world.getBlockState(target.below())
-			.getBlock(), target.below());
+			.getBlock(), null);
 	}
 
 	public static CompoundTag prepareBlockEntityData(Level level, BlockState blockState, BlockEntity blockEntity) {

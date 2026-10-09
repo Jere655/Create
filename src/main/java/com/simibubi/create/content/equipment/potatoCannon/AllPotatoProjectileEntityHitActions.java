@@ -31,10 +31,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.food.FoodProperties.PossibleEffect;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.item.component.SuspiciousStewEffects.Entry;
 import net.minecraft.world.level.Level;
@@ -124,10 +124,10 @@ public class AllPotatoProjectileEntityHitActions {
 				return true;
 
 			if (entity instanceof LivingEntity livingEntity) {
-				for (PossibleEffect effect : foodProperty.effects()) {
-					if (livingEntity.getRandom().nextFloat() < effect.probability())
-						applyEffect(livingEntity, effect.effect());
-				}
+				Consumable consumable = projectile.get(DataComponents.CONSUMABLE);
+				if (consumable != null)
+					consumable.onConsumeEffects()
+						.forEach(effect -> effect.apply(entity.level(), projectile, livingEntity));
 			}
 			return !recoverable;
 		}
@@ -164,8 +164,8 @@ public class AllPotatoProjectileEntityHitActions {
 				double teleportZ = entityZ + (livingEntity.getRandom()
 					.nextDouble() - 0.5D) * teleportDiameter;
 
-				EntityTeleportEvent.ChorusFruit event =
-					EventHooks.onChorusFruitTeleport(livingEntity, teleportX, teleportY, teleportZ);
+				EntityTeleportEvent.ItemConsumption event =
+					EventHooks.onItemConsumptionTeleport(livingEntity, projectile, teleportX, teleportY, teleportZ);
 				if (event.isCanceled())
 					return false;
 				if (livingEntity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true)) {
@@ -247,8 +247,10 @@ public class AllPotatoProjectileEntityHitActions {
 
 	private static void applyEffect(LivingEntity entity, MobEffectInstance effect) {
 		if (effect.getEffect().value().isInstantenous()) {
+			if (!(entity.level() instanceof ServerLevel serverLevel))
+				return;
 			effect.getEffect().value()
-				.applyInstantenousEffect(null, null, entity, effect.getDuration(), 1.0);
+				.applyInstantenousEffect(serverLevel, null, null, entity, effect.getAmplifier(), 1.0);
 		} else {
 			entity.addEffect(effect);
 		}

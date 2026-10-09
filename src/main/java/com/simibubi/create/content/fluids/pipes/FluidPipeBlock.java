@@ -41,6 +41,8 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.PipeBlock;
@@ -251,12 +253,12 @@ public class FluidPipeBlock extends PipeBlock implements SimpleWaterloggedBlock,
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world,
-		BlockPos pos, BlockPos neighbourPos) {
+	public BlockState updateShape(BlockState state, LevelReader world, ScheduledTickAccess scheduledTicks, BlockPos pos,
+		Direction direction, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
 		if (state.getValue(BlockStateProperties.WATERLOGGED))
-			world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
+			scheduledTicks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
 		if (isOpenAt(state, direction) && neighbourState.hasProperty(BlockStateProperties.WATERLOGGED))
-			world.scheduleTick(pos, this, 1, TickPriority.HIGH);
+			scheduledTicks.scheduleTick(pos, this, 1, TickPriority.HIGH);
 		return updateBlockState(state, direction, direction.getOpposite(), world, pos);
 	}
 

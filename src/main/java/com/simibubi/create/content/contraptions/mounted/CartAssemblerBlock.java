@@ -48,6 +48,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.RailShape;
@@ -193,13 +194,13 @@ public class CartAssemblerBlock extends BaseRailBlock
 
 	@Override
 	public void neighborChanged(@NotNull BlockState state, @NotNull Level worldIn, @NotNull BlockPos pos,
-								@NotNull Block blockIn, @NotNull BlockPos fromPos, boolean isMoving) {
+		@NotNull Block blockIn, @Nullable Orientation orientation, boolean isMoving) {
 		if (worldIn.isClientSide)
 			return;
 		boolean previouslyPowered = state.getValue(POWERED);
 		if (previouslyPowered != worldIn.hasNeighborSignal(pos))
 			worldIn.setBlock(pos, state.cycle(POWERED), Block.UPDATE_CLIENTS);
-		super.neighborChanged(state, worldIn, pos, blockIn, fromPos, isMoving);
+		super.neighborChanged(state, worldIn, pos, blockIn, orientation, isMoving);
 	}
 
 	@Override

@@ -42,6 +42,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -273,15 +275,16 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction pDirection, BlockState pNeighborState,
-								  LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
-		return updatedShapeInner(state, pDirection, pNeighborState, pLevel, pCurrentPos);
+	public BlockState updateShape(BlockState state, LevelReader pLevel, ScheduledTickAccess scheduledTicks,
+		BlockPos pCurrentPos, Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState,
+		RandomSource random) {
+		return updatedShapeInner(state, pDirection, pNeighborState, pLevel, scheduledTicks, pCurrentPos);
 	}
 
 	private BlockState updatedShapeInner(BlockState state, Direction pDirection, BlockState pNeighborState,
-										 LevelAccessor pLevel, BlockPos pCurrentPos) {
+		LevelReader pLevel, ScheduledTickAccess scheduledTicks, BlockPos pCurrentPos) {
 		if (state.getValue(BlockStateProperties.WATERLOGGED))
-			pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
+			scheduledTicks.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
 		if (!canConnect(state, pNeighborState))
 			return setConnection(state, pDirection, false);
 		if (pDirection.getAxis() == getConnectionAxis(state))

@@ -54,8 +54,8 @@ public class MechanicalPistonHeadBlock extends WrenchableDirectionalBlock implem
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos,
-									   Player player) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
+		Player player) {
         return AllBlocks.PISTON_EXTENSION_POLE.asStack();
     }
 

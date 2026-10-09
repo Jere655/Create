@@ -83,8 +83,8 @@ public class LitBlazeBurnerBlock extends Block implements IWrenchable {
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos,
-									   Player player) {
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
+		Player player) {
 		return AllItems.EMPTY_BLAZE_BURNER.asStack();
 	}
 

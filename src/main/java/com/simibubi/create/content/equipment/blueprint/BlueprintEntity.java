@@ -60,11 +60,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DiodeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -103,7 +100,9 @@ public class BlueprintEntity extends HangingEntity
 	}
 
 	@Override
-	protected void defineSynchedData(SynchedEntityData.Builder builder) {}
+	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+	}
 
 	@Override
 	public void addAdditionalSaveData(ValueOutput output) {
@@ -130,7 +129,7 @@ public class BlueprintEntity extends HangingEntity
 
 	protected void updateFacingWithBoundingBox(Direction facing, Direction verticalOrientation) {
 		Objects.requireNonNull(facing);
-		setDirection(facing);
+		setDirectionRaw(facing);
 		this.verticalOrientation = verticalOrientation;
 		if (facing.getAxis()
 			.isHorizontal()) {
@@ -205,7 +204,7 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	protected void recalculateBoundingBox() {
 		if (this.getDirection() != null && this.verticalOrientation != null) {
-			setBoundingBox(calculateBoundingBox(pos, direction));
+			setBoundingBox(calculateBoundingBox(pos, getDirection()));
 		}
 	}
 	@Override
@@ -222,6 +221,7 @@ public class BlueprintEntity extends HangingEntity
 		int i = Math.max(1, this.getWidth() / 16);
 		int j = Math.max(1, this.getHeight() / 16);
 		BlockPos blockpos = this.pos.relative(this.getDirection().getOpposite());
+		Direction direction = getDirection();
 		Direction upDirection = direction.getAxis()
 			.isHorizontal() ? Direction.UP
 			: direction == Direction.UP ? verticalOrientation : verticalOrientation.getOpposite();
@@ -286,8 +286,8 @@ public class BlueprintEntity extends HangingEntity
 	}
 
 	@Override
-	public void dropItem(@Nullable Entity p_110128_1_) {
-		if (!level().getGameRules()
+	public void dropItem(ServerLevel level, @Nullable Entity p_110128_1_) {
+		if (!level.getGameRules()
 			.getBoolean(GameRules.RULE_DOENTITYDROPS))
 			return;
 
@@ -297,12 +297,11 @@ public class BlueprintEntity extends HangingEntity
 				return;
 		}
 
-		if (level() instanceof ServerLevel serverLevel)
-			spawnAtLocation(serverLevel, AllItems.CRAFTING_BLUEPRINT.asStack());
+		spawnAtLocation(level, AllItems.CRAFTING_BLUEPRINT.asStack());
 	}
 
 	@Override
-	public ItemStack getPickedResult(HitResult target) {
+	public ItemStack getPickResult() {
 		return AllItems.CRAFTING_BLUEPRINT.asStack();
 	}
 
@@ -317,16 +316,8 @@ public class BlueprintEntity extends HangingEntity
 	}
 
 	@Override
-	public void moveTo(double p_70012_1_, double p_70012_3_, double p_70012_5_, float p_70012_7_, float p_70012_8_) {
+	public void snapTo(double p_70012_1_, double p_70012_3_, double p_70012_5_, float p_70012_7_, float p_70012_8_) {
 		this.setPos(p_70012_1_, p_70012_3_, p_70012_5_);
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void lerpTo(double pX, double pY, double pZ, float pYRot, float pXRot, int pSteps) {
-		BlockPos blockpos =
-				this.pos.offset(BlockPos.containing(pX - this.getX(), pY - this.getY(), pZ - this.getZ()));
-		this.setPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
 	}
 
 	@Override

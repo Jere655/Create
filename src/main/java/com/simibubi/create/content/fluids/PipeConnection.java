@@ -245,7 +245,7 @@ public class PipeConnection {
 
 		if (connectionData.contains("Pressure")) {
 			ListTag pressureData = connectionData.getListOrEmpty("Pressure");
-			pressure = Couple.create(pressureData.getFloat(0), pressureData.getFloat(1));
+			pressure = Couple.create(pressureData.getFloat(0).orElse(0f), pressureData.getFloat(1).orElse(0f));
 		} else
 			pressure.replace(f -> 0f);
 

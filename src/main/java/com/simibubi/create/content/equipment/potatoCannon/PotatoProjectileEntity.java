@@ -69,15 +69,15 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		this.stack = stack;
 		type = PotatoCannonProjectileType.getTypeForItem(level().registryAccess(), stack.getItem())
 			.orElseGet(() -> level().registryAccess()
-				.registryOrThrow(CreateRegistries.POTATO_PROJECTILE_TYPE)
-				.getHolderOrThrow(AllPotatoProjectileTypes.FALLBACK))
+				.lookupOrThrow(CreateRegistries.POTATO_PROJECTILE_TYPE)
+				.getOrThrow(AllPotatoProjectileTypes.FALLBACK))
 			.value();
 	}
 
 	public void setEnchantmentEffectsFromCannon(ItemStack cannon) {
-		Registry<Enchantment> enchantmentRegistry = registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+		var enchantmentRegistry = registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
 
-		int recovery = cannon.getEnchantmentLevel(enchantmentRegistry.getHolderOrThrow(AllEnchantments.POTATO_RECOVERY));
+		int recovery = cannon.getEnchantmentLevel(enchantmentRegistry.getOrThrow(AllEnchantments.POTATO_RECOVERY));
 
 		if (recovery > 0)
 			recoveryChance = .125f + recovery * .125f;

@@ -1,7 +1,6 @@
 package com.simibubi.create.content.logistics.box;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +32,7 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Pose;
@@ -43,6 +43,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -50,7 +51,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -112,7 +112,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	}
 
 	@Override
-	public ItemStack getPickedResult(HitResult target) {
+	public ItemStack getPickResult() {
 		return box.copy();
 	}
 
@@ -146,12 +146,13 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		motion = collideBoundingBox(this, motion, bb, level(), entityStream);
 
 		Vec3 clientPos = position().add(motion);
-		if (lerpSteps != 0)
-			clientPos = VecHelper.lerp(Math.min(1, tickCount / 20f), clientPos, new Vec3(lerpX, lerpY, lerpZ));
+		InterpolationHandler interpolation = getInterpolation();
+		if (interpolation.hasActiveInterpolation())
+			clientPos = VecHelper.lerp(Math.min(1, tickCount / 20f), clientPos, interpolation.position());
 		if (tickCount < 5)
 			setPos(clientPos.x, clientPos.y, clientPos.z);
 		if (tickCount < 20)
-			lerpTo(clientPos.x, clientPos.y, clientPos.z, getYRot(), getXRot(), lerpSteps == 0 ? 3 : lerpSteps);
+			moveOrInterpolateTo(clientPos, getYRot(), getXRot());
 	}
 
 	@Override
@@ -246,7 +247,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	}
 
 	@Override
-	public boolean canBeCollidedWith() {
+	public boolean canBeCollidedWith(Entity entity) {
 		return false;
 	}
 
@@ -406,11 +407,6 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	}
 
 	@Override
-	public Iterable<ItemStack> getArmorSlots() {
-		return Collections.emptyList();
-	}
-
-	@Override
 	public ItemStack getItemBySlot(EquipmentSlot pSlot) {
 		if (pSlot == EquipmentSlot.MAINHAND)
 			return getBox();
@@ -475,6 +471,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 
 	@Override
 	public boolean fireImmune() {
-		return box.has(DataComponents.FIRE_RESISTANT) || super.fireImmune();
+		DamageResistant damageResistant = box.get(DataComponents.DAMAGE_RESISTANT);
+		return damageResistant != null && damageResistant.types().equals(DamageTypeTags.IS_FIRE) || super.fireImmune();
 	}
 }
